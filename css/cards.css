@@ -1,0 +1,11 @@
+
+.tilt-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.tilt-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+}
+.career-img-sistemas    { background: linear-gradient(135deg, #FEE2E2, #FECACA); }
+.career-img-electronica { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); }
+.career-img-admin       { background: linear-gradient(135deg, #FEF3C7, #FDE68A); }

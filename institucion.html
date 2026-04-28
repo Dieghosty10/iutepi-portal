@@ -1,0 +1,342 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Conoce la misión, visión, carta filosófica y objetivos del IUTEPI." />
+  <title>Institución — IUTEPI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/cards.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/chatbot.css" />
+  <style>
+    .institution-block {
+      padding: var(--space-4xl) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .institution-block:last-child { border-bottom: none; }
+    .institution-block:nth-child(even) { background: var(--bg-surface); }
+    .block-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.8fr;
+      gap: var(--space-4xl);
+      align-items: start;
+    }
+    .block-inner.reverse { grid-template-columns: 1.8fr 1fr; }
+    .block-icon-wrap {
+      width: 90px; height: 90px;
+      border-radius: var(--radius-xl);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem;
+      margin-bottom: var(--space-xl);
+    }
+    .block-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--primary);
+      font-family: var(--font-display);
+      margin-bottom: var(--space-sm);
+    }
+    .block-title { margin-bottom: var(--space-xl); }
+    .quote-block {
+      border-left: 3px solid var(--primary);
+      padding: var(--space-xl) var(--space-xl);
+      background: rgba(204,31,38,0.04);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .objectives-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+    .obj-item {
+      display: flex;
+      gap: var(--space-lg);
+      padding: var(--space-lg) var(--space-xl);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      transition: all var(--transition-base);
+    }
+    .obj-item:hover {
+      border-color: var(--border-hover);
+      transform: translateX(6px);
+    }
+    .obj-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--grad-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 700; font-size: 0.85rem;
+      color: #fff; flex-shrink: 0;
+    }
+    .obj-text { font-size: 0.93rem; color: var(--text-secondary); line-height: 1.65; }
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+    }
+    .value-card {
+      padding: var(--space-xl);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      text-align: center;
+      transition: all var(--transition-base);
+    }
+    .value-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-4px);
+    }
+    .value-icon { font-size: 1.8rem; margin-bottom: var(--space-md); }
+    .value-card h4 { font-size: 0.95rem; margin-bottom: var(--space-sm); color: var(--accent); }
+    .value-card p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+    @media (max-width: 1024px) {
+      .block-inner, .block-inner.reverse { grid-template-columns: 1fr; }
+      .values-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .values-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="scroll-progress"></div>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <img src="assets/images/logo-iutepi.png" alt="IUTEPI" class="navbar-logo-img" />
+      </a>
+      <div class="nav-overlay" id="nav-overlay"></div>
+      <ul class="navbar-menu" id="navbar-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+        <li class="nav-item">
+          <a href="institucion.html" class="nav-link active" data-dropdown>Institución <i class="fas fa-chevron-down arrow"></i></a>
+          <div class="nav-dropdown">
+            <a href="#mision"><i class="fas fa-bullseye"></i> Misión y Visión</a>
+            <a href="#filosofia"><i class="fas fa-book-open"></i> Carta Filosófica</a>
+            <a href="#objetivos"><i class="fas fa-flag"></i> Objetivos</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" data-dropdown>Sedes <i class="fas fa-chevron-down arrow"></i></a>
+          <div class="nav-dropdown">
+            <a href="sedes.html#valencia"><i class="fas fa-star"></i> Valencia (Principal)</a>
+            <a href="sedes.html#valencia"><i class="fas fa-map-marker-alt"></i> Valencia</a>
+            <a href="sedes.html#acarigua"><i class="fas fa-map-marker-alt"></i> Acarigua</a>
+            <a href="sedes.html#guanare"><i class="fas fa-map-marker-alt"></i> Guanare</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="carreras.html" class="nav-link">Carreras</a>
+        </li>
+        <li class="nav-item"><a href="diplomados.html" class="nav-link">Diplomados</a></li>
+        <li class="nav-item"><a href="metodologias.html" class="nav-link">Metodologías</a></li>
+        <li class="nav-item"><a href="contacto.html" class="nav-link">Contacto</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="aula-virtual.html" class="navbar-cta" id="nav-aula-virtual" style="background:var(--text-primary);color:#fff;border-color:var(--text-primary);margin-right:8px;">
+          <i class="fas fa-desktop"></i> Aula Virtual
+        </a>
+        <a href="requisitos.html" class="navbar-cta"><i class="fas fa-edit"></i> Inscríbete</a>
+        <button class="navbar-hamburger" id="navbar-hamburger" aria-label="Menú"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <section class="page-header">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="page-header-content container">
+      <div class="page-header-breadcrumb">
+        <a href="index.html">Inicio</a>
+        <span class="sep"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i></span>
+        <span>Institución</span>
+      </div>
+      <h1>Nuestra <span class="text-red">Institución</span></h1>
+      <p>Más de 50 años formando Técnicos Superiores Universitarios comprometidos con el desarrollo tecnológico y social de Venezuela.</p>
+    </div>
+  </section>
+  <main id="content">
+    <section class="institution-block" id="mision">
+      <div class="container">
+        <div class="block-inner">
+          <div class="reveal">
+            <div class="block-icon-wrap" style="background:rgba(204,31,38,0.12);color:var(--primary);">
+              <i class="fas fa-bullseye"></i>
+            </div>
+            <div class="block-label">Misión</div>
+            <h2 class="block-title">¿Qué somos?</h2>
+            <div class="quote-block">
+              El IUTEPI es una institución de educación superior, cuya función primordial es la formación de Técnicos Superiores Universitarios en el ámbito de la Tecnología y la Administración Industrial, respondiendo a las necesidades del país en materia productiva y de servicios, promoviendo la investigación, la extensión cultural y el desarrollo sustentable de la región y la nación.
+            </div>
+          </div>
+          <div class="reveal reveal-delay-1">
+            <div class="block-icon-wrap" style="background:rgba(232,184,75,0.12);color:var(--accent);">
+              <i class="fas fa-eye"></i>
+            </div>
+            <div class="block-label" style="color:var(--accent);">Visión</div>
+            <h2 class="block-title">¿Hacia dónde vamos?</h2>
+            <div class="quote-block" style="border-color:var(--accent);background:rgba(232,184,75,0.04);">
+              Ser una institución de educación superior de referencia nacional en la formación de Técnicos Superiores Universitarios innovadores, creativos y comprometidos socialmente, con alta calificación técnica y humanística, al servicio del desarrollo integral de Venezuela.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="institution-block" id="filosofia">
+      <div class="container">
+        <div style="max-width:900px; margin:0 auto; text-align:center;">
+          <div class="section-badge reveal" style="margin-bottom:var(--space-xl);">
+            <i class="fas fa-book-open"></i> Carta Filosófica
+          </div>
+          <h2 class="reveal">Nuestros <span class="text-red">Principios</span></h2>
+          <div class="divider"></div>
+          <div class="quote-block reveal" style="text-align:left; font-size:1.05rem; max-width:800px; margin:var(--space-2xl) auto;">
+            El IUTEPI asume como principios fundamentales la <strong style="color:var(--text-primary);">excelencia académica</strong>, el <strong style="color:var(--text-primary);">humanismo</strong>, la <strong style="color:var(--text-primary);">responsabilidad social</strong>, la pertinencia con el entorno productivo y tecnológico, y el compromiso con el desarrollo del país. Nuestra institución forma profesionales con valores éticos, espíritu emprendedor, conciencia ciudadana y capacidad técnica para transformar su entorno.
+          </div>
+        </div>
+        <div class="values-grid" style="margin-top:var(--space-3xl);">
+          <div class="value-card reveal">
+            <div class="value-icon"></div>
+            <h4>Excelencia Académica</h4>
+            <p>Comprometidos con los más altos estándares de calidad educativa y pertinencia con el mercado laboral.</p>
+          </div>
+          <div class="value-card reveal reveal-delay-1">
+            <div class="value-icon"></div>
+            <h4>Responsabilidad Social</h4>
+            <p>Formamos profesionales con conciencia social y compromiso con el desarrollo de sus comunidades.</p>
+          </div>
+          <div class="value-card reveal reveal-delay-2">
+            <div class="value-icon"></div>
+            <h4>Innovación</h4>
+            <p>Fomentamos el espíritu emprendedor y la creatividad tecnológica para transformar el entorno.</p>
+          </div>
+          <div class="value-card reveal">
+            <div class="value-icon">️</div>
+            <h4>Ética Profesional</h4>
+            <p>Valores morales y éticos sólidos que guían la conducta de nuestros egresados en su vida profesional.</p>
+          </div>
+          <div class="value-card reveal reveal-delay-1">
+            <div class="value-icon"></div>
+            <h4>Pertinencia Nacional</h4>
+            <p>Nuestros programas responden directamente a las necesidades productivas del país y la región.</p>
+          </div>
+          <div class="value-card reveal reveal-delay-2">
+            <div class="value-icon"></div>
+            <h4>Ciudadanía</h4>
+            <p>Formamos ciudadanos íntegros, participativos y comprometidos con Venezuela y su desarrollo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="institution-block" id="objetivos">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-badge"><i class="fas fa-flag"></i> Objetivos Institucionales</div>
+          <h2 class="section-title">Nuestras <span class="text-red">Metas</span></h2>
+          <p class="section-subtitle">Principios que guían cada una de nuestras acciones académicas, culturales y de extensión comunitaria.</p>
+        </div>
+        <div class="objectives-list" style="max-width:900px; margin:0 auto;">
+          <div class="obj-item reveal">
+            <div class="obj-num">01</div>
+            <div class="obj-text">Formar Técnicos Superiores Universitarios competentes y actualizados para el mercado laboral nacional e internacional, con dominio de las tecnologías vigentes.</div>
+          </div>
+          <div class="obj-item reveal">
+            <div class="obj-num">02</div>
+            <div class="obj-text">Promover la investigación aplicada orientada a dar soluciones concretas a problemas del entorno regional, nacional y productivo.</div>
+          </div>
+          <div class="obj-item reveal">
+            <div class="obj-num">03</div>
+            <div class="obj-text">Fomentar la extensión universitaria, la cultura, el deporte y el desarrollo comunitario como parte integral de la formación estudiantil.</div>
+          </div>
+          <div class="obj-item reveal">
+            <div class="obj-num">04</div>
+            <div class="obj-text">Establecer vínculos estratégicos con el sector productivo nacional e internacional para garantizar la pertinencia de la oferta académica.</div>
+          </div>
+          <div class="obj-item reveal">
+            <div class="obj-num">05</div>
+            <div class="obj-text">Garantizar una formación integral que combine excelencia técnica, valores humanos y ciudadanía responsable en cada egresado.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-content">
+          <h2 style="font-size:clamp(1.8rem,4vw,3rem); margin-bottom:var(--space-lg);">
+            Sé parte del <span class="text-red">IUTEPI</span>
+          </h2>
+          <p style="font-size:1.05rem; color:var(--text-secondary); max-width:500px; margin:0 auto;">
+            Únete a nuestra familia institucional y construye un futuro profesional sólido.
+          </p>
+          <div class="cta-btns">
+            <a href="carreras.html" class="btn btn-primary btn-lg" id="inst-cta-carreras">
+              <i class="fas fa-graduation-cap"></i> Ver carreras
+            </a>
+            <a href="requisitos.html" class="btn btn-secondary btn-lg" id="inst-cta-req">
+              <i class="fas fa-edit"></i> Inscríbete
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <div style="width:36px;height:36px;background:var(--grad-primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:0.85rem;color:#fff;">IUT</div>
+            <span>IU<span>TEPI</span></span>
+          </div>
+          <p>Instituto Universitario de Tecnología y Administración Industrial. Formando profesionales desde 1974.</p>
+          <div class="footer-social">
+            <a href="https://www.facebook.com/iutepi.institutouniversitario/" aria-label="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/iutepi.valencia/?hl=es" aria-label="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+            
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Institución</h4>
+          <ul>
+            <li><a href="#mision"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Misión y Visión</a></li>
+            <li><a href="#filosofia"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Carta Filosófica</a></li>
+            <li><a href="#objetivos"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Objetivos</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Académico</h4>
+          <ul>
+            <li><a href="carreras.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Carreras</a></li>
+            <li><a href="diplomados.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Diplomados</a></li>
+            <li><a href="metodologias.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Metodologías</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <div class="footer-contact-item"><i class="fas fa-envelope"></i><a href="mailto:iutepi@iutepi.edu">iutepi@iutepi.edu</a></div>
+          <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>Valencia, Carabobo, Venezuela</span></div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 <span>IUTEPI</span>. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script type="module" src="js/firebase-config.js"></script>
+</body>
+</html>

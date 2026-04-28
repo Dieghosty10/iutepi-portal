@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sedes del IUTEPI en Venezuela: Valencia, Acarigua y Guanare." />
+  <title>Sedes — IUTEPI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/cards.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/chatbot.css" />
+  <style>
+    .sede-section {
+      padding: var(--space-4xl) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .sede-section:nth-child(even) { background: var(--bg-surface); }
+    .sede-section:last-child { border-bottom: none; }
+    .sede-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4xl);
+      align-items: center;
+    }
+    .sede-grid.reverse { direction: rtl; }
+    .sede-grid.reverse > * { direction: ltr; }
+    .sede-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 4px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: var(--font-display);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: var(--space-lg);
+    }
+    .sede-title { margin-bottom: var(--space-md); }
+    .sede-location { color: var(--text-muted); font-size: 0.9rem; display:flex; align-items:center; gap:6px; margin-bottom:var(--space-xl); }
+    .sede-features {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+    }
+    .sede-feature-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 10px var(--space-lg);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+    .sede-feature-item i { color: var(--primary); width:18px; text-align:center; }
+    .sede-carreras {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+    }
+    .map-placeholder {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: var(--text-muted);
+      gap: var(--space-lg);
+      position: relative;
+      overflow: hidden;
+    }
+    .map-placeholder::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--grad-hero);
+      opacity: 0.5;
+    }
+    .map-placeholder > * { position: relative; z-index: 1; }
+    .map-placeholder p { font-size: 0.9rem; color: var(--text-muted); font-family: var(--font-display); font-weight: 500; }
+    @media (max-width: 1024px) {
+      .sede-grid, .sede-grid.reverse { grid-template-columns: 1fr; direction: ltr; }
+    }
+  </style>
+</head>
+<body style="padding-top:calc(var(--navbar-h));">
+  <div id="scroll-progress"></div>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <img src="assets/images/logo-iutepi.png" alt="IUTEPI" class="navbar-logo-img" />
+      </a>
+      <div class="nav-overlay" id="nav-overlay"></div>
+      <ul class="navbar-menu" id="navbar-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+        <li class="nav-item">
+          <a href="institucion.html" class="nav-link" data-dropdown>Institución <i class="fas fa-chevron-down arrow"></i></a>
+          <div class="nav-dropdown">
+            <a href="institucion.html#mision"><i class="fas fa-bullseye"></i> Misión y Visión</a>
+            <a href="institucion.html#filosofia"><i class="fas fa-book-open"></i> Carta Filosófica</a>
+            <a href="institucion.html#objetivos"><i class="fas fa-flag"></i> Objetivos</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="sedes.html" class="nav-link active" data-dropdown>Sedes <i class="fas fa-chevron-down arrow"></i></a>
+          <div class="nav-dropdown">
+            <a href="#valencia"><i class="fas fa-star"></i> Valencia (Principal)</a>
+            <a href="#acarigua"><i class="fas fa-map-marker-alt"></i> Acarigua</a>
+            <a href="#guanare"><i class="fas fa-map-marker-alt"></i> Guanare</a>
+          </div>
+        </li>
+        <li class="nav-item"><a href="carreras.html" class="nav-link">Carreras</a></li>
+        <li class="nav-item"><a href="diplomados.html" class="nav-link">Diplomados</a></li>
+        <li class="nav-item"><a href="metodologias.html" class="nav-link">Metodologías</a></li>
+        <li class="nav-item"><a href="contacto.html" class="nav-link">Contacto</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="aula-virtual.html" class="navbar-cta" id="nav-aula-virtual" style="background:var(--text-primary);color:#fff;border-color:var(--text-primary);margin-right:8px;">
+          <i class="fas fa-desktop"></i> Aula Virtual
+        </a>
+        <a href="requisitos.html" class="navbar-cta"><i class="fas fa-edit"></i> Inscríbete</a>
+        <button class="navbar-hamburger" id="navbar-hamburger" aria-label="Menú"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <section class="page-header">
+    <div class="page-header-content container">
+      <div class="page-header-breadcrumb">
+        <a href="index.html">Inicio</a>
+        <span class="sep"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i></span>
+        <span>Sedes</span>
+      </div>
+      <h1>Nuestras <span class="text-red">Sedes</span></h1>
+      <p>El IUTEPI está presente en 3 ubicaciones de Venezuela para acercarte la educación de calidad donde estés.</p>
+    </div>
+  </section>
+  <section class="stats-strip">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item reveal"><div class="stat-number"><span>3</span></div><div class="stat-label">Sedes en Venezuela</div></div>
+        <div class="stat-item reveal reveal-delay-1"><div class="stat-number"><span>2</span></div><div class="stat-label">Estados cubiertos</div></div>
+        <div class="stat-item reveal reveal-delay-2"><div class="stat-number"><span>3</span></div><div class="stat-label">Carreras disponibles</div></div>
+        <div class="stat-item reveal reveal-delay-3"><div class="stat-number"><span>1</span></div><div class="stat-label">Plataforma virtual nacional</div></div>
+      </div>
+    </div>
+  </section>
+  <main id="content">
+    <section class="sede-section" id="valencia">
+      <div class="container">
+        <div class="sede-grid">
+          <div class="reveal">
+            <div class="sede-badge" style="background:rgba(232,184,75,0.12);color:var(--accent);border:1px solid rgba(232,184,75,0.3);">
+              <i class="fas fa-star"></i> Sede Principal
+            </div>
+            <h2 class="sede-title">Valencia, <span class="text-red">Carabobo</span></h2>
+            <div class="sede-location"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i>Valencia, Estado Carabobo, Venezuela</div>
+            <p style="font-size:0.95rem;color:var(--text-secondary);line-height:1.75;margin-bottom:var(--space-xl);">
+              La sede de Valencia atiende la demanda educativa del centro del país. Cuenta con instalaciones completas incluyendo laboratorios especializados, biblioteca, áreas deportivas y el aula virtual presencial. Todas las carreras están disponibles en esta sede.
+            </p>
+            <div class="sede-features">
+              <div class="sede-feature-item"><i class="fas fa-desktop"></i>Laboratorio de Computación</div>
+              <div class="sede-feature-item"><i class="fas fa-microchip"></i>Laboratorio de Electrónica</div>
+              <div class="sede-feature-item"><i class="fas fa-book"></i>Biblioteca Universitaria</div>
+              <div class="sede-feature-item"><i class="fas fa-running"></i>Canchas Deportivas</div>
+              <div class="sede-feature-item"><i class="fas fa-microphone"></i>Auditorio</div>
+            </div>
+            <div class="section-sub-title" style="font-size:0.9rem;font-family:var(--font-display);font-weight:700;color:var(--text-secondary);margin-bottom:var(--space-sm);">Carreras disponibles:</div>
+            <div class="sede-carreras">
+              <span class="badge badge-primary"><i class="fas fa-laptop-code"></i> Análisis de Sistemas</span>
+              <span class="badge badge-blue"><i class="fas fa-microchip"></i> Electrónica</span>
+              <span class="badge badge-accent"><i class="fas fa-chart-line"></i> Administración Industrial</span>
+            </div>
+          </div>
+          <div class="reveal reveal-delay-1">
+            <div class="map-placeholder">
+              <i class="fas fa-map-marker-alt" style="color:var(--primary);font-size:3rem;"></i>
+              <p>Valencia, Estado Carabobo</p>
+              <a href="https://maps.google.com/?q=Valencia+Carabobo+Venezuela+IUTEPI" target="_blank" class="btn btn-primary btn-sm" id="map-valencia">
+                <i class="fas fa-directions"></i> Ver en Google Maps
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="sede-section" id="acarigua">
+      <div class="container">
+        <div class="sede-grid reverse">
+          <div class="reveal">
+            <div class="sede-badge" style="background:rgba(64,200,130,0.12);color:#64E8A0;border:1px solid rgba(64,200,130,0.3);">
+              <i class="fas fa-map-marker-alt"></i> Extensión
+            </div>
+            <h2 class="sede-title">Acarigua, <span class="text-red">Portuguesa</span></h2>
+            <div class="sede-location"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i>Acarigua, Estado Portuguesa, Venezuela</div>
+            <p style="font-size:0.95rem;color:var(--text-secondary);line-height:1.75;margin-bottom:var(--space-xl);">
+              La extensión de Acarigua sirve a la población del sur-occidente del país, facilitando el acceso a educación superior tecnológica en la región llanera.
+            </p>
+            <div class="sede-features">
+              <div class="sede-feature-item"><i class="fas fa-desktop"></i>Laboratorio de Computación</div>
+              <div class="sede-feature-item"><i class="fas fa-chalkboard-teacher"></i>Aulas Equipadas</div>
+              <div class="sede-feature-item"><i class="fas fa-wifi"></i>Acceso a Aula Virtual</div>
+            </div>
+            <div class="section-sub-title" style="font-size:0.9rem;font-family:var(--font-display);font-weight:700;color:var(--text-secondary);margin-bottom:var(--space-sm);">Carreras disponibles:</div>
+            <div class="sede-carreras">
+              <span class="badge badge-primary"><i class="fas fa-laptop-code"></i> Análisis de Sistemas</span>
+              <span class="badge badge-accent"><i class="fas fa-chart-line"></i> Administración Industrial</span>
+            </div>
+          </div>
+          <div class="reveal reveal-delay-1">
+            <div class="map-placeholder">
+              <i class="fas fa-map-marker-alt" style="color:#64E8A0;font-size:3rem;"></i>
+              <p>Acarigua, Estado Portuguesa</p>
+              <a href="https://maps.google.com/?q=Acarigua+Portuguesa+Venezuela" target="_blank" class="btn btn-sm" style="background:linear-gradient(135deg,#4CAF50,#388E3C);color:#fff;" id="map-acarigua">
+                <i class="fas fa-directions"></i> Ver en Google Maps
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="sede-section" id="guanare">
+      <div class="container">
+        <div class="sede-grid">
+          <div class="reveal">
+            <div class="sede-badge" style="background:rgba(232,184,75,0.12);color:var(--accent);border:1px solid rgba(232,184,75,0.3);">
+              <i class="fas fa-map-marker-alt"></i> Ampliación
+            </div>
+            <h2 class="sede-title">Guanare, <span class="text-red">Portuguesa</span></h2>
+            <div class="sede-location"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i>Guanare, Estado Portuguesa, Venezuela</div>
+            <p style="font-size:0.95rem;color:var(--text-secondary);line-height:1.75;margin-bottom:var(--space-xl);">
+              La ampliación de Guanare extiende la presencia del IUTEPI a la capital del Estado Portuguesa, ampliando el acceso a la educación universitaria tecnológica en la región.
+            </p>
+            <div class="sede-features">
+              <div class="sede-feature-item"><i class="fas fa-chalkboard-teacher"></i>Aulas Equipadas</div>
+              <div class="sede-feature-item"><i class="fas fa-wifi"></i>Acceso a Plataforma Virtual</div>
+            </div>
+            <div class="section-sub-title" style="font-size:0.9rem;font-family:var(--font-display);font-weight:700;color:var(--text-secondary);margin-bottom:var(--space-sm);">Carreras disponibles:</div>
+            <div class="sede-carreras">
+              <span class="badge badge-accent"><i class="fas fa-chart-line"></i> Administración Industrial</span>
+            </div>
+          </div>
+          <div class="reveal reveal-delay-1">
+            <div class="map-placeholder">
+              <i class="fas fa-map-marker-alt" style="color:var(--accent);font-size:3rem;"></i>
+              <p>Guanare, Estado Portuguesa</p>
+              <a href="https://maps.google.com/?q=Guanare+Portuguesa+Venezuela" target="_blank" class="btn btn-sm btn-accent" id="map-guanare">
+                <i class="fas fa-directions"></i> Ver en Google Maps
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-content">
+          <div class="section-badge" style="margin-bottom:var(--space-xl);">
+            <i class="fas fa-globe"></i> Sin límites geográficos
+          </div>
+          <h2 style="font-size:clamp(1.8rem,4vw,3rem); margin-bottom:var(--space-lg);">
+            ¿No estás cerca de ninguna sede?<br>
+            <span class="text-red">Estudia en línea</span>
+          </h2>
+          <p style="font-size:1.05rem; color:var(--text-secondary); max-width:600px; margin:0 auto;">
+            Con nuestra modalidad <strong style="color:var(--text-primary);">virtual y semipresencial</strong>, puedes estudiar desde cualquier parte de Venezuela o del mundo, accediendo al Aula Virtual del IUTEPI.
+          </p>
+          <div class="cta-btns">
+            <a href="http://virtual.iutepi.edu.ve/moodle/" target="_blank" class="btn btn-primary btn-lg" id="sedes-aula-virtual">
+              <i class="fas fa-globe"></i> Acceder al Aula Virtual
+            </a>
+            <a href="metodologias.html" class="btn btn-secondary btn-lg" id="sedes-metodologias">
+              <i class="fas fa-info-circle"></i> Ver modalidades
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">
+            <img src="assets/images/logo-iutepi.png" alt="IUTEPI" style="height:38px;filter:brightness(0) invert(1);" />
+          </a>
+          <p>Instituto Universitario de Tecnología para la Informática.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Sedes</h4>
+          <ul>
+            <li><a href="#valencia"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Valencia (Principal)</a></li>
+            <li><a href="#acarigua"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Acarigua</a></li>
+            <li><a href="#guanare"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Guanare</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Académico</h4>
+          <ul>
+            <li><a href="carreras.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Carreras</a></li>
+            <li><a href="requisitos.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Inscripción</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <div class="footer-contact-item"><i class="fas fa-envelope"></i><a href="mailto:iutepi@iutepi.edu">iutepi@iutepi.edu</a></div>
+          <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>Valencia, Carabobo, Venezuela</span></div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 <span>IUTEPI</span>. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script type="module" src="js/firebase-config.js"></script>
+</body>
+</html>

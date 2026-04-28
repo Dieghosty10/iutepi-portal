@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Inicializar Base de Datos IUTEPI+</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f0f0f0; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #CC1F26; color: white; border: none; border-radius: 5px; }
+    #log { margin-top: 20px; background: #fff; padding: 15px; border-radius: 5px; border: 1px solid #ccc; height: 300px; overflow-y: auto; font-family: monospace; }
+  </style>
+</head>
+<body>
+  <h1>Configuración Inicial de Firebase</h1>
+  <p>Haz clic en el botón para insertar algunos usuarios de prueba (Alumnos y Profesores) en la base de datos.</p>
+  <button id="btn-init">Insertar Datos de Prueba</button>
+  <div id="log">Esperando...</div>
+  <script type="module">
+    import { db, collection, addDoc } from './js/firebase-config.js';
+    const logDiv = document.getElementById('log');
+    function log(msg) {
+      logDiv.innerHTML += `<div>${msg}</div>`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+    const testUsers = [
+      {
+        nombre: "Diego",
+        cedula: "12345678",
+        rol: "alumno",
+        carrera: "Análisis de Sistemas"
+      },
+      {
+        nombre: "María Pérez",
+        cedula: "87654321",
+        rol: "alumno",
+        carrera: "Electrónica"
+      },
+      {
+        nombre: "Prof. Carlos López",
+        cedula: "11223344",
+        rol: "profesor",
+        materia: "Programación I"
+      }
+    ];
+    document.getElementById('btn-init').addEventListener('click', async () => {
+      log("Iniciando inserción de datos...");
+      try {
+        for (const user of testUsers) {
+          log(`Insertando usuario: ${user.nombre} (${user.rol})...`);
+          const docRef = await addDoc(collection(db, "users"), user);
+          log(`<span style="color:green">Completado ID: ${docRef.id}</span>`);
+        }
+        log("<strong>¡Todos los datos fueron insertados correctamente!</strong>");
+        log("Ya puedes ir a <a href='aula-virtual.html'>aula-virtual.html</a> y probar iniciar sesión con cédula 12345678 o 11223344.");
+      } catch (e) {
+        log(`<span style="color:red">Error: ${e.message}</span>`);
+      }
+    });
+  </script>
+</body>
+</html>

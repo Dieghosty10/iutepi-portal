@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Campus Virtual IUTEPI. Acceso exclusivo para estudiantes y docentes registrados." />
+  <title>Campus Virtual | IUTEPI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <style>
+    /* Estilos específicos para el aula virtual */
+    body { padding-top: calc(var(--topbar-h) + var(--navbar-h)); background: var(--bg-surface); }
+    .login-container {
+      max-width: 1000px;
+      margin: var(--space-4xl) auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-2xl);
+      background: #fff;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .login-left {
+      padding: var(--space-4xl) var(--space-3xl);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .login-right {
+      background: var(--primary-bg);
+      padding: var(--space-4xl) var(--space-3xl);
+      border-left: 1px solid rgba(204,31,38,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .login-title {
+      font-size: 2rem;
+      color: var(--primary-dark);
+      margin-bottom: var(--space-2xl);
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: var(--space-lg);
+    }
+    .form-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all var(--transition-base);
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(204,31,38,0.15);
+    }
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .btn-login {
+      width: 100%;
+      justify-content: center;
+      margin-top: var(--space-md);
+    }
+    .login-divider {
+      margin: var(--space-xl) 0;
+      position: relative;
+      text-align: center;
+    }
+    .login-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      height: 1px;
+      background: var(--border);
+      z-index: 1;
+    }
+    .login-divider span {
+      position: relative;
+      background: #fff;
+      padding: 0 10px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      z-index: 2;
+    }
+    .info-title {
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: var(--space-lg);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    .info-text {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: var(--space-md);
+    }
+    .info-highlight {
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+    .info-box {
+      background: #fff;
+      border: 1px solid rgba(204,31,38,0.2);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      margin: var(--space-md) 0;
+      text-align: center;
+      font-family: var(--font-display);
+    }
+    .info-box span {
+      display: block;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .info-alert {
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+    .error-msg {
+      background: #FEF2F2;
+      color: var(--primary);
+      padding: 12px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      text-align: center;
+      margin-bottom: var(--space-md);
+      border: 1px solid rgba(204,31,38,0.2);
+      display: none;
+    }
+    /* Modal for Dashboard simulation */
+    .dashboard-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-xl);
+    }
+    .dashboard-modal.active { display: flex; }
+    .dashboard-content {
+      background: var(--bg-surface);
+      width: 100%;
+      max-width: 800px;
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-xl);
+    }
+    .dash-header {
+      background: var(--primary);
+      color: #fff;
+      padding: var(--space-xl);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dash-body { padding: var(--space-2xl); min-height: 300px; }
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-xl);
+      margin-top: var(--space-xl);
+    }
+    .dash-card {
+      background: #fff;
+      padding: var(--space-xl);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .dash-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); transform: translateY(-3px); }
+    .dash-card i { font-size: 2rem; color: var(--primary); margin-bottom: 10px; }
+    @media (max-width: 768px) {
+      .login-container { grid-template-columns: 1fr; margin: var(--space-xl); }
+      .dash-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar scrolled" role="navigation" aria-label="Menú principal">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-logo" id="nav-logo">
+        <img src="assets/images/logo-iutepi.png" alt="IUTEPI" class="navbar-logo-img" />
+      </a>
+      <div class="nav-overlay" id="nav-overlay"></div>
+      <ul class="navbar-menu" id="navbar-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+        <li class="nav-item"><a href="institucion.html" class="nav-link">Institución</a></li>
+        <li class="nav-item"><a href="carreras.html" class="nav-link">Carreras</a></li>
+        <li class="nav-item"><a href="contacto.html" class="nav-link">Contacto</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="aula-virtual.html" class="navbar-cta" id="nav-aula-virtual" style="background:var(--text-primary);color:#fff;border-color:var(--text-primary);margin-right:8px;">
+          <i class="fas fa-desktop"></i> Aula Virtual
+        </a>
+        <a href="requisitos.html" class="navbar-cta" id="nav-inscribete">
+          <i class="fas fa-edit"></i> Inscríbete
+        </a>
+      </div>
+    </div>
+  </nav>
+  <main id="content">
+    <div class="container">
+      <div class="login-container">
+        <div class="login-left">
+          <h1 class="login-title">Acceder</h1>
+          <div id="login-error" class="error-msg">
+            <i class="fas fa-exclamation-circle"></i> <span>Credenciales incorrectas.</span>
+          </div>
+          <form id="login-form">
+            <div class="form-group">
+              <label for="username" class="form-label">Nombre de usuario (Cédula)</label>
+              <input type="text" id="username" class="form-control" placeholder="Ej: 12345678" required autocomplete="username" />
+            </div>
+            <div class="form-group">
+              <label for="password" class="form-label">Contraseña (Cédula)</label>
+              <input type="password" id="password" class="form-control" placeholder="Ej: 12345678" required autocomplete="current-password" />
+            </div>
+            <div class="form-group">
+              <label class="form-checkbox">
+                <input type="checkbox" id="remember" /> Recordar nombre de usuario
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-login" id="btn-submit">
+              <i class="fas fa-sign-in-alt"></i> Acceder
+            </button>
+          </form>
+          <div style="text-align:center; margin-top:var(--space-md);">
+            <a href="mailto:soporte@iutepi.edu.ve" style="font-size:0.85rem; color:var(--text-muted);"><i class="fas fa-question-circle"></i> ¿Olvidó su contraseña?</a>
+          </div>
+          <div class="login-divider"><span>Opciones alternativas</span></div>
+          <button type="button" class="btn btn-secondary btn-login" id="btn-guest">
+            <i class="fas fa-user-circle"></i> Iniciar sesión como invitado
+          </button>
+        </div>
+        <div class="login-right">
+          <h2 class="info-title">Bienvenidos</h2>
+          <p class="info-text">
+            Todos los estudiantes y docentes, obligatoriamente, tendrán que iniciar sesión utilizando su cédula de identidad como usuario y como contraseña:
+          </p>
+          <div class="info-box">
+            <span>Usuario: &lt;cédula de identidad&gt;</span>
+            <span>Contraseña: &lt;cédula de identidad&gt;</span>
+          </div>
+          <p class="info-text" style="text-align:center;">
+            Sin puntos u otros caracteres (ejemplo: <span class="info-highlight">12345</span>).
+          </p>
+          <p class="info-alert">
+            ¡Importante! Si tus dígitos de cédula contienen "0" al inicio, no los tomes en cuenta. (ejemplo: 00340) Solo considera 340.
+          </p>
+          <div style="margin-top:var(--space-xl); font-size:0.8rem; color:var(--text-secondary); text-align:center;">
+            <p>En caso de no poder acceder con tu cédula debes dirigirte al departamento de control de estudios para actualizar tus datos.</p>
+            <p style="margin-top:10px;"><i class="fas fa-envelope"></i> Soporte: <strong>soporte@iutepi.edu.ve</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div class="dashboard-modal" id="dashboard-modal">
+    <div class="dashboard-content">
+      <div class="dash-header">
+        <div>
+          <h2 style="color:#fff; font-size:1.5rem;" id="dash-title">Campus Virtual</h2>
+          <div style="font-size:0.85rem; opacity:0.8;" id="dash-role">Estudiante</div>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="btn-logout" style="border-color:rgba(255,255,255,0.3); color:#fff;">
+          <i class="fas fa-sign-out-alt"></i> Salir
+        </button>
+      </div>
+      <div class="dash-body">
+        <h3 id="dash-welcome">¡Hola!</h3>
+        <p style="color:var(--text-muted); margin-top:8px;" id="dash-desc">Bienvenido a tu panel de control académico.</p>
+        <div class="dash-grid" id="dash-modules">
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="footer" style="margin-top:0;">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;">
+        <p>&copy; 2025 <span>IUTEPI</span>. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="js/navbar.js"></script>
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/aula-virtual.js"></script>
+</body>
+</html>

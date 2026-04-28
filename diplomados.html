@@ -1,0 +1,260 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Diplomados del IUTEPI: Seguridad Informática, Automatización Industrial, Administración Contable y Redes." />
+  <title>Diplomados — IUTEPI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/cards.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/chatbot.css" />
+  <style>
+    .diplomas-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-xl);
+    }
+    .diploma-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+      transition: all var(--transition-base);
+      position: relative;
+      overflow: hidden;
+    }
+    .diploma-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--dc-color, var(--grad-primary));
+      transition: height var(--transition-base);
+    }
+    .diploma-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-glow), var(--shadow-md);
+      border-color: rgba(204,31,38,0.3);
+    }
+    .diploma-card:hover::before { height: 4px; }
+    .diploma-icon {
+      width: 64px; height: 64px;
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: var(--space-xl);
+    }
+    .diploma-card h3 { font-size: 1.15rem; margin-bottom: var(--space-md); }
+    .diploma-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: var(--space-xl); }
+    .diploma-meta {
+      display: flex;
+      gap: var(--space-lg);
+      flex-wrap: wrap;
+    }
+    .diploma-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-family: var(--font-display);
+    }
+    .diploma-meta-item i { color: var(--primary); font-size: 0.75rem; }
+    .diploma-card-footer {
+      margin-top: var(--space-xl);
+      padding-top: var(--space-xl);
+      border-top: 1px solid var(--border);
+    }
+    @media (max-width: 768px) {
+      .diplomas-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="scroll-progress"></div>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <img src="assets/images/logo-iutepi.png" alt="IUTEPI" class="navbar-logo-img" />
+      </a>
+      <div class="nav-overlay" id="nav-overlay"></div>
+      <ul class="navbar-menu" id="navbar-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+        <li class="nav-item"><a href="institucion.html" class="nav-link" data-dropdown>Institución <i class="fas fa-chevron-down arrow"></i></a><div class="nav-dropdown"><a href="institucion.html#mision"><i class="fas fa-bullseye"></i> Misión y Visión</a><a href="institucion.html#filosofia"><i class="fas fa-book-open"></i> Carta Filosófica</a><a href="institucion.html#objetivos"><i class="fas fa-flag"></i> Objetivos</a></div></li>
+        <li class="nav-item"><a href="carreras.html" class="nav-link">Carreras</a></li>
+        <li class="nav-item"><a href="diplomados.html" class="nav-link active">Diplomados</a></li>
+        <li class="nav-item"><a href="metodologias.html" class="nav-link">Metodologías</a></li>
+        <li class="nav-item"><a href="contacto.html" class="nav-link">Contacto</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="aula-virtual.html" class="navbar-cta" id="nav-aula-virtual" style="background:var(--text-primary);color:#fff;border-color:var(--text-primary);margin-right:8px;">
+          <i class="fas fa-desktop"></i> Aula Virtual
+        </a>
+        <a href="requisitos.html" class="navbar-cta"><i class="fas fa-edit"></i> Inscríbete</a>
+        <button class="navbar-hamburger" id="navbar-hamburger" aria-label="Menú"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <section class="page-header">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="page-header-content container">
+      <div class="page-header-breadcrumb">
+        <a href="index.html">Inicio</a>
+        <span class="sep"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i></span>
+        <span>Diplomados</span>
+      </div>
+      <h1><span class="text-red">Diplomados</span> y Certificados</h1>
+      <p>Programas de actualización profesional diseñados para potenciar tu carrera con conocimientos especializados y certificación oficial.</p>
+    </div>
+  </section>
+  <main id="content">
+    <section class="section">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-badge"><i class="fas fa-certificate"></i> Formación Continua</div>
+          <h2 class="section-title">Diplomados <span class="text-red">Disponibles</span></h2>
+          <p class="section-subtitle">Certificados de alta demanda en el mercado laboral venezolano e internacional. Modalidades adaptadas a tu disponibilidad.</p>
+        </div>
+        <div class="diplomas-grid">
+          <div class="diploma-card tilt-card reveal" style="--dc-color: linear-gradient(135deg, #CC1F26, #9B1219);">
+            <div class="diploma-icon" style="background:rgba(204,31,38,0.12);color:var(--primary);">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="badge badge-primary" style="margin-bottom:var(--space-md);">Alta Demanda</div>
+            <h3>Seguridad Informática</h3>
+            <p>Aprende a proteger sistemas, redes y datos corporativos. Técnicas de ethical hacking, pentesting, criptografía y gestión de vulnerabilidades para defenderte del cibercrimen.</p>
+            <div class="diploma-meta">
+              <div class="diploma-meta-item"><i class="fas fa-clock"></i>6 meses</div>
+              <div class="diploma-meta-item"><i class="fas fa-laptop"></i>Semipresencial</div>
+              <div class="diploma-meta-item"><i class="fas fa-certificate"></i>Certificado oficial</div>
+            </div>
+            <div class="diploma-card-footer">
+              <a href="contacto.html" class="btn btn-primary btn-sm" id="info-seguridad">
+                <i class="fas fa-info-circle"></i> Más información
+              </a>
+            </div>
+          </div>
+          <div class="diploma-card tilt-card reveal reveal-delay-1" style="--dc-color: linear-gradient(135deg, #1A62CC, #0F3E82);">
+            <div class="diploma-icon" style="background:rgba(26,98,204,0.12);color:#1A62CC;">
+              <i class="fas fa-robot"></i>
+            </div>
+            <div class="badge badge-blue" style="margin-bottom:var(--space-md);">Industria 4.0</div>
+            <h3>Automatización Industrial</h3>
+            <p>Domina los sistemas de control automático, PLCs, robótica industrial y SCADA. Prepárate para liderar la transformación digital de la industria venezolana.</p>
+            <div class="diploma-meta">
+              <div class="diploma-meta-item"><i class="fas fa-clock"></i>6 meses</div>
+              <div class="diploma-meta-item"><i class="fas fa-school"></i>Presencial</div>
+              <div class="diploma-meta-item"><i class="fas fa-certificate"></i>Certificado oficial</div>
+            </div>
+            <div class="diploma-card-footer">
+              <a href="contacto.html" class="btn btn-sm" style="background:linear-gradient(135deg,#1A62CC,#0F3E82);color:#fff;" id="info-automatizacion">
+                <i class="fas fa-info-circle"></i> Más información
+              </a>
+            </div>
+          </div>
+          <div class="diploma-card tilt-card reveal reveal-delay-2" style="--dc-color: linear-gradient(135deg, #E8B84B, #C99A30);">
+            <div class="diploma-icon" style="background:rgba(232,184,75,0.12);color:var(--accent-dark);">
+              <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <div class="badge badge-accent" style="margin-bottom:var(--space-md);">Empresarial</div>
+            <h3>Administración Contable y Tributaria</h3>
+            <p>Domina la contabilidad empresarial actualizada y el complejo sistema tributario venezolano. Perfecto para contadores, administradores y emprendedores.</p>
+            <div class="diploma-meta">
+              <div class="diploma-meta-item"><i class="fas fa-clock"></i>4 meses</div>
+              <div class="diploma-meta-item"><i class="fas fa-laptop"></i>Semipresencial</div>
+              <div class="diploma-meta-item"><i class="fas fa-certificate"></i>Certificado oficial</div>
+            </div>
+            <div class="diploma-card-footer">
+              <a href="contacto.html" class="btn btn-sm btn-accent" id="info-contable">
+                <i class="fas fa-info-circle"></i> Más información
+              </a>
+            </div>
+          </div>
+          <div class="diploma-card tilt-card reveal reveal-delay-3" style="--dc-color: linear-gradient(135deg, #64E8A0, #4CAF50);">
+            <div class="diploma-icon" style="background:rgba(64,200,130,0.12);color:#4CAF50;">
+              <i class="fas fa-network-wired"></i>
+            </div>
+            <div class="badge badge-green" style="margin-bottom:var(--space-md);">Tecnología</div>
+            <h3>Redes y Comunicaciones</h3>
+            <p>Aprende configuración de routers, switches, protocolos de red, VoIP y ciberseguridad en redes. Certificación alineada con estándares internacionales (Cisco / CompTIA).</p>
+            <div class="diploma-meta">
+              <div class="diploma-meta-item"><i class="fas fa-clock"></i>5 meses</div>
+              <div class="diploma-meta-item"><i class="fas fa-globe"></i>Virtual</div>
+              <div class="diploma-meta-item"><i class="fas fa-certificate"></i>Certificado oficial</div>
+            </div>
+            <div class="diploma-card-footer">
+              <a href="contacto.html" class="btn btn-sm" style="background:linear-gradient(135deg,#4CAF50,#388E3C);color:#fff;" id="info-redes">
+                <i class="fas fa-info-circle"></i> Más información
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section" style="background:var(--bg-surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 class="section-title">¿Por qué un <span class="text-red">Diplomado</span>?</h2>
+        </div>
+        <div class="grid-3">
+          <div class="feature-card reveal">
+            <div class="feature-icon"><i class="fas fa-briefcase"></i></div>
+            <h3>Mejora tu Empleabilidad</h3>
+            <p>Los diplomados especializados te diferencian en el mercado laboral y aumentan tus posibilidades de conseguir mejores oportunidades.</p>
+          </div>
+          <div class="feature-card reveal reveal-delay-1">
+            <div class="feature-icon"><i class="fas fa-clock"></i></div>
+            <h3>Corta Duración</h3>
+            <p>Entre 4 y 6 meses, los diplomados son intensivos y prácticos. Aprende exactamente lo que necesitas sin años de espera.</p>
+          </div>
+          <div class="feature-card reveal reveal-delay-2">
+            <div class="feature-icon"><i class="fas fa-certificate"></i></div>
+            <h3>Certificado Oficial</h3>
+            <p>Al finalizar recibes un certificado oficial del IUTEPI, reconocido en el ámbito académico y empresarial venezolano.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-content">
+          <h2 style="font-size:clamp(1.8rem,4vw,3rem); margin-bottom:var(--space-lg);">¿Interesado en algún <span class="text-red">diplomado</span>?</h2>
+          <p style="font-size:1.05rem; color:var(--text-secondary); max-width:500px; margin:0 auto;">Contáctanos para conocer fechas de inicio, costos y requisitos de inscripción.</p>
+          <div class="cta-btns">
+            <a href="contacto.html" class="btn btn-primary btn-lg" id="diploma-cta-contacto">
+              <i class="fas fa-envelope"></i> Pedir información
+            </a>
+            <button onclick="window.piaChatbot?.openPanel()" class="btn btn-secondary btn-lg" id="diploma-cta-pia">
+              <i class="fas fa-robot"></i> Preguntar a PIA
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo"><div style="width:36px;height:36px;background:var(--grad-primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:0.85rem;color:#fff;">IUT</div><span>IU<span>TEPI</span></span></div>
+          <p>Instituto Universitario de Tecnología y Administración Industrial.</p>
+        </div>
+        <div class="footer-col"><h4>Diplomados</h4><ul><li><a href="#"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Seguridad Informática</a></li><li><a href="#"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Automatización Industrial</a></li><li><a href="#"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Contable y Tributaria</a></li><li><a href="#"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Redes y Comunicaciones</a></li></ul></div>
+        <div class="footer-col"><h4>Académico</h4><ul><li><a href="carreras.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Carreras TSU</a></li><li><a href="requisitos.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Inscripción</a></li></ul></div>
+        <div class="footer-col"><h4>Contacto</h4><div class="footer-contact-item"><i class="fas fa-envelope"></i><a href="mailto:iutepi@iutepi.edu">iutepi@iutepi.edu</a></div><div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>Valencia, Carabobo, Venezuela</span></div></div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2025 <span>IUTEPI</span>. Todos los derechos reservados.</p></div>
+    </div>
+  </footer>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script type="module" src="js/firebase-config.js"></script>
+</body>
+</html>

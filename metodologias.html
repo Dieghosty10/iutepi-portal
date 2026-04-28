@@ -1,0 +1,385 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Modalidades de estudio del IUTEPI: Presencial, Semipresencial y Virtual. Elige cómo estudiar." />
+  <title>Metodologías — IUTEPI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/cards.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/chatbot.css" />
+  <style>
+    .method-detail-section {
+      padding: var(--space-5xl) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .method-detail-section:nth-child(even) { background: var(--bg-surface); }
+    .method-detail-section:last-of-type { border-bottom: none; }
+    .method-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4xl);
+      align-items: center;
+    }
+    .method-detail-grid.reverse { direction: rtl; }
+    .method-detail-grid.reverse > * { direction: ltr; }
+    .method-hero-icon {
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 300px;
+      margin: 0 auto;
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .method-hero-icon::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      filter: blur(60px);
+    }
+    .method-details-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin: var(--space-xl) 0;
+    }
+    .method-detail-li {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 10px var(--space-lg);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    .pros-cons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+    .pros, .cons {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+    }
+    .pros { border-color: rgba(76,175,80,0.3); background: rgba(76,175,80,0.04); }
+    .cons { border-color: rgba(204,31,38,0.2); background: rgba(204,31,38,0.03); }
+    .pros h4, .cons h4 {
+      font-size: 0.85rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      margin-bottom: var(--space-md);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .pros h4 { color: #4CAF50; }
+    .cons h4 { color: var(--primary); }
+    .pc-item {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      padding: 5px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      line-height: 1.5;
+    }
+    .pc-item i { font-size: 0.7rem; margin-top: 3px; flex-shrink: 0; }
+    .pros .pc-item i { color: #4CAF50; }
+    .cons .pc-item i { color: var(--primary); }
+    @media (max-width: 1024px) {
+      .method-detail-grid, .method-detail-grid.reverse { grid-template-columns: 1fr; direction: ltr; }
+      .method-hero-icon { max-width: 200px; font-size: 5rem; }
+    }
+    @media (max-width: 640px) {
+      .pros-cons { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="scroll-progress"></div>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <img src="assets/images/logo-iutepi.png" alt="IUTEPI" class="navbar-logo-img" />
+      </a>
+      <div class="nav-overlay" id="nav-overlay"></div>
+      <ul class="navbar-menu" id="navbar-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+        <li class="nav-item"><a href="institucion.html" class="nav-link" data-dropdown>Institución <i class="fas fa-chevron-down arrow"></i></a><div class="nav-dropdown"><a href="institucion.html#mision"><i class="fas fa-bullseye"></i> Misión y Visión</a><a href="institucion.html#filosofia"><i class="fas fa-book-open"></i> Carta Filosófica</a><a href="institucion.html#objetivos"><i class="fas fa-flag"></i> Objetivos</a></div></li>
+        <li class="nav-item"><a href="carreras.html" class="nav-link">Carreras</a></li>
+        <li class="nav-item"><a href="diplomados.html" class="nav-link">Diplomados</a></li>
+        <li class="nav-item"><a href="metodologias.html" class="nav-link active">Metodologías</a></li>
+        <li class="nav-item"><a href="contacto.html" class="nav-link">Contacto</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="aula-virtual.html" class="navbar-cta" id="nav-aula-virtual" style="background:var(--text-primary);color:#fff;border-color:var(--text-primary);margin-right:8px;">
+          <i class="fas fa-desktop"></i> Aula Virtual
+        </a>
+        <a href="requisitos.html" class="navbar-cta"><i class="fas fa-edit"></i> Inscríbete</a>
+        <button class="navbar-hamburger" id="navbar-hamburger" aria-label="Menú"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <section class="page-header">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="page-header-content container">
+      <div class="page-header-breadcrumb">
+        <a href="index.html">Inicio</a>
+        <span class="sep"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i></span>
+        <span>Metodologías</span>
+      </div>
+      <h1>Metodologías de <span class="text-red">Estudio</span></h1>
+      <p>El IUTEPI ofrece tres modalidades adaptadas a tu estilo de vida. Estudia como prefieras, desde donde puedas.</p>
+    </div>
+  </section>
+  <main id="content">
+    
+    <section class="method-detail-section" id="presencial">
+      <div class="container">
+        <div class="method-detail-grid">
+          <div class="reveal">
+            <div class="section-badge" style="margin-bottom:var(--space-lg);">
+              <i class="fas fa-school"></i> Modalidad 1
+            </div>
+            <h2 style="margin-bottom:var(--space-md);"> <span class="text-red">Presencial</span></h2>
+            <p style="font-size:1rem;color:var(--text-secondary);line-height:1.75;margin-bottom:var(--space-xl);">La modalidad clásica universitaria. Asistes físicamente a las instalaciones del IUTEPI de lunes a viernes para recibir clases directas con docentes, usar los laboratorios y participar en la vida universitaria completa.</p>
+            <div class="method-details-list">
+              <div class="method-detail-li"><i class="fas fa-calendar" style="color:var(--primary);"></i>Lunes a viernes sin excepción</div>
+              <div class="method-detail-li"><i class="fas fa-clock" style="color:var(--primary);"></i>Turno mañana: 7:00am — 12:00pm</div>
+              <div class="method-detail-li"><i class="fas fa-clock" style="color:var(--primary);"></i>Turno tarde: 12:00pm — 6:00pm</div>
+              <div class="method-detail-li"><i class="fas fa-flask" style="color:var(--primary);"></i>Acceso completo a laboratorios</div>
+              <div class="method-detail-li"><i class="fas fa-users" style="color:var(--primary);"></i>Clases interactivas con docentes</div>
+            </div>
+            <div class="pros-cons">
+              <div class="pros">
+                <h4><i class="fas fa-plus"></i> Ventajas</h4>
+                <div class="pc-item"><i class="fas fa-check"></i>Interacción directa con docentes</div>
+                <div class="pc-item"><i class="fas fa-check"></i>Acceso a todos los laboratorios</div>
+                <div class="pc-item"><i class="fas fa-check"></i>Vida universitaria completa</div>
+                <div class="pc-item"><i class="fas fa-check"></i>Red de contactos presencial</div>
+              </div>
+              <div class="cons">
+                <h4><i class="fas fa-info"></i> Consideraciones</h4>
+                <div class="pc-item"><i class="fas fa-exclamation"></i>Requiere asistencia diaria</div>
+                <div class="pc-item"><i class="fas fa-exclamation"></i>Menos compatible con trabajo de tiempo completo</div>
+                <div class="pc-item"><i class="fas fa-exclamation"></i>Debes residir cerca de la sede</div>
+              </div>
+            </div>
+            <div style="margin-top:var(--space-xl);">
+              <a href="requisitos.html" class="btn btn-primary" id="btn-inscribir-presencial">
+                <i class="fas fa-edit"></i> Inscribirme en modalidad presencial
+              </a>
+            </div>
+          </div>
+          <div class="reveal reveal-delay-1" style="text-align:center;">
+            <div class="method-hero-icon" style="background:rgba(204,31,38,0.08);margin:0 auto;">
+              <img src="assets/images/method_presential.png" alt="Modalidad" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-xl);position:relative;z-index:2;" />
+            </div>
+            <div class="method-detail" style="margin-top:var(--space-xl);justify-content:center;">
+              <i class="fas fa-map-marker-alt"></i> Disponible en todas las sedes
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="method-detail-section" id="semipresencial">
+      <div class="container">
+        <div class="method-detail-grid reverse">
+          <div class="reveal">
+            <div class="section-badge" style="margin-bottom:var(--space-lg);">
+              <i class="fas fa-laptop"></i> Modalidad 2
+            </div>
+            <h2 style="margin-bottom:var(--space-md);"> <span class="text-red">Semipresencial</span></h2>
+            <p style="font-size:1rem;color:var(--text-secondary);line-height:1.75;margin-bottom:var(--space-xl);">La modalidad perfecta para quienes trabajan entre semana. Asiste los sábados a la sede para clases magistrales y práctica de laboratorio, y complementa con actividades en la plataforma virtual durante la semana.</p>
+            <div class="method-details-list">
+              <div class="method-detail-li"><i class="fas fa-calendar" style="color:#1A62CC;"></i>Sábados presenciales obligatorios</div>
+              <div class="method-detail-li"><i class="fas fa-clock" style="color:#1A62CC;"></i>Sábados: 7:00am — 1:00pm</div>
+              <div class="method-detail-li"><i class="fas fa-globe" style="color:#1A62CC;"></i>Actividades virtuales de lunes a viernes</div>
+              <div class="method-detail-li"><i class="fas fa-flask" style="color:#1A62CC;"></i>Laboratorios los sábados</div>
+              <div class="method-detail-li"><i class="fas fa-book" style="color:#1A62CC;"></i>Material disponible en plataforma Moodle</div>
+            </div>
+            <div class="pros-cons">
+              <div class="pros">
+                <h4><i class="fas fa-plus"></i> Ventajas</h4>
+                <div class="pc-item"><i class="fas fa-check"></i>Compatible con trabajo de lunes a viernes</div>
+                <div class="pc-item"><i class="fas fa-check"></i>Mantiene contacto presencial semanal</div>
+                <div class="pc-item"><i class="fas fa-check"></i>Flexibilidad para actividades virtuales</div>
+                <div class="pc-item"><i class="fas fa-check"></i>Ideal para quienes están lejos</div>
+              </div>
+              <div class="cons">
+                <h4><i class="fas fa-info"></i> Consideraciones</h4>
+                <div class="pc-item"><i class="fas fa-exclamation"></i>Sábados son obligatorios</div>
+                <div class="pc-item"><i class="fas fa-exclamation"></i>Requiere disciplina para las actividades online</div>
+              </div>
+            </div>
+            <div style="margin-top:var(--space-xl);">
+              <a href="requisitos.html" class="btn" style="background:linear-gradient(135deg,#1A62CC,#0F3E82);color:#fff;" id="btn-inscribir-semi">
+                <i class="fas fa-edit"></i> Inscribirme en modalidad semipresencial
+              </a>
+            </div>
+          </div>
+          <div class="reveal reveal-delay-1" style="text-align:center;">
+            <div class="method-hero-icon" style="background:rgba(26,98,204,0.08);margin:0 auto;">
+              <img src="assets/images/method_presential.png" alt="Modalidad" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-xl);position:relative;z-index:2;" />
+            </div>
+            <div class="method-detail" style="margin-top:var(--space-xl);justify-content:center;">
+              <i class="fas fa-award"></i> La más popular entre estudiantes que trabajan
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="method-detail-section" id="virtual">
+      <div class="container">
+        <div class="method-detail-grid">
+          <div class="reveal">
+            <div class="section-badge" style="margin-bottom:var(--space-lg);">
+              <i class="fas fa-globe"></i> Modalidad 3
+            </div>
+            <h2 style="margin-bottom:var(--space-md);"> <span style="color:var(--accent);">Virtual / A Distancia</span></h2>
+            <p style="font-size:1rem;color:var(--text-secondary);line-height:1.75;margin-bottom:var(--space-xl);">100% en línea sin ninguna asistencia presencial requerida. Estudia desde donde estés en Venezuela o el mundo. Todo el material, entregas, evaluaciones y clases se realizan a través de la plataforma Moodle del IUTEPI.</p>
+            <div class="method-details-list">
+              <div class="method-detail-li"><i class="fas fa-globe" style="color:var(--accent-dark);"></i>100% en línea — sin asistencia presencial</div>
+              <div class="method-detail-li"><i class="fas fa-clock" style="color:var(--accent-dark);"></i>Acceso 24/7 a la plataforma Moodle</div>
+              <div class="method-detail-li"><i class="fas fa-video" style="color:var(--accent-dark);"></i>Clases grabadas y en vivo según horario</div>
+              <div class="method-detail-li"><i class="fas fa-map-marker-alt" style="color:var(--accent-dark);"></i>Estudia desde cualquier parte del mundo</div>
+              <div class="method-detail-li"><i class="fas fa-mobile-alt" style="color:var(--accent-dark);"></i>Compatible con móvil, tablet y PC</div>
+            </div>
+            <div class="pros-cons">
+              <div class="pros">
+                <h4><i class="fas fa-plus"></i> Ventajas</h4>
+                <div class="pc-item"><i class="fas fa-check"></i>Máxima flexibilidad horaria</div>
+                <div class="pc-item"><i class="fas fa-check"></i>Estudia desde cualquier lugar</div>
+                <div class="pc-item"><i class="fas fa-check"></i>Sin costos de transporte</div>
+                <div class="pc-item"><i class="fas fa-check"></i>Compatible con cualquier trabajo</div>
+              </div>
+              <div class="cons">
+                <h4><i class="fas fa-info"></i> Consideraciones</h4>
+                <div class="pc-item"><i class="fas fa-exclamation"></i>Requiere alta autodisciplina</div>
+                <div class="pc-item"><i class="fas fa-exclamation"></i>Necesitas conexión a internet estable</div>
+                <div class="pc-item"><i class="fas fa-exclamation"></i>Menos interacción social directa</div>
+              </div>
+            </div>
+            <div style="margin-top:var(--space-xl);display:flex;gap:var(--space-md);flex-wrap:wrap;">
+              <a href="requisitos.html" class="btn btn-accent" id="btn-inscribir-virtual">
+                <i class="fas fa-edit"></i> Inscribirme en modalidad virtual
+              </a>
+              <a href="http://virtual.iutepi.edu.ve/moodle/" target="_blank" class="btn btn-secondary" id="btn-ver-moodle">
+                <i class="fas fa-external-link-alt"></i> Ver plataforma Moodle
+              </a>
+            </div>
+          </div>
+          <div class="reveal reveal-delay-1" style="text-align:center;">
+            <div class="method-hero-icon" style="background:rgba(232,184,75,0.08);margin:0 auto;">
+              <img src="assets/images/method_semipresential.png" alt="Modalidad" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radius-xl);position:relative;z-index:2;" />
+            </div>
+            <div class="method-detail" style="margin-top:var(--space-xl);justify-content:center;">
+              <i class="fas fa-globe"></i> Disponible para todo Venezuela
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section" style="background:var(--bg-surface);border-top:1px solid var(--border);">
+      <div class="container">
+        <div class="section-header reveal">
+          <h2 class="section-title">Comparativa de <span class="text-red">Modalidades</span></h2>
+        </div>
+        <div class="reveal" style="overflow-x:auto;">
+          <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+            <thead>
+              <tr style="background:var(--bg-card);border-bottom:2px solid var(--border);">
+                <th style="padding:16px;text-align:left;color:var(--text-muted);font-family:var(--font-display);font-size:0.8rem;text-transform:uppercase;letter-spacing:0.06em;">Característica</th>
+                <th style="padding:16px;text-align:center;color:var(--primary);font-family:var(--font-display);"> Presencial</th>
+                <th style="padding:16px;text-align:center;color:#7CB4FF;font-family:var(--font-display);"> Semipresencial</th>
+                <th style="padding:16px;text-align:center;color:var(--accent);font-family:var(--font-display);"> Virtual</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:14px 16px;color:var(--text-secondary);">Días de asistencia</td>
+                <td style="padding:14px 16px;text-align:center;color:var(--text-primary);">Lun — Vie</td>
+                <td style="padding:14px 16px;text-align:center;color:var(--text-primary);">Solo Sábados</td>
+                <td style="padding:14px 16px;text-align:center;color:var(--text-primary);">Ninguno</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02);">
+                <td style="padding:14px 16px;color:var(--text-secondary);">Compatible con trabajo</td>
+                <td style="padding:14px 16px;text-align:center;"> Parcial</td>
+                <td style="padding:14px 16px;text-align:center;"> Sí</td>
+                <td style="padding:14px 16px;text-align:center;"> Sí</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:14px 16px;color:var(--text-secondary);">Acceso a laboratorios</td>
+                <td style="padding:14px 16px;text-align:center;"> Completo</td>
+                <td style="padding:14px 16px;text-align:center;"> Sábados</td>
+                <td style="padding:14px 16px;text-align:center;"> Virtual</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);background:rgba(255,255,255,0.02);">
+                <td style="padding:14px 16px;color:var(--text-secondary);">Flexibilidad horaria</td>
+                <td style="padding:14px 16px;text-align:center;"> Baja</td>
+                <td style="padding:14px 16px;text-align:center;"> Media</td>
+                <td style="padding:14px 16px;text-align:center;"> Alta</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--border);">
+                <td style="padding:14px 16px;color:var(--text-secondary);">Ideal para</td>
+                <td style="padding:14px 16px;text-align:center;color:var(--text-muted);font-size:0.83rem;">Bachilleres recientes, dedicación completa</td>
+                <td style="padding:14px 16px;text-align:center;color:var(--text-muted);font-size:0.83rem;">Trabajadores, padres de familia</td>
+                <td style="padding:14px 16px;text-align:center;color:var(--text-muted);font-size:0.83rem;">Personas fuera de la ciudad, máxima flexibilidad</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-content">
+          <h2 style="font-size:clamp(1.8rem,4vw,3rem); margin-bottom:var(--space-lg);">¿Cuál es tu <span class="text-red">modalidad ideal</span>?</h2>
+          <p style="font-size:1.05rem; color:var(--text-secondary); max-width:500px; margin:0 auto;">Pregúntale a PIA, nuestro asistente IA, o contáctanos directamente para orientarte.</p>
+          <div class="cta-btns">
+            <a href="requisitos.html" class="btn btn-primary btn-lg" id="metod-cta-req">
+              <i class="fas fa-edit"></i> Ver requisitos e inscribirse
+            </a>
+            <button onclick="window.piaChatbot?.openPanel()" class="btn btn-secondary btn-lg" id="metod-cta-pia">
+              <i class="fas fa-robot"></i> Consultar con PIA
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo"><div style="width:36px;height:36px;background:var(--grad-primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:0.85rem;color:#fff;">IUT</div><span>IU<span>TEPI</span></span></div>
+          <p>Instituto Universitario de Tecnología y Administración Industrial.</p>
+        </div>
+        <div class="footer-col"><h4>Modalidades</h4><ul><li><a href="#presencial"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Presencial</a></li><li><a href="#semipresencial"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Semipresencial</a></li><li><a href="#virtual"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Virtual / A Distancia</a></li></ul></div>
+        <div class="footer-col"><h4>Académico</h4><ul><li><a href="carreras.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Carreras</a></li><li><a href="requisitos.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Inscripción</a></li><li><a href="diplomados.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Diplomados</a></li></ul></div>
+        <div class="footer-col"><h4>Contacto</h4><div class="footer-contact-item"><i class="fas fa-envelope"></i><a href="mailto:iutepi@iutepi.edu">iutepi@iutepi.edu</a></div><div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>Valencia, Carabobo, Venezuela</span></div></div>
+      </div>
+      <div class="footer-bottom"><p>&copy; 2025 <span>IUTEPI</span>. Todos los derechos reservados.</p></div>
+    </div>
+  </footer>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script type="module" src="js/firebase-config.js"></script>
+</body>
+</html>

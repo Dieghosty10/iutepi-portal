@@ -1,0 +1,446 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Requisitos de inscripción del IUTEPI. Pasos, documentos necesarios y proceso para inscribirte en nuestras carreras." />
+  <title>Requisitos de Inscripción — IUTEPI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/cards.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/chatbot.css" />
+  <style>
+    .steps-section {
+      padding: var(--space-5xl) 0;
+    }
+    .steps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4xl);
+      align-items: start;
+    }
+    /* Timeline steps */
+    .step-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+    .step-timeline::before {
+      content: '';
+      position: absolute;
+      left: 22px;
+      top: 44px;
+      bottom: 44px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--primary), var(--accent));
+      opacity: 0.3;
+    }
+    .step-item {
+      display: flex;
+      gap: var(--space-xl);
+      padding: var(--space-xl) 0;
+      position: relative;
+    }
+    .step-icon-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .step-num {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--grad-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 800; font-size: 0.9rem; color: #fff;
+      box-shadow: 0 4px 16px rgba(204,31,38,0.35);
+      z-index: 1;
+      flex-shrink: 0;
+    }
+    .step-content { flex: 1; padding-top: 8px; }
+    .step-content h3 { font-size: 1.1rem; margin-bottom: var(--space-md); }
+    .doc-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .doc-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 12px var(--space-lg);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      transition: all var(--transition-base);
+    }
+    .doc-item:hover {
+      border-color: var(--border-hover);
+      transform: translateX(4px);
+    }
+    .doc-item i { color: var(--primary); font-size: 0.85rem; width: 20px; text-align: center; }
+    /* Right side info */
+    .info-cards {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      position: sticky;
+      top: 90px;
+    }
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+    }
+    .info-card-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--border);
+    }
+    .info-card-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+    }
+    .info-card h3 { font-size: 1rem; margin: 0; }
+    .online-steps {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    .online-step {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-md);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .online-step-num {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: rgba(204,31,38,0.12);
+      border: 1px solid rgba(204,31,38,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+    @media (max-width: 1024px) {
+      .steps-grid { grid-template-columns: 1fr; }
+      .info-cards { position: static; }
+    }
+  </style>
+</head>
+<body>
+  <div id="scroll-progress"></div>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <img src="assets/images/logo-iutepi.png" alt="IUTEPI" class="navbar-logo-img" />
+      </a>
+      <div class="nav-overlay" id="nav-overlay"></div>
+      <ul class="navbar-menu" id="navbar-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+        <li class="nav-item">
+          <a href="institucion.html" class="nav-link" data-dropdown>Institución <i class="fas fa-chevron-down arrow"></i></a>
+          <div class="nav-dropdown">
+            <a href="institucion.html#mision"><i class="fas fa-bullseye"></i> Misión y Visión</a>
+            <a href="institucion.html#filosofia"><i class="fas fa-book-open"></i> Carta Filosófica</a>
+            <a href="institucion.html#objetivos"><i class="fas fa-flag"></i> Objetivos</a>
+          </div>
+        </li>
+        <li class="nav-item"><a href="carreras.html" class="nav-link">Carreras</a></li>
+        <li class="nav-item"><a href="diplomados.html" class="nav-link">Diplomados</a></li>
+        <li class="nav-item"><a href="metodologias.html" class="nav-link">Metodologías</a></li>
+        <li class="nav-item"><a href="contacto.html" class="nav-link">Contacto</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="aula-virtual.html" class="navbar-cta" id="nav-aula-virtual" style="background:var(--text-primary);color:#fff;border-color:var(--text-primary);margin-right:8px;">
+          <i class="fas fa-desktop"></i> Aula Virtual
+        </a>
+        <a href="requisitos.html" class="navbar-cta"><i class="fas fa-edit"></i> Inscríbete</a>
+        <button class="navbar-hamburger" id="navbar-hamburger" aria-label="Menú"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <section class="page-header">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="page-header-content container">
+      <div class="page-header-breadcrumb">
+        <a href="index.html">Inicio</a>
+        <span class="sep"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i></span>
+        <span>Requisitos</span>
+      </div>
+      <div class="section-badge" style="margin-bottom:var(--space-lg); display:inline-flex;">
+        <i class="fas fa-edit"></i> Inscripción
+      </div>
+      <h1>¿Cómo <span class="text-red">Inscribirme</span>?</h1>
+      <p>Sigue estos pasos simples para formar parte del IUTEPI. El proceso es rápido, claro y diseñado para facilitarte el inicio de tu carrera universitaria.</p>
+    </div>
+  </section>
+  <main id="content">
+    <section class="steps-section">
+      <div class="container">
+        <div class="steps-grid">
+          <div>
+            <h2 style="margin-bottom:var(--space-2xl);" class="reveal">Proceso de <span class="text-red">Inscripción</span></h2>
+            <div class="step-timeline">
+              <div class="step-item reveal">
+                <div class="step-icon-wrap">
+                  <div class="step-num">1</div>
+                </div>
+                <div class="step-content">
+                  <h3> Documentos Personales</h3>
+                  <div class="doc-list">
+                    <div class="doc-item"><i class="fas fa-id-card"></i>Cédula de identidad (original y copia)</div>
+                    <div class="doc-item"><i class="fas fa-file-alt"></i>Partida de nacimiento (original y copia)</div>
+                    <div class="doc-item"><i class="fas fa-image"></i>4 fotografías tipo carnet (fondo blanco)</div>
+                  </div>
+                </div>
+              </div>
+              <div class="step-item reveal">
+                <div class="step-icon-wrap">
+                  <div class="step-num">2</div>
+                </div>
+                <div class="step-content">
+                  <h3> Documentos Académicos</h3>
+                  <div class="doc-list">
+                    <div class="doc-item"><i class="fas fa-graduation-cap"></i>Título de bachiller (original y copia)</div>
+                    <div class="doc-item"><i class="fas fa-file-alt"></i>Notas certificadas de bachillerato (original)</div>
+                    <div class="doc-item"><i class="fas fa-file-alt"></i>Constancia de culminación de estudios*</div>
+                  </div>
+                  <p style="font-size:0.8rem; color:var(--text-muted); margin-top:var(--space-sm);">*Si el título aún está en trámite</p>
+                </div>
+              </div>
+              <div class="step-item reveal">
+                <div class="step-icon-wrap">
+                  <div class="step-num">3</div>
+                </div>
+                <div class="step-content">
+                  <h3> Preinscripción en Línea</h3>
+                  <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:var(--space-md);">Ingresa al sistema en línea del IUTEPI y llena el formulario de preinscripción con tus datos personales y la carrera de tu preferencia.</p>
+                  <a href="http://dnsiutepi.no-ip.net:8099/IUTEPI/ACTIVOS/index.php" target="_blank" class="btn btn-primary btn-sm" id="btn-sistema-linea">
+                    <i class="fas fa-external-link-alt"></i> Sistema en línea
+                  </a>
+                </div>
+              </div>
+              <div class="step-item reveal">
+                <div class="step-icon-wrap">
+                  <div class="step-num">4</div>
+                </div>
+                <div class="step-content">
+                  <h3> Consignación de Documentos</h3>
+                  <p style="font-size:0.9rem; color:var(--text-secondary);">Dirígete a la sede del IUTEPI más cercana con todos los documentos originales y copias para su verificación y registro oficial.</p>
+                </div>
+              </div>
+              <div class="step-item reveal">
+                <div class="step-icon-wrap">
+                  <div class="step-num">5</div>
+                </div>
+                <div class="step-content">
+                  <h3> Pago de Aranceles</h3>
+                  <p style="font-size:0.9rem; color:var(--text-secondary);">Realiza el pago de los aranceles de inscripción según las indicaciones de la institución. Los montos son muy accesibles.</p>
+                </div>
+              </div>
+              <div class="step-item reveal">
+                <div class="step-icon-wrap">
+                  <div class="step-num" style="background:linear-gradient(135deg,#4CAF50,#388E3C);"></div>
+                </div>
+                <div class="step-content">
+                  <h3> ¡Listo! Recibe tu comprobante</h3>
+                  <p style="font-size:0.9rem; color:var(--text-secondary);">Una vez completado el proceso, recibirás tu comprobante de inscripción y el horario de clases. ¡Bienvenido al IUTEPI!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="info-cards">
+            <div class="info-card reveal">
+              <div class="info-card-header">
+                <div class="info-card-icon" style="background:rgba(204,31,38,0.12);color:var(--primary);">
+                  <i class="fas fa-info-circle"></i>
+                </div>
+                <h3>Información Rápida</h3>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:var(--space-md);">
+                <div class="doc-item"><i class="fas fa-clock"></i>Duración de la carrera: <strong style="color:var(--text-primary);margin-left:4px;">6 semestres</strong></div>
+                <div class="doc-item"><i class="fas fa-calendar"></i>Modalidades: <strong style="color:var(--text-primary);margin-left:4px;">Presencial, Semi, Virtual</strong></div>
+                <div class="doc-item"><i class="fas fa-graduation-cap"></i>Título: <strong style="color:var(--text-primary);margin-left:4px;">TSU (Técnico Superior)</strong></div>
+                <div class="doc-item" style="border-color:rgba(204,31,38,0.3);">
+                  <i class="fas fa-check" style="color:#4CAF50;"></i>Reconocido por el Ministerio de Educación
+                </div>
+              </div>
+            </div>
+            <div class="info-card reveal reveal-delay-1">
+              <div class="info-card-header">
+                <div class="info-card-icon" style="background:rgba(232,184,75,0.12);color:var(--accent);">
+                  <i class="fas fa-headset"></i>
+                </div>
+                <h3>¿Tienes dudas?</h3>
+              </div>
+              <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:var(--space-lg);">Nuestro equipo está disponible para orientarte en el proceso de inscripción.</p>
+              <div style="display:flex; flex-direction:column; gap:var(--space-sm);">
+                <a href="mailto:iutepi@iutepi.edu" class="btn btn-primary" id="req-email-btn">
+                  <i class="fas fa-envelope"></i> Escríbenos por email
+                </a>
+                <a href="contacto.html" class="btn btn-secondary" id="req-contact-btn">
+                  <i class="fas fa-paper-plane"></i> Formulario de contacto
+                </a>
+                <button onclick="window.piaChatbot?.openPanel()" class="btn btn-ghost" id="req-pia-btn">
+                  <i class="fas fa-robot"></i> Preguntarle a PIA (IA)
+                </button>
+              </div>
+            </div>
+            <div class="info-card reveal reveal-delay-2">
+              <div class="info-card-header">
+                <div class="info-card-icon" style="background:rgba(204,31,38,0.12);color:var(--primary);">
+                  <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3>Escoge tu Carrera</h3>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:var(--space-sm);">
+                <a href="carreras.html#sistemas" class="doc-item" style="text-decoration:none;">
+                  <i class="fas fa-laptop-code"></i>Análisis de Sistemas
+                </a>
+                <a href="carreras.html#electronica" class="doc-item" style="text-decoration:none;color:var(--text-secondary);">
+                  <i class="fas fa-microchip" style="color:#1A62CC;"></i>Electrónica
+                </a>
+                <a href="carreras.html#administracion" class="doc-item" style="text-decoration:none;color:var(--text-secondary);">
+                  <i class="fas fa-chart-line" style="color:var(--accent-dark);"></i>Administración Industrial
+                </a>
+              </div>
+              <a href="carreras.html" class="btn btn-secondary btn-sm" style="margin-top:var(--space-lg);" id="req-ver-carreras">
+                Ver pensum completo <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section" style="background:var(--bg-surface); border-top:1px solid var(--border);">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-badge"><i class="fas fa-question-circle"></i> Preguntas Frecuentes</div>
+          <h2 class="section-title">FAQ de <span class="text-red">Inscripción</span></h2>
+        </div>
+        <div class="faq-list" style="max-width:800px; margin:0 auto;" data-accordion-group>
+          <div class="accordion-item reveal">
+            <div class="accordion-header">
+              <h4>¿Necesito el título de bachiller en físico para inscribirme?</h4>
+              <i class="fas fa-chevron-down accordion-icon"></i>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-body-inner">
+                <p>No necesariamente. Si tu título está en trámite, puedes presentar la <strong>Constancia de Culminación de Estudios</strong> emitida por tu institución educativa. Una vez que obtengas el título, debes actualizarlo en el sistema del IUTEPI.</p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item reveal">
+            <div class="accordion-header">
+              <h4>¿Puedo inscribirme si soy de otra ciudad?</h4>
+              <i class="fas fa-chevron-down accordion-icon"></i>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-body-inner">
+                <p>¡Claro! El IUTEPI tiene <strong>3 sedes</strong> en Venezuela (Valencia, Carabobo, Venezuela<strong>virtual y semipresencial</strong> que te permite estudiar desde cualquier lugar del país.</p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item reveal">
+            <div class="accordion-header">
+              <h4>¿Cuánto cuesta inscribirse en el IUTEPI?</h4>
+              <i class="fas fa-chevron-down accordion-icon"></i>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-body-inner">
+                <p>El IUTEPI es una institución oficial con aranceles muy accesibles. Los montos exactos se actualizan periódicamente. Para información actualizada de costos, contáctanos directamente en <a href="mailto:iutepi@iutepi.edu">iutepi@iutepi.edu</a> o visita la sede.</p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item reveal">
+            <div class="accordion-header">
+              <h4>¿Puedo cambiar de carrera después de inscribirme?</h4>
+              <i class="fas fa-chevron-down accordion-icon"></i>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-body-inner">
+                <p>Sí, el IUTEPI contempla procesos de traslado de carrera sujetos a disponibilidad y condiciones específicas del período. Consulta con la oficina de control de estudios para más información y requisitos del proceso de traslado.</p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item reveal">
+            <div class="accordion-header">
+              <h4>¿Cuándo son los períodos de inscripción?</h4>
+              <i class="fas fa-chevron-down accordion-icon"></i>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-body-inner">
+                <p>El IUTEPI maneja semestres regulares y puede tener períodos intensivos. Las fechas de inscripción se publican en la <a href="https://www.iutepi.edu" target="_blank">web oficial</a> y en las redes sociales de la institución. Suscríbete a nuestras redes para estar al tanto.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <div style="width:36px;height:36px;background:var(--grad-primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:0.85rem;color:#fff;">IUT</div>
+            <span>IU<span>TEPI</span></span>
+          </div>
+          <p>Instituto Universitario de Tecnología y Administración Industrial. Formando profesionales desde 1974.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Inscripción</h4>
+          <ul>
+            <li><a href="#"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Requisitos</a></li>
+            
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Carreras</h4>
+          <ul>
+            <li><a href="carreras.html#sistemas"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Análisis de Sistemas</a></li>
+            <li><a href="carreras.html#electronica"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Electrónica</a></li>
+            <li><a href="carreras.html#administracion"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Administración Industrial</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <div class="footer-contact-item"><i class="fas fa-envelope"></i><a href="mailto:iutepi@iutepi.edu">iutepi@iutepi.edu</a></div>
+          <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>Valencia, Carabobo, Venezuela</span></div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 <span>IUTEPI</span>. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script type="module" src="js/firebase-config.js"></script>
+</body>
+</html>

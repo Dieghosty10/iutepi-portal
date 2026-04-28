@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Contáctanos en el IUTEPI. Formulario de contacto, email, ubicación y redes sociales." />
+  <title>Contacto — IUTEPI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/chatbot.css" />
+  <style>
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--space-4xl);
+      align-items: start;
+      padding: var(--space-5xl) 0;
+    }
+    /* Form */
+    .contact-form-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+    }
+    .form-group {
+      margin-bottom: var(--space-lg);
+    }
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      font-family: var(--font-display);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-sm);
+    }
+    .form-control {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 0.925rem;
+      transition: border-color var(--transition-base);
+      outline: none;
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(204,31,38,0.08);
+    }
+    .form-control::placeholder { color: var(--text-muted); }
+    textarea.form-control {
+      resize: vertical;
+      min-height: 130px;
+      max-height: 300px;
+    }
+    .form-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235E7097' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 40px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+    }
+    /* Info Side */
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+    .contact-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      transition: all var(--transition-base);
+    }
+    .contact-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-3px);
+    }
+    .contact-card-icon {
+      width: 52px; height: 52px;
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: var(--space-lg);
+    }
+    .contact-card h3 { font-size: 1rem; margin-bottom: var(--space-sm); }
+    .contact-card p { font-size: 0.88rem; color: var(--text-muted); }
+    .contact-card a { color: var(--primary-light); font-size: 0.95rem; font-weight: 500; }
+    .contact-card a:hover { color: var(--accent); }
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-sm);
+    }
+    .social-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: var(--space-md);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 1.2rem;
+      text-decoration: none;
+      transition: all var(--transition-base);
+    }
+    .social-btn span { font-size: 0.7rem; color: var(--text-muted); font-family: var(--font-display); }
+    .social-btn:hover { transform: translateY(-3px); border-color: var(--border-hover); }
+    .social-btn.fb:hover { background: rgba(24,119,242,0.08); border-color: rgba(24,119,242,0.3); }
+    .social-btn.ig:hover { background: rgba(225,48,108,0.08); border-color: rgba(225,48,108,0.3); }
+    .social-btn.tw:hover { background: rgba(29,161,242,0.08); border-color: rgba(29,161,242,0.3); }
+    .social-btn.yt:hover { background: rgba(255,0,0,0.08); border-color: rgba(255,0,0,0.3); }
+    @media (max-width: 1024px) {
+      .contact-grid { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="scroll-progress"></div>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <img src="assets/images/logo-iutepi.png" alt="IUTEPI" class="navbar-logo-img" />
+      </a>
+      <div class="nav-overlay" id="nav-overlay"></div>
+      <ul class="navbar-menu" id="navbar-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+        <li class="nav-item">
+          <a href="institucion.html" class="nav-link" data-dropdown>Institución <i class="fas fa-chevron-down arrow"></i></a>
+          <div class="nav-dropdown">
+            <a href="institucion.html#mision"><i class="fas fa-bullseye"></i> Misión y Visión</a>
+            <a href="institucion.html#filosofia"><i class="fas fa-book-open"></i> Carta Filosófica</a>
+            <a href="institucion.html#objetivos"><i class="fas fa-flag"></i> Objetivos</a>
+          </div>
+        </li>
+        <li class="nav-item"><a href="carreras.html" class="nav-link">Carreras</a></li>
+        <li class="nav-item"><a href="diplomados.html" class="nav-link">Diplomados</a></li>
+        <li class="nav-item"><a href="metodologias.html" class="nav-link">Metodologías</a></li>
+        <li class="nav-item"><a href="contacto.html" class="nav-link active">Contacto</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="aula-virtual.html" class="navbar-cta" id="nav-aula-virtual" style="background:var(--text-primary);color:#fff;border-color:var(--text-primary);margin-right:8px;">
+          <i class="fas fa-desktop"></i> Aula Virtual
+        </a>
+        <a href="requisitos.html" class="navbar-cta"><i class="fas fa-edit"></i> Inscríbete</a>
+        <button class="navbar-hamburger" id="navbar-hamburger" aria-label="Menú"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <section class="page-header">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="page-header-content container">
+      <div class="page-header-breadcrumb">
+        <a href="index.html">Inicio</a>
+        <span class="sep"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i></span>
+        <span>Contacto</span>
+      </div>
+      <h1>Ponte en <span class="text-red">Contacto</span></h1>
+      <p>Estamos aquí para resolver tus dudas sobre las carreras, inscripción, sedes y todo lo relacionado con el IUTEPI.</p>
+    </div>
+  </section>
+  <main id="content">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="reveal">
+          <div class="contact-form-wrap">
+            <h2 style="margin-bottom:var(--space-sm);">Envíanos un mensaje</h2>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:var(--space-2xl);">Te responderemos lo antes posible. También puedes preguntarle a <strong style="color:var(--primary);">PIA</strong>, nuestro asistente IA.</p>
+            <form id="contact-form" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="contact-nombre">Nombre completo *</label>
+                  <input type="text" id="contact-nombre" class="form-control" placeholder="Tu nombre" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="contact-email">Correo electrónico *</label>
+                  <input type="email" id="contact-email" class="form-control" placeholder="tu@email.com" required />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label" for="contact-telefono">Teléfono (opcional)</label>
+                  <input type="tel" id="contact-telefono" class="form-control" placeholder="+58 4XX XXX XXXX" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="contact-asunto">Asunto *</label>
+                  <select id="contact-asunto" class="form-control form-select" required>
+                    <option value="" disabled selected>Selecciona un asunto</option>
+                    <option>Información sobre carreras</option>
+                    <option>Proceso de inscripción</option>
+                    <option>Modalidades de estudio</option>
+                    <option>Información sobre sedes</option>
+                    <option>Diplomados y certificados</option>
+                    <option>Aula virtual / Plataforma</option>
+                    <option>Otro</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contact-carrera">Carrera de interés</label>
+                <select id="contact-carrera" class="form-control form-select">
+                  <option value="" disabled selected>¿Cuál carrera te interesa?</option>
+                  <option>Análisis de Sistemas</option>
+                  <option>Electrónica</option>
+                  <option>Administración Industrial</option>
+                  <option>Aún no lo decido</option>
+                  <option>No aplica</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contact-mensaje">Mensaje *</label>
+                <textarea id="contact-mensaje" class="form-control" placeholder="Escribe aquí tu consulta con todos los detalles que necesites..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg" id="contact-submit" style="width:100%;">
+                <i class="fas fa-paper-plane"></i> Enviar mensaje
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="contact-info">
+          <div class="contact-card reveal">
+            <div class="contact-card-icon" style="background:rgba(204,31,38,0.12);color:var(--primary);">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <h3>Correo Electrónico</h3>
+            <p style="margin-bottom:var(--space-sm);">Para consultas generales y administrativas:</p>
+            <a href="mailto:iutepi@iutepi.edu">iutepi@iutepi.edu</a>
+          </div>
+          <div class="contact-card reveal reveal-delay-1">
+            <div class="contact-card-icon" style="background:rgba(232,184,75,0.12);color:var(--accent);">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <h3>Sede Principal</h3>
+            <p>Valencia, Carabobo, Venezuela</p>
+            <a href="sedes.html" style="margin-top:var(--space-sm);display:inline-flex;align-items:center;gap:6px;font-size:0.88rem;">
+              Ver todas las sedes <i class="fas fa-arrow-right" style="font-size:0.75rem;"></i>
+            </a>
+          </div>
+          <div class="contact-card reveal reveal-delay-2">
+            <div class="contact-card-icon" style="background:rgba(64,200,130,0.12);color:#64E8A0;">
+              <i class="fas fa-desktop"></i>
+            </div>
+            <h3>Portales Digitales</h3>
+            <div style="display:flex;flex-direction:column;gap:var(--space-sm);margin-top:var(--space-sm);">
+              <a href="http://dnsiutepi.no-ip.net:8099/IUTEPI/ACTIVOS/index.php" target="_blank">
+                <i class="fas fa-external-link-alt" style="font-size:0.8rem;"></i> Sistema en Línea
+              </a>
+              <a href="http://virtual.iutepi.edu.ve/moodle/" target="_blank">
+                <i class="fas fa-external-link-alt" style="font-size:0.8rem;"></i> Aula Virtual Moodle
+              </a>
+              <a href="https://www.iutepi.edu" target="_blank">
+                <i class="fas fa-external-link-alt" style="font-size:0.8rem;"></i> Web Oficial IUTEPI
+              </a>
+            </div>
+          </div>
+          <div class="contact-card reveal reveal-delay-3">
+            <div class="contact-card-icon" style="background:rgba(100,100,255,0.12);color:#8B8BFF;">
+              <i class="fas fa-share-alt"></i>
+            </div>
+            <h3>Redes Sociales</h3>
+            <div class="social-grid">
+              <a href="#" class="social-btn fb" aria-label="Facebook">
+                <i class="fab fa-facebook-f" style="color:#1877F2;"></i>
+                <span>Facebook</span>
+              </a>
+              <a href="#" class="social-btn ig" aria-label="Instagram">
+                <i class="fab fa-instagram" style="color:#E1306C;"></i>
+                <span>Instagram</span>
+              </a>
+              <a href="#" class="social-btn tw" aria-label="Twitter">
+                
+                <span>Twitter</span>
+              </a>
+              <a href="#" class="social-btn yt" aria-label="YouTube">
+                
+                <span>YouTube</span>
+              </a>
+            </div>
+          </div>
+          <div class="reveal" style="background:linear-gradient(135deg,var(--secondary),var(--secondary-light));border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-xl);padding:var(--space-xl);text-align:center;">
+            <div style="font-size:2rem;margin-bottom:var(--space-md);"></div>
+            <h3 style="margin-bottom:var(--space-sm);">¿Prefieres respuestas instantáneas?</h3>
+            <p style="font-size:0.88rem;color:var(--text-muted);margin-bottom:var(--space-lg);">PIA, nuestro asistente de IA, responde en segundos sobre carreras, inscripción, sedes y más.</p>
+            <button onclick="window.piaChatbot?.openPanel()" class="btn btn-primary" id="contacto-pia-btn" style="width:100%;">
+              <i class="fas fa-robot"></i> Abrir chat con PIA
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <div style="width:36px;height:36px;background:var(--grad-primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:900;font-size:0.85rem;color:#fff;">IUT</div>
+            <span>IU<span>TEPI</span></span>
+          </div>
+          <p>Instituto Universitario de Tecnología y Administración Industrial.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Institución</h4>
+          <ul>
+            <li><a href="institucion.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Sobre el IUTEPI</a></li>
+            <li><a href="sedes.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Sedes</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Académico</h4>
+          <ul>
+            <li><a href="carreras.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Carreras</a></li>
+            <li><a href="requisitos.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Inscripción</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <div class="footer-contact-item"><i class="fas fa-envelope"></i><a href="mailto:iutepi@iutepi.edu">iutepi@iutepi.edu</a></div>
+          <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>Valencia, Carabobo, Venezuela</span></div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 <span>IUTEPI</span>. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/contacto-firebase.js"></script>
+</body>
+</html>

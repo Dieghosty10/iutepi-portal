@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Conoce las 3 carreras del IUTEPI: Análisis de Sistemas, Electrónica y Administración Industrial. Pensum completo por semestre, menciones y campo laboral." />
+  <title>Carreras — IUTEPI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/navbar.css" />
+  <link rel="stylesheet" href="css/cards.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/chatbot.css" />
+  <style>
+    .career-detail-section {
+      padding: var(--space-4xl) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .career-detail-section:last-of-type { border-bottom: none; }
+    .career-detail-section:nth-child(even) { background: var(--bg-surface); }
+    .career-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: var(--space-4xl);
+      align-items: start;
+    }
+    .career-detail-grid.reverse { direction: rtl; }
+    .career-detail-grid.reverse > * { direction: ltr; }
+    .career-intro-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+      position: sticky;
+      top: 90px;
+    }
+    .career-badge-large {
+      width: 80px; height: 80px;
+      border-radius: var(--radius-xl);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+      margin-bottom: var(--space-xl);
+    }
+    .career-intro-card h2 { font-size: 1.4rem; margin-bottom: var(--space-sm); }
+    .career-intro-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: var(--space-xl); }
+    .profile-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+    }
+    .profile-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+    .profile-item i { color: var(--primary); margin-top: 2px; flex-shrink: 0; font-size: 0.75rem; }
+    .career-actions { display: flex; flex-direction: column; gap: var(--space-sm); }
+    .mentions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: var(--space-lg);
+      margin-bottom: var(--space-2xl);
+    }
+    .labor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: var(--space-sm);
+      margin-top: var(--space-lg);
+    }
+    .labor-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+      background: rgba(232,184,75,0.06);
+      border: 1px solid rgba(232,184,75,0.2);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    .labor-item i { color: var(--accent); font-size: 0.75rem; }
+    .section-sub-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-lg);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-family: var(--font-display);
+    }
+    .section-sub-title i { color: var(--primary); }
+    @media (max-width:1024px) {
+      .career-detail-grid { grid-template-columns: 1fr; }
+      .career-detail-grid.reverse { direction: ltr; }
+      .career-intro-card { position: static; }
+    }
+  </style>
+</head>
+<body style="padding-top:calc(var(--topbar-h) + var(--navbar-h));">
+  <div id="scroll-progress"></div>
+  <nav class="navbar" role="navigation" aria-label="Menú principal">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-logo">
+        <img src="assets/images/logo-iutepi.png" alt="IUTEPI" class="navbar-logo-img"  />
+        <div class="navbar-logo-text" style="display:none;">
+          <span class="navbar-logo-name">IU<span>TEPI</span></span>
+          <span class="navbar-logo-tagline">Tecnología &amp; Informática</span>
+        </div>
+      </a>
+      <div class="nav-overlay" id="nav-overlay"></div>
+      <ul class="navbar-menu" id="navbar-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+        <li class="nav-item">
+          <a href="institucion.html" class="nav-link" data-dropdown>Institución <i class="fas fa-chevron-down arrow"></i></a>
+          <div class="nav-dropdown">
+            <a href="institucion.html#mision"><i class="fas fa-bullseye"></i> Misión y Visión</a>
+            <a href="institucion.html#filosofia"><i class="fas fa-book-open"></i> Carta Filosófica</a>
+            <a href="institucion.html#objetivos"><i class="fas fa-flag"></i> Objetivos</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="sedes.html" class="nav-link" data-dropdown>Sedes <i class="fas fa-chevron-down arrow"></i></a>
+          <div class="nav-dropdown">
+            <a href="sedes.html#valencia"><i class="fas fa-star"></i> Valencia (Principal)</a>
+            <a href="sedes.html#valencia"><i class="fas fa-map-marker-alt"></i> Valencia</a>
+            <a href="sedes.html#acarigua"><i class="fas fa-map-marker-alt"></i> Acarigua</a>
+            <a href="sedes.html#guanare"><i class="fas fa-map-marker-alt"></i> Guanare</a>
+          </div>
+        </li>
+        <li class="nav-item">
+          <a href="carreras.html" class="nav-link active" data-dropdown>Carreras <i class="fas fa-chevron-down arrow"></i></a>
+          <div class="nav-dropdown">
+            <a href="carreras.html#sistemas"><i class="fas fa-laptop-code"></i> Análisis de Sistemas</a>
+            <a href="carreras.html#electronica"><i class="fas fa-microchip"></i> Electrónica</a>
+            <a href="carreras.html#administracion"><i class="fas fa-chart-line"></i> Administración Industrial</a>
+            <div class="dropdown-divider"></div>
+            <a href="carreras.html"><i class="fas fa-th-large"></i> Ver todas las carreras</a>
+          </div>
+        </li>
+        <li class="nav-item"><a href="diplomados.html" class="nav-link">Diplomados</a></li>
+        <li class="nav-item"><a href="metodologias.html" class="nav-link">Metodologías</a></li>
+        <li class="nav-item"><a href="contacto.html" class="nav-link">Contacto</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="aula-virtual.html" class="navbar-cta" id="nav-aula-virtual" style="background:var(--text-primary);color:#fff;border-color:var(--text-primary);margin-right:8px;">
+          <i class="fas fa-desktop"></i> Aula Virtual
+        </a>
+        <a href="requisitos.html" class="navbar-cta"><i class="fas fa-edit"></i> Inscríbete</a>
+        <button class="navbar-hamburger" id="navbar-hamburger" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </nav>
+  <section class="page-header">
+    <div class="page-header-content container">
+      <div class="page-header-breadcrumb">
+        <a href="index.html">Inicio</a>
+        <span class="sep"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i></span>
+        <span>Carreras</span>
+      </div>
+      <div class="section-badge" style="margin-bottom:var(--space-lg); display:inline-flex;">
+        <i class="fas fa-graduation-cap"></i> Oferta Académica
+      </div>
+      <h1>Nuestras <span class="text-red">Carreras</span></h1>
+      <p>Tres programas de Técnico Superior Universitario (TSU) diseñados para insertarte rápidamente en el mercado laboral con las habilidades que el país necesita.</p>
+    </div>
+  </section>
+  <section style="background:var(--bg-surface); border-bottom:1px solid var(--border); padding:var(--space-lg) 0; position:sticky; top:72px; z-index:50;">
+    <div class="container">
+      <div class="career-tabs" style="justify-content:center; margin:0;">
+        <button class="career-tab-btn active" data-tab="sistemas" id="tab-btn-sistemas">
+          <i class="fas fa-laptop-code"></i> Análisis de Sistemas
+        </button>
+        <button class="career-tab-btn" data-tab="electronica" id="tab-btn-electronica">
+          <i class="fas fa-microchip"></i> Electrónica
+        </button>
+        <button class="career-tab-btn" data-tab="administracion" id="tab-btn-admin">
+          <i class="fas fa-chart-line"></i> Administración Industrial
+        </button>
+      </div>
+    </div>
+  </section>
+  <main id="content">
+    <section id="sistemas" class="career-tab-content active career-detail-section">
+      <div class="container">
+        <div class="career-detail-grid">
+          <div class="reveal">
+            <div class="career-intro-card">
+              <div class="career-badge-large" style="background:rgba(204,31,38,0.12);color:var(--primary);">
+                <i class="fas fa-laptop-code"></i>
+              </div>
+              <div class="badge badge-primary" style="margin-bottom:var(--space-md);">TSU · 6 semestres</div>
+              <h2>Análisis de Sistemas</h2>
+              <p>Profesional capaz de desarrollar, administrar y gestionar sistemas de información, redes de datos y aplicaciones web para el entorno tecnológico actual.</p>
+              <div class="section-sub-title"><i class="fas fa-user-tie"></i> Perfil del Egresado</div>
+              <div class="profile-list">
+                <div class="profile-item"><i class="fas fa-check"></i>Desarrollar programas científico-administrativos</div>
+                <div class="profile-item"><i class="fas fa-check"></i>Manejar paquetes: nómina, inventario, hojas de cálculo</div>
+                <div class="profile-item"><i class="fas fa-check"></i>Analizar, diseñar y programar sistemas de computación</div>
+                <div class="profile-item"><i class="fas fa-check"></i>Implementar sistemas operativos y aplicaciones</div>
+                <div class="profile-item"><i class="fas fa-check"></i>Gestionar redes de datos y comunicaciones</div>
+                <div class="profile-item"><i class="fas fa-check"></i>Desarrollar aplicaciones web modernas</div>
+              </div>
+              <div class="career-actions">
+                <a href="assets/pdfs/pensum-sistemas.pdf" target="_blank" class="btn btn-primary" id="download-pensum-sistemas">
+                  <i class="fas fa-download"></i> Descargar Pensum PDF
+                </a>
+                <a href="requisitos.html" class="btn btn-secondary" id="inscribete-sistemas">
+                  <i class="fas fa-edit"></i> Inscríbete ahora
+                </a>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="reveal" style="margin-bottom:var(--space-2xl);">
+              <div class="section-sub-title"><i class="fas fa-star"></i> Menciones Disponibles</div>
+              <div class="mentions-grid">
+                <div class="mention-card">
+                  <div class="mention-num">01</div>
+                  <h4>Gestión de Redes</h4>
+                  <p>Diseña y administra infraestructuras de red, configurando y gestionando los sistemas de información y comunicación empresarial.</p>
+                </div>
+                <div class="mention-card">
+                  <div class="mention-num">02</div>
+                  <h4>Desarrollo Web</h4>
+                  <p>Diseña y desarrolla aplicaciones WEB con múltiples lenguajes y frameworks para la gestión de espacios interactivos digitales.</p>
+                </div>
+              </div>
+            </div>
+            <div class="reveal">
+              <div class="section-sub-title"><i class="fas fa-book"></i> Pensum — Materias por Semestre</div>
+              <div class="semester-list">
+                <div class="semester-item open">
+                  <div class="semester-header">
+                    <div class="semester-num">1</div>
+                    <div class="semester-title">Primer Semestre</div>
+                    <div class="semester-count">6 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle"></i>Matemática I</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Inglés Técnico I</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Lenguajes de Programación I</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Introducción a la Computación</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Sistemas Operativos I</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Comunicación y Lenguaje</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num">2</div>
+                    <div class="semester-title">Segundo Semestre</div>
+                    <div class="semester-count">6 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle"></i>Matemática II</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Inglés Técnico II</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Lenguajes de Programación II</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Base de Datos I</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Sistemas Operativos II</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Metodología de la Investigación</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num">3</div>
+                    <div class="semester-title">Tercer Semestre</div>
+                    <div class="semester-count">6 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle"></i>Matemática III</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Lenguajes de Programación III</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Base de Datos II</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Redes de Datos I</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Ingeniería de Software I</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Seguridad Informática</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num">4</div>
+                    <div class="semester-title">Cuarto Semestre</div>
+                    <div class="semester-count">6 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle"></i>Base de Datos III</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Redes de Datos II</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Ingeniería de Software II</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Administración de Sistemas</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Electiva I (según mención)</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Pasantías — Fase I</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num">5</div>
+                    <div class="semester-title">Quinto Semestre</div>
+                    <div class="semester-count">3 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle"></i>Proyecto de Investigación Tecnológica</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Electiva II (según mención)</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Seminario de Grado</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num">6</div>
+                    <div class="semester-title">Sexto Semestre</div>
+                    <div class="semester-count">2 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle"></i>Proyecto de Grado</div>
+                        <div class="subject-item"><i class="fas fa-circle"></i>Pasantías — Fase II</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="reveal" style="margin-top:var(--space-2xl);">
+              <div class="section-sub-title"><i class="fas fa-briefcase"></i> Campo Laboral</div>
+              <div class="labor-grid">
+                <div class="labor-item"><i class="fas fa-check"></i>Empresas de tecnología</div>
+                <div class="labor-item"><i class="fas fa-check"></i>Bancos e instituciones financieras</div>
+                <div class="labor-item"><i class="fas fa-check"></i>Organismos públicos y privados</div>
+                <div class="labor-item"><i class="fas fa-check"></i>Desarrollo freelance</div>
+                <div class="labor-item"><i class="fas fa-check"></i>Empresas de telecomunicaciones</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="electronica" class="career-tab-content career-detail-section">
+      <div class="container">
+        <div class="career-detail-grid reverse">
+          <div class="reveal">
+            <div class="career-intro-card">
+              <div class="career-badge-large" style="background:rgba(26,98,204,0.12);color:#1A62CC;">
+                <i class="fas fa-microchip"></i>
+              </div>
+              <div class="badge badge-blue" style="margin-bottom:var(--space-md);">TSU · 6 semestres</div>
+              <h2>Electrónica</h2>
+              <p>Profesional formado en el análisis y diseño de circuitos electrónicos digitales y analógicos, sistemas de automatización y fabricación de placas de circuito impreso.</p>
+              <div class="section-sub-title" style="color:#7CB4FF;"><i class="fas fa-user-tie" style="color:#1A62CC;"></i> Perfil del Egresado</div>
+              <div class="profile-list">
+                <div class="profile-item"><i class="fas fa-check" style="color:#1A62CC;"></i>Diseñar circuitos electrónicos analógicos y digitales</div>
+                <div class="profile-item"><i class="fas fa-check" style="color:#1A62CC;"></i>Programar sistemas de control automático</div>
+                <div class="profile-item"><i class="fas fa-check" style="color:#1A62CC;"></i>Diseñar y fabricar placas PCB</div>
+                <div class="profile-item"><i class="fas fa-check" style="color:#1A62CC;"></i>Realizar instalaciones eléctricas industriales</div>
+                <div class="profile-item"><i class="fas fa-check" style="color:#1A62CC;"></i>Mantener y reparar equipos electrónicos</div>
+                <div class="profile-item"><i class="fas fa-check" style="color:#1A62CC;"></i>Manejar microprocesadores y microcontroladores</div>
+              </div>
+              <div class="career-actions">
+                <a href="assets/pdfs/pensum-electronica.pdf" target="_blank" class="btn" style="background:linear-gradient(135deg,#1A62CC,#0F3E82);color:#fff;" id="download-pensum-electronica">
+                  <i class="fas fa-download"></i> Descargar Pensum PDF
+                </a>
+                <a href="requisitos.html" class="btn btn-secondary" id="inscribete-electronica">
+                  <i class="fas fa-edit"></i> Inscríbete ahora
+                </a>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="reveal" style="margin-bottom:var(--space-2xl);">
+              <div class="section-sub-title"><i class="fas fa-star" style="color:#1A62CC;"></i> Menciones Disponibles</div>
+              <div class="mentions-grid">
+                <div class="mention-card" style="border-color:rgba(26,98,204,0.3);">
+                  <div class="mention-num" style="-webkit-text-stroke-color:#0F3E82;">01</div>
+                  <h4 style="color:#1A62CC;">Canalizaciones Eléctricas</h4>
+                  <p>Diseña e instala canalizaciones eléctricas con criterios técnicos de protección y seguridad industrial.</p>
+                </div>
+                <div class="mention-card" style="border-color:rgba(26,98,204,0.3);">
+                  <div class="mention-num" style="-webkit-text-stroke-color:#0F3E82;">02</div>
+                  <h4 style="color:#1A62CC;">Automatización</h4>
+                  <p>Programa y desarrolla circuitos de control automático para procesos industriales modernos.</p>
+                </div>
+                <div class="mention-card" style="border-color:rgba(26,98,204,0.3);">
+                  <div class="mention-num" style="-webkit-text-stroke-color:#0F3E82;">03</div>
+                  <h4 style="color:#1A62CC;">PCB — Circuito Impreso</h4>
+                  <p>Diseña y fabrica placas de circuito impreso para aplicaciones electrónicas digitales y analógicas.</p>
+                </div>
+              </div>
+            </div>
+            <div class="reveal">
+              <div class="section-sub-title"><i class="fas fa-book" style="color:#1A62CC;"></i> Pensum — Materias por Semestre</div>
+              <div class="semester-list">
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num" style="background:rgba(26,98,204,0.12);border-color:rgba(26,98,204,0.25);color:#7CB4FF;">1</div>
+                    <div class="semester-title">Primer Semestre</div>
+                    <div class="semester-count">6 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Física I</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Matemática I</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Electrónica Básica</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Inglés Técnico I</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Dibujo Técnico</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Comunicación y Lenguaje</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num" style="background:rgba(26,98,204,0.12);border-color:rgba(26,98,204,0.25);color:#7CB4FF;">2</div>
+                    <div class="semester-title">Segundo Semestre</div>
+                    <div class="semester-count">6 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Física II</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Matemática II</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Electrónica Analógica</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Inglés Técnico II</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Circuitos Eléctricos</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Metodología de la Investigación</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num" style="background:rgba(26,98,204,0.12);border-color:rgba(26,98,204,0.25);color:#7CB4FF;">3</div>
+                    <div class="semester-title">Tercer Semestre</div>
+                    <div class="semester-count">6 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Matemática III</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Electrónica Digital</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Microprocesadores</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Instrumentación Industrial</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Señales y Sistemas</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Programación de Microcontroladores</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num" style="background:rgba(26,98,204,0.12);border-color:rgba(26,98,204,0.25);color:#7CB4FF;">4</div>
+                    <div class="semester-title">Cuarto Semestre</div>
+                    <div class="semester-count">6 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Automatización Industrial</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Control Industrial</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Diseño de PCB</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Mantenimiento de Equipos</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Electiva I (según mención)</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Pasantías — Fase I</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num" style="background:rgba(26,98,204,0.12);border-color:rgba(26,98,204,0.25);color:#7CB4FF;">5</div>
+                    <div class="semester-title">Quinto Semestre</div>
+                    <div class="semester-count">3 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Proyecto de Investigación Tecnológica</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Electiva II (según mención)</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Seminario de Grado</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num" style="background:rgba(26,98,204,0.12);border-color:rgba(26,98,204,0.25);color:#7CB4FF;">6</div>
+                    <div class="semester-title">Sexto Semestre</div>
+                    <div class="semester-count">2 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Proyecto de Grado</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:#1A62CC;"></i>Pasantías — Fase II</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="reveal" style="margin-top:var(--space-2xl);">
+              <div class="section-sub-title"><i class="fas fa-briefcase" style="color:#1A62CC;"></i> Campo Laboral</div>
+              <div class="labor-grid">
+                <div class="labor-item" style="background:rgba(26,98,204,0.06);border-color:rgba(26,98,204,0.2);"><i class="fas fa-check" style="color:#7CB4FF;"></i>Industrias manufactureras</div>
+                <div class="labor-item" style="background:rgba(26,98,204,0.06);border-color:rgba(26,98,204,0.2);"><i class="fas fa-check" style="color:#7CB4FF;"></i>Telecomunicaciones</div>
+                <div class="labor-item" style="background:rgba(26,98,204,0.06);border-color:rgba(26,98,204,0.2);"><i class="fas fa-check" style="color:#7CB4FF;"></i>Plantas industriales</div>
+                <div class="labor-item" style="background:rgba(26,98,204,0.06);border-color:rgba(26,98,204,0.2);"><i class="fas fa-check" style="color:#7CB4FF;"></i>Talleres de electrónica</div>
+                <div class="labor-item" style="background:rgba(26,98,204,0.06);border-color:rgba(26,98,204,0.2);"><i class="fas fa-check" style="color:#7CB4FF;"></i>Automatización y robótica</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="administracion" class="career-tab-content career-detail-section">
+      <div class="container">
+        <div class="career-detail-grid">
+          <div class="reveal">
+            <div class="career-intro-card">
+              <div class="career-badge-large" style="background:rgba(232,184,75,0.12);color:var(--accent);">
+                <i class="fas fa-chart-line"></i>
+              </div>
+              <div class="badge badge-accent" style="margin-bottom:var(--space-md);">TSU · 6 semestres</div>
+              <h2>Administración Industrial</h2>
+              <p>Profesional con sólidos fundamentos en administración contable, financiera y operativa de la industria y el comercio. Perfil gerencial con alta demanda en el mercado laboral venezolano.</p>
+              <div class="section-sub-title" style="color:var(--accent);"><i class="fas fa-user-tie" style="color:var(--accent-dark);"></i> Perfil del Egresado</div>
+              <div class="profile-list">
+                <div class="profile-item"><i class="fas fa-check" style="color:var(--accent-dark);"></i>Administrar empresas industriales y comerciales</div>
+                <div class="profile-item"><i class="fas fa-check" style="color:var(--accent-dark);"></i>Gestionar estados financieros y contables</div>
+                <div class="profile-item"><i class="fas fa-check" style="color:var(--accent-dark);"></i>Dominar políticas tributarias empresariales</div>
+                <div class="profile-item"><i class="fas fa-check" style="color:var(--accent-dark);"></i>Gestionar políticas bancarias y aseguradoras</div>
+                <div class="profile-item"><i class="fas fa-check" style="color:var(--accent-dark);"></i>Liderar procesos de administración de negocios</div>
+                <div class="profile-item"><i class="fas fa-check" style="color:var(--accent-dark);"></i>Evaluar actividades productivas con liderazgo</div>
+              </div>
+              <div class="career-actions">
+                <a href="assets/pdfs/pensum-administracion.pdf" target="_blank" class="btn btn-accent" id="download-pensum-admin">
+                  <i class="fas fa-download"></i> Descargar Pensum PDF
+                </a>
+                <a href="requisitos.html" class="btn btn-secondary" id="inscribete-admin">
+                  <i class="fas fa-edit"></i> Inscríbete ahora
+                </a>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="reveal" style="margin-bottom:var(--space-2xl);">
+              <div class="section-sub-title"><i class="fas fa-star" style="color:var(--accent-dark);"></i> Menciones Disponibles</div>
+              <div class="mentions-grid">
+                <div class="mention-card">
+                  <div class="mention-num">01</div>
+                  <h4>Contaduría</h4>
+                  <p>Maneja los criterios para el análisis profundo de estados financieros en diversas áreas contables.</p>
+                </div>
+                <div class="mention-card">
+                  <div class="mention-num">02</div>
+                  <h4>Tributo</h4>
+                  <p>Domina los fundamentos del impuesto en sus múltiples dimensiones para la gestión de políticas tributarias.</p>
+                </div>
+                <div class="mention-card">
+                  <div class="mention-num">03</div>
+                  <h4>Banca, Seguros y Negocios</h4>
+                  <p>Gestiona políticas bancarias y aseguradoras con capacidad para liderar negocios creativamente.</p>
+                </div>
+              </div>
+            </div>
+            <div class="reveal">
+              <div class="section-sub-title"><i class="fas fa-book" style="color:var(--accent-dark);"></i> Pensum — Materias por Semestre</div>
+              <div class="semester-list">
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num" style="background:rgba(232,184,75,0.12);border-color:rgba(232,184,75,0.25);color:var(--accent);">1</div>
+                    <div class="semester-title">Primer Semestre</div>
+                    <div class="semester-count">6 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Matemática I</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Inglés Técnico I</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Contabilidad I</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Economía General</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Comunicación y Lenguaje</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Introducción a la Administración</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num" style="background:rgba(232,184,75,0.12);border-color:rgba(232,184,75,0.25);color:var(--accent);">2</div>
+                    <div class="semester-title">Segundo Semestre</div>
+                    <div class="semester-count">6 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Matemática II</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Inglés Técnico II</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Contabilidad II</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Derecho Mercantil</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Estadística Aplicada</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Metodología de la Investigación</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num" style="background:rgba(232,184,75,0.12);border-color:rgba(232,184,75,0.25);color:var(--accent);">3</div>
+                    <div class="semester-title">Tercer Semestre</div>
+                    <div class="semester-count">6 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Matemática Financiera</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Contabilidad de Costos</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Administración de Empresas I</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Finanzas Empresariales</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Tributación</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Relaciones Industriales</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num" style="background:rgba(232,184,75,0.12);border-color:rgba(232,184,75,0.25);color:var(--accent);">4</div>
+                    <div class="semester-title">Cuarto Semestre</div>
+                    <div class="semester-count">6 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Administración de Empresas II</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Análisis Financiero</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Seguridad Industrial</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Mercadeo y Ventas</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Electiva I (según mención)</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Pasantías — Fase I</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num" style="background:rgba(232,184,75,0.12);border-color:rgba(232,184,75,0.25);color:var(--accent);">5</div>
+                    <div class="semester-title">Quinto Semestre</div>
+                    <div class="semester-count">3 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Proyecto de Investigación</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Electiva II (según mención)</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Seminario de Grado</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="semester-item">
+                  <div class="semester-header">
+                    <div class="semester-num" style="background:rgba(232,184,75,0.12);border-color:rgba(232,184,75,0.25);color:var(--accent);">6</div>
+                    <div class="semester-title">Sexto Semestre</div>
+                    <div class="semester-count">2 materias</div>
+                    <i class="fas fa-chevron-right semester-chevron"></i>
+                  </div>
+                  <div class="semester-body">
+                    <div class="semester-body-inner">
+                      <div class="subject-list">
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Proyecto de Grado</div>
+                        <div class="subject-item"><i class="fas fa-circle" style="color:var(--accent-dark);"></i>Pasantías — Fase II</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="reveal" style="margin-top:var(--space-2xl);">
+              <div class="section-sub-title"><i class="fas fa-briefcase" style="color:var(--accent-dark);"></i> Campo Laboral</div>
+              <div class="labor-grid">
+                <div class="labor-item"><i class="fas fa-check"></i>Empresas industriales</div>
+                <div class="labor-item"><i class="fas fa-check"></i>Instituciones bancarias</div>
+                <div class="labor-item"><i class="fas fa-check"></i>Despachos contables</div>
+                <div class="labor-item"><i class="fas fa-check"></i>Organismos públicos</div>
+                <div class="labor-item"><i class="fas fa-check"></i>Consultoría empresarial</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="footer-logo">
+            <img src="assets/images/logo-iutepi.png" alt="Logo IUTEPI" style="max-height: 50px; filter:brightness(0) invert(1);">
+            
+          </a>
+          <p>Instituto Universitario de Tecnología para la Informática. Formando Técnicos Superiores Universitarios desde 1974.</p>
+          <div class="footer-social">
+            <a href="https://www.facebook.com/iutepi.institutouniversitario/" aria-label="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/iutepi.valencia/?hl=es" aria-label="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+            
+            
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>Carreras</h4>
+          <ul>
+            <li><a href="#sistemas"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Análisis de Sistemas</a></li>
+            <li><a href="#electronica"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Electrónica</a></li>
+            <li><a href="#administracion"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Administración Industrial</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Accesos Rápidos</h4>
+          <ul>
+            <li><a href="requisitos.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Requisitos</a></li>
+            <li><a href="metodologias.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Metodologías</a></li>
+            <li><a href="diplomados.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Diplomados</a></li>
+            <li><a href="contacto.html"><i class="fas fa-chevron-right" style="font-size:0.65rem;"></i> Contacto</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <div class="footer-contact-item"><i class="fas fa-envelope"></i><a href="mailto:iutepi@iutepi.edu">iutepi@iutepi.edu</a></div>
+          <div class="footer-contact-item"><i class="fas fa-map-marker-alt"></i><span>Valencia, Carabobo, Venezuela</span></div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 <span>IUTEPI</span>. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/chatbot.js"></script>
+  <script>
+    // Tab URL hash navigation
+    window.addEventListener('DOMContentLoaded', () => {
+      const hash = window.location.hash.replace('#', '');
+      const validTabs = ['sistemas', 'electronica', 'administracion'];
+      if (validTabs.includes(hash)) {
+        document.querySelectorAll('.career-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.career-tab-content').forEach(c => c.classList.remove('active'));
+        const btn = document.querySelector(`[data-tab="${hash}"]`);
+        const content = document.getElementById(hash);
+        if (btn && content) {
+          btn.classList.add('active');
+          content.classList.add('active');
+        }
+      }
+    });
+  </script>
+  <script type="module" src="js/firebase-config.js"></script>
+</body>
+</html>
