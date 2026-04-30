@@ -1,72 +1,176 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="IUTEPI — Instituto Universitario de Tecnología para la Informática. Carreras de Análisis de Sistemas, Electrónica y Administración Industrial en modalidad presencial, semipresencial y virtual." />
+  <meta name="description"
+    content="IUTEPI — Instituto Universitario de Tecnología para la Informática. Carreras de Análisis de Sistemas, Electrónica y Administración Industrial en modalidad presencial, semipresencial y virtual." />
   <title>IUTEPI — Instituto Universitario de Tecnología para la Informática</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/navbar.css" />
   <link rel="stylesheet" href="css/cards.css" />
   <link rel="stylesheet" href="css/chatbot.css" />
   <style>
-    /* ---- Hero ---- */
-    body { padding-top: calc(var(--topbar-h) + var(--navbar-h)); }
-    .hero {
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-      padding: var(--space-5xl) 0;
-      overflow: hidden;
-      position: relative;
+    /* ---- Hero Carousel ---- */
+    body {
+      padding-top: calc(var(--topbar-h) + var(--navbar-h));
     }
+
+    .hero {
+      position: relative;
+      min-height: 92vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Carousel slides */
+    .hero-carousel {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 1.2s ease-in-out;
+      will-change: opacity;
+    }
+
+    .hero-slide.active {
+      opacity: 1;
+    }
+
+    /* Capa fondo borroso */
+    .hero-slide-blur {
+      position: absolute;
+      inset: -5%;
+      background-size: cover;
+      background-position: center;
+      filter: blur(25px) brightness(0.4);
+      transform: scale(1.05);
+      transition: transform 8s ease-in-out;
+      will-change: transform;
+    }
+
+    .hero-slide.active .hero-slide-blur {
+      transform: scale(1);
+    }
+
+    /* Capa imagen completa */
+    .hero-slide-img {
+      position: absolute;
+      inset: 0;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      transform: scale(1.02);
+      transition: transform 8s ease-in-out;
+      will-change: transform;
+    }
+
+    .hero-slide.active .hero-slide-img {
+      transform: scale(1);
+    }
+
+    /* Dark + red gradient overlay */
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(105deg, rgba(10, 10, 15, 0.82) 0%, rgba(10, 10, 15, 0.55) 55%, rgba(10, 10, 15, 0.25) 100%),
+        linear-gradient(180deg, rgba(204, 31, 38, 0.18) 0%, transparent 60%);
+      z-index: 1;
+    }
+
+    /* Animated line top */
     .hero::before {
       content: '';
       position: absolute;
-      top: 0; left: 0; right: 0;
+      top: 0;
+      left: 0;
+      right: 0;
       height: 4px;
+      background: linear-gradient(90deg, var(--primary), #ff6b6b, var(--primary));
+      background-size: 200%;
+      animation: shimmer 3s linear infinite;
+      z-index: 10;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 0%
+      }
+
+      100% {
+        background-position: 200%
+      }
+    }
+
+    /* Progress indicators */
+    .hero-dots {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+
+    .hero-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.35);
+      transition: all 0.4s ease;
+      cursor: pointer;
+    }
+
+    .hero-dot.active {
+      width: 28px;
+      border-radius: 3px;
       background: var(--primary);
     }
+
     .hero-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--space-4xl);
-      align-items: center;
+      position: relative;
+      z-index: 5;
+      max-width: 700px;
     }
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--space-sm);
-      background: var(--primary-bg);
-      border: 1px solid rgba(204,31,38,0.2);
-      color: var(--primary);
-      font-family: var(--font-display);
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 5px 14px;
-      border-radius: var(--radius-pill);
-      margin-bottom: var(--space-xl);
-    }
+
     .hero-title {
-      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-size: clamp(2.6rem, 5.5vw, 4.4rem);
       font-weight: 900;
-      line-height: 1.1;
+      line-height: 1.08;
       margin-bottom: var(--space-xl);
-      color: var(--text-primary);
+      color: #fff;
+      text-shadow: 0 2px 24px rgba(0, 0, 0, 0.4);
     }
-    .hero-title .accent { color: var(--primary); }
+
+    .hero-title .accent {
+      color: #ff4d55;
+    }
+
     .hero-desc {
-      font-size: 1.05rem;
-      color: var(--text-muted);
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.78);
       line-height: 1.8;
       margin-bottom: var(--space-2xl);
-      max-width: 500px;
+      max-width: 540px;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
     }
+
     .hero-btns {
       display: flex;
       align-items: center;
@@ -74,108 +178,37 @@
       flex-wrap: wrap;
       margin-bottom: var(--space-2xl);
     }
+
     .hero-chips {
       display: flex;
       flex-wrap: wrap;
       gap: var(--space-sm);
     }
+
     .hero-chip {
       display: flex;
       align-items: center;
       gap: 6px;
       font-size: 0.8rem;
-      color: var(--text-muted);
-      padding: 5px 12px;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
+      color: rgba(255, 255, 255, 0.85);
+      padding: 5px 14px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: var(--radius-pill);
+      backdrop-filter: blur(8px);
     }
-    .hero-chip i { color: var(--primary); font-size: 0.7rem; }
-    /* Right — Visual card */
-    .hero-visual-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-xl);
-      padding: var(--space-2xl);
-      box-shadow: var(--shadow-lg);
-    }
-    .hero-card-head {
-      display: flex;
-      align-items: center;
-      gap: var(--space-md);
-      padding-bottom: var(--space-xl);
-      margin-bottom: var(--space-xl);
-      border-bottom: 1px solid var(--border);
-    }
-    .hero-card-logo {
-      height: 40px;
-      width: auto;
-    }
-    .hero-card-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px; }
-    .hero-card-sub   { font-size: 0.75rem; color: var(--text-muted); }
-    .career-list { display: flex; flex-direction: column; gap: var(--space-sm); }
-    .career-list-item {
-      display: flex;
-      align-items: center;
-      gap: var(--space-md);
-      padding: var(--space-md) var(--space-lg);
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all var(--transition-base);
-      text-decoration: none;
-    }
-    .career-list-item:hover {
-      border-color: var(--primary);
-      box-shadow: var(--shadow-sm);
-      transform: translateX(4px);
-    }
-    .cli-icon {
-      width: 38px; height: 38px;
-      border-radius: var(--radius-sm);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.95rem;
-      flex-shrink: 0;
-    }
-    .cli-info { flex: 1; }
-    .cli-name { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
-    .cli-desc { font-size: 0.75rem; color: var(--text-muted); }
-    .cli-arrow { color: var(--text-light); font-size: 0.75rem; }
-    .hero-visual-card:hover .career-list-item:hover .cli-arrow { color: var(--primary); }
-    /* Properties strip */
-    .hero-prop-strip {
-      display: flex;
-      gap: 0;
-      margin-top: var(--space-xl);
-      padding-top: var(--space-xl);
-      border-top: 1px solid var(--border);
-    }
-    .hero-prop {
-      flex: 1;
-      text-align: center;
-      padding: 0 var(--space-md);
-      border-right: 1px solid var(--border);
-    }
-    .hero-prop:last-child { border-right: none; }
-    .hero-prop-val {
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 1.3rem;
-      color: var(--primary);
-      display: block;
-    }
-    .hero-prop-lbl {
+
+    .hero-chip i {
+      color: #ff6b6b;
       font-size: 0.7rem;
-      color: var(--text-muted);
-      font-family: var(--font-display);
-      display: block;
     }
+
     /* ---- Highlights strip ---- */
     .highlights-strip {
       background: var(--primary);
       padding: var(--space-xl) 0;
     }
+
     .highlights-inner {
       display: flex;
       align-items: center;
@@ -183,16 +216,19 @@
       gap: var(--space-4xl);
       flex-wrap: wrap;
     }
+
     .highlight-item {
       display: flex;
       align-items: center;
       gap: var(--space-md);
-      color: rgba(255,255,255,0.9);
+      color: rgba(255, 255, 255, 0.9);
     }
+
     .highlight-item i {
       font-size: 1.2rem;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255, 255, 255, 0.7);
     }
+
     .highlight-item strong {
       display: block;
       font-family: var(--font-display);
@@ -200,56 +236,143 @@
       font-size: 0.9rem;
       color: #fff;
     }
+
     .highlight-item span {
       font-size: 0.78rem;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255, 255, 255, 0.7);
     }
+
     /* ---- Careers grid ---- */
     .careers-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: var(--space-xl);
     }
+
     /* ---- Features ---- */
     .features-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: var(--space-xl);
     }
+
+    /* ---- Galeria ---- */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-md);
+      margin-top: var(--space-2xl);
+    }
+
+    .gallery-item {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      background: var(--bg-subtle);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.08);
+    }
+
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: var(--space-lg);
+    }
+
+    .gallery-item:hover .gallery-overlay {
+      opacity: 1;
+    }
+
+    .gallery-overlay span {
+      color: #fff;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
     /* ---- Testimonials ---- */
     .testimonials-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: var(--space-xl);
     }
+
     /* ---- Section alt bg ---- */
-    .section-alt { background: var(--bg-surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    @media (max-width: 1024px) {
-      .hero-inner { grid-template-columns: 1fr; }
-      .hero-desc { max-width: 100%; }
-      .careers-grid      { grid-template-columns: 1fr 1fr; }
-      .features-grid     { grid-template-columns: 1fr 1fr; }
-      .testimonials-grid { grid-template-columns: 1fr 1fr; }
-      .highlights-inner  { gap: var(--space-2xl); }
+    .section-alt {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
+
+    @media (max-width: 1024px) {
+      .careers-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .testimonials-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .highlights-inner {
+        gap: var(--space-2xl);
+      }
+    }
+
     @media (max-width: 768px) {
-      body { padding-top: var(--navbar-h); }
-      .careers-grid, .features-grid, .testimonials-grid { grid-template-columns: 1fr; }
-      .highlights-inner { flex-direction: column; gap: var(--space-xl); }
-      .hero-prop-strip  { display: none; }
+      body {
+        padding-top: var(--navbar-h);
+      }
+
+      .hero {
+        min-height: 85vh;
+        padding-bottom: 60px;
+      }
+
+      .hero-slide-img {
+        background-size: cover;
+      }
+
+      /* En teléfono mejor cubrir todo para no verse miniatura */
+      .careers-grid,
+      .features-grid,
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .highlights-inner {
+        flex-direction: column;
+        gap: var(--space-xl);
+      }
     }
   </style>
 </head>
+
 <body>
   <div id="scroll-progress"></div>
   <nav class="navbar" role="navigation" aria-label="Menú principal">
     <div class="navbar-inner">
       <a href="index.html" class="navbar-logo" id="nav-logo">
-        <img
-          src="assets/images/logo-iutepi.png"
-          alt="IUTEPI"
-          class="navbar-logo-img"
-        />
+        <img src="assets/images/logo-iutepi.png" alt="IUTEPI" class="navbar-logo-img" />
         <div class="navbar-logo-text" style="display:none;">
           <span class="navbar-logo-name">IU<span>TEPI</span></span>
           <span class="navbar-logo-tagline">Tecnología &amp; Informática</span>
@@ -304,7 +427,8 @@
         </li>
       </ul>
       <div class="navbar-actions">
-        <a href="aula-virtual.html" class="navbar-cta" id="nav-aula-virtual" style="background:var(--text-primary);color:#fff;border-color:var(--text-primary);margin-right:8px;">
+        <a href="aula-virtual.html" class="navbar-cta" id="nav-aula-virtual"
+          style="background:var(--text-primary);color:#fff;border-color:var(--text-primary);margin-right:8px;">
           <i class="fas fa-desktop"></i> Aula Virtual
         </a>
         <a href="requisitos.html" class="navbar-cta" id="nav-inscribete">
@@ -318,98 +442,45 @@
   </nav>
   <main id="content">
     <section class="hero" id="hero">
+      <!-- Carousel background -->
+      <div class="hero-carousel" id="hero-carousel" aria-hidden="true">
+        <!-- Las imágenes se cargan dinámicamente desde assets/images/hero-carousel/ -->
+        <!-- Imagen de respaldo mientras no hay fotos -->
+        <div class="hero-slide active"
+          style="background-color:#0a0a10; background-image:linear-gradient(135deg,#0a0a10 0%,#1a0508 50%,#0a0a10 100%);">
+        </div>
+      </div>
+      <div class="hero-overlay"></div>
+
       <div class="container container--lg">
         <div class="hero-inner">
-          <div>
-            <div class="hero-eyebrow">
-              <i class="fas fa-university"></i>
-              Instituto Universitario Oficial · Venezuela
-            </div>
-            <h1 class="hero-title">
-              Tu futuro comienza<br>
-              en el <span class="accent">IUTEPI</span>
-            </h1>
-            <p class="hero-desc">
-              Formamos <strong>Técnicos Superiores Universitarios</strong> en tecnología y administración. Modalidades presencial, semipresencial y virtual para adaptarse a tu vida.
-            </p>
-            <div class="hero-btns">
-              <a href="carreras.html" class="btn btn-primary btn-lg" id="hero-btn-carreras">
-                <i class="fas fa-book-open"></i> Ver carreras
-              </a>
-              <a href="requisitos.html" class="btn btn-secondary btn-lg" id="hero-btn-inscribete">
-                <i class="fas fa-edit"></i> Cómo inscribirme
-              </a>
-            </div>
-            <div class="hero-chips">
-              <div class="hero-chip"><i class="fas fa-check"></i> 3 carreras disponibles</div>
-              <div class="hero-chip"><i class="fas fa-check"></i> Modalidad virtual</div>
-              <div class="hero-chip"><i class="fas fa-check"></i> 3 años de duración</div>
-            </div>
+          <h1 class="hero-title">
+            Tu futuro comienza<br>
+            en el <span class="accent">IUTEPI</span>
+          </h1>
+          <p class="hero-desc">
+            Formamos <strong>Técnicos Superiores Universitarios</strong> en tecnología y administración. Modalidades
+            presencial, semipresencial y virtual para adaptarse a tu vida.
+          </p>
+          <div class="hero-btns">
+            <a href="carreras.html" class="btn btn-primary btn-lg" id="hero-btn-carreras">
+              <i class="fas fa-book-open"></i> Ver carreras
+            </a>
+            <a href="requisitos.html" class="btn btn-secondary btn-lg" id="hero-btn-inscribete"
+              style="background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.3);color:#fff;backdrop-filter:blur(8px);">
+              <i class="fas fa-edit"></i> Cómo inscribirme
+            </a>
           </div>
-          <div class="reveal">
-            <div class="hero-visual-card">
-              <div class="hero-card-head">
-                <img
-                  src="assets/images/logo-iutepi.png"
-                  alt="IUTEPI"
-                  class="hero-card-logo"
-                  onerror=""
-                />
-                <div>
-                  <div class="hero-card-title">Carreras Disponibles</div>
-                  <div class="hero-card-sub">Técnico Superior Universitario</div>
-                </div>
-              </div>
-              <div class="career-list">
-                <a href="carreras.html#sistemas" class="career-list-item" id="hci-sistemas">
-                  <div class="cli-icon" style="background:#FEF2F2;color:#CC1F26;">
-                    <i class="fas fa-laptop-code"></i>
-                  </div>
-                  <div class="cli-info">
-                    <div class="cli-name">Análisis de Sistemas</div>
-                    <div class="cli-desc">Programación · Redes · Bases de Datos</div>
-                  </div>
-                  <i class="fas fa-chevron-right cli-arrow"></i>
-                </a>
-                <a href="carreras.html#electronica" class="career-list-item" id="hci-electronica">
-                  <div class="cli-icon" style="background:#EFF6FF;color:#1A62CC;">
-                    <i class="fas fa-microchip"></i>
-                  </div>
-                  <div class="cli-info">
-                    <div class="cli-name">Electrónica</div>
-                    <div class="cli-desc">Circuitos · Automatización · PCB</div>
-                  </div>
-                  <i class="fas fa-chevron-right cli-arrow"></i>
-                </a>
-                <a href="carreras.html#administracion" class="career-list-item" id="hci-admin">
-                  <div class="cli-icon" style="background:#FFFBEB;color:#92400E;">
-                    <i class="fas fa-chart-line"></i>
-                  </div>
-                  <div class="cli-info">
-                    <div class="cli-name">Administración Industrial</div>
-                    <div class="cli-desc">Contabilidad · Tributos · Finanzas</div>
-                  </div>
-                  <i class="fas fa-chevron-right cli-arrow"></i>
-                </a>
-              </div>
-              <div class="hero-prop-strip">
-                <div class="hero-prop">
-                  <span class="hero-prop-val">5</span>
-                  <span class="hero-prop-lbl">Semestres</span>
-                </div>
-                <div class="hero-prop">
-                  <span class="hero-prop-val">4</span>
-                  <span class="hero-prop-lbl">Sedes</span>
-                </div>
-                <div class="hero-prop">
-                  <span class="hero-prop-val">3</span>
-                  <span class="hero-prop-lbl">Modalidades</span>
-                </div>
-              </div>
-            </div>
+          <div class="hero-chips">
+            <div class="hero-chip"><i class="fas fa-check"></i> 3 carreras disponibles</div>
+            <div class="hero-chip"><i class="fas fa-check"></i> Modalidad virtual</div>
+            <div class="hero-chip"><i class="fas fa-check"></i> 3 años de duración</div>
           </div>
         </div>
       </div>
+
+      <!-- Dot indicators -->
+      <div class="hero-dots" id="hero-dots"></div>
     </section>
     <div class="highlights-strip">
       <div class="container">
@@ -454,16 +525,21 @@
           </div>
           <h2 class="section-title">Nuestras Carreras</h2>
           <p class="section-subtitle">
-            Tres programas de Técnico Superior Universitario diseñados para el mercado laboral actual. Pensum completo en solo 3 años.
+            Tres programas de Técnico Superior Universitario diseñados para el mercado laboral actual. Pensum completo
+            en solo 3 años.
           </p>
         </div>
         <div class="careers-grid">
           <div class="career-card reveal" id="card-sistemas">
-            <div class="career-card-image" style="background:#FEF2F2;"><img src="assets/images/career_systems.png" style="width:100%;height:100%;object-fit:cover;"/><div class="career-card-image-overlay"></div></div>
+            <div class="career-card-image" style="background:#FEF2F2;"><img src="assets/images/career_systems.png"
+                style="width:100%;height:100%;object-fit:cover;" />
+              <div class="career-card-image-overlay"></div>
+            </div>
             <div class="career-card-body">
               <div class="career-card-label">TSU · 6 semestres</div>
               <h3>Análisis de Sistemas</h3>
-              <p>Diseña, desarrolla y administra sistemas informáticos. Domina la programación, bases de datos, redes y desarrollo web.</p>
+              <p>Diseña, desarrolla y administra sistemas informáticos. Domina la programación, bases de datos, redes y
+                desarrollo web.</p>
               <div class="career-card-tags">
                 <span class="badge badge-primary">Programación</span>
                 <span class="badge badge-primary">Bases de Datos</span>
@@ -478,11 +554,15 @@
             </div>
           </div>
           <div class="career-card reveal reveal-delay-1" id="card-electronica">
-            <div class="career-card-image" style="background:#EFF6FF;"><img src="assets/images/career_electronics.png" style="width:100%;height:100%;object-fit:cover;"/><div class="career-card-image-overlay"></div></div>
+            <div class="career-card-image" style="background:#EFF6FF;"><img src="assets/images/career_electronics.png"
+                style="width:100%;height:100%;object-fit:cover;" />
+              <div class="career-card-image-overlay"></div>
+            </div>
             <div class="career-card-body">
               <div class="career-card-label" style="color:#1A62CC;">TSU · 6 semestres</div>
               <h3>Electrónica</h3>
-              <p>Diseña circuitos electrónicos, sistemas de automatización y placas de circuito impreso. Alta demanda en la industria manufacturera.</p>
+              <p>Diseña circuitos electrónicos, sistemas de automatización y placas de circuito impreso. Alta demanda en
+                la industria manufacturera.</p>
               <div class="career-card-tags">
                 <span class="badge badge-blue">Circuitos</span>
                 <span class="badge badge-blue">Automatización</span>
@@ -490,18 +570,23 @@
               </div>
               <div class="career-card-footer">
                 <div class="career-meta"><i class="fas fa-clock"></i> 3 años</div>
-                <a href="carreras.html#electronica" class="btn btn-sm" style="background:#1A62CC;color:#fff;border-color:#1A62CC;" id="card-btn-electronica">
+                <a href="carreras.html#electronica" class="btn btn-sm"
+                  style="background:#1A62CC;color:#fff;border-color:#1A62CC;" id="card-btn-electronica">
                   Ver pensum <i class="fas fa-arrow-right"></i>
                 </a>
               </div>
             </div>
           </div>
           <div class="career-card reveal reveal-delay-2" id="card-administracion">
-            <div class="career-card-image" style="background:#FFFBEB;"><img src="assets/images/career_admin.png" style="width:100%;height:100%;object-fit:cover;"/><div class="career-card-image-overlay"></div></div>
+            <div class="career-card-image" style="background:#FFFBEB;"><img src="assets/images/career_admin.png"
+                style="width:100%;height:100%;object-fit:cover;" />
+              <div class="career-card-image-overlay"></div>
+            </div>
             <div class="career-card-body">
               <div class="career-card-label" style="color:#92400E;">TSU · 6 semestres</div>
               <h3>Administración Industrial</h3>
-              <p>Gestiona empresas industriales y comerciales con dominio en contabilidad, finanzas y tributación. Tres menciones disponibles.</p>
+              <p>Gestiona empresas industriales y comerciales con dominio en contabilidad, finanzas y tributación. Tres
+                menciones disponibles.</p>
               <div class="career-card-tags">
                 <span class="badge badge-accent">Contabilidad</span>
                 <span class="badge badge-accent">Tributos</span>
@@ -528,23 +613,27 @@
         <div class="section-header reveal">
           <div class="section-badge"><i class="fas fa-star"></i> Por qué elegirnos</div>
           <h2 class="section-title">La diferencia <span class="text-red">IUTEPI</span></h2>
-          <p class="section-subtitle">Más de cinco décadas formando profesionales técnicos de alto nivel para Venezuela y el mundo.</p>
+          <p class="section-subtitle">Más de cinco décadas formando profesionales técnicos de alto nivel para Venezuela
+            y el mundo.</p>
         </div>
         <div class="features-grid">
           <div class="feature-card reveal">
             <div class="feature-icon"><i class="fas fa-laptop-code"></i></div>
             <h3>Tecnología Actualizada</h3>
-            <p>Laboratorios equipados con herramientas reales del mercado laboral para que la transición al trabajo sea inmediata.</p>
+            <p>Laboratorios equipados con herramientas reales del mercado laboral para que la transición al trabajo sea
+              inmediata.</p>
           </div>
           <div class="feature-card reveal reveal-delay-1">
             <div class="feature-icon"><i class="fas fa-clock"></i></div>
             <h3>Duración Competitiva</h3>
-            <p>Solo 3 años para obtener tu título de TSU y comenzar tu carrera profesional con alta demanda en el mercado.</p>
+            <p>Solo 3 años para obtener tu título de TSU y comenzar tu carrera profesional con alta demanda en el
+              mercado.</p>
           </div>
           <div class="feature-card reveal reveal-delay-2">
             <div class="feature-icon"><i class="fas fa-globe"></i></div>
             <h3>Modalidad Virtual</h3>
-            <p>Estudia desde cualquier lugar con nuestra plataforma Moodle. Diseñada para quienes trabajan o viven en otra ciudad.</p>
+            <p>Estudia desde cualquier lugar con nuestra plataforma Moodle. Diseñada para quienes trabajan o viven en
+              otra ciudad.</p>
           </div>
           <div class="feature-card reveal">
             <div class="feature-icon"><i class="fas fa-map-marker-alt"></i></div>
@@ -554,12 +643,14 @@
           <div class="feature-card reveal reveal-delay-1">
             <div class="feature-icon"><i class="fas fa-briefcase"></i></div>
             <h3>Alta Empleabilidad</h3>
-            <p>El pensum está diseñado junto al sector productivo para garantizar que nuestros egresados sean inmediatamente contratables.</p>
+            <p>El pensum está diseñado junto al sector productivo para garantizar que nuestros egresados sean
+              inmediatamente contratables.</p>
           </div>
           <div class="feature-card reveal reveal-delay-2">
             <div class="feature-icon"><i class="fas fa-user-graduate"></i></div>
             <h3>Formación Integral</h3>
-            <p>Combinamos excelencia técnica con valores humanos y ciudadanía responsable en cada programa académico.</p>
+            <p>Combinamos excelencia técnica con valores humanos y ciudadanía responsable en cada programa académico.
+            </p>
           </div>
         </div>
       </div>
@@ -569,31 +660,38 @@
         <div class="section-header reveal">
           <div class="section-badge"><i class="fas fa-clock"></i> Modalidades de Estudio</div>
           <h2 class="section-title">Estudia a tu <span class="text-red">ritmo</span></h2>
-          <p class="section-subtitle">Elige la modalidad que mejor se adapte a tu horario, ubicación y estilo de vida.</p>
+          <p class="section-subtitle">Elige la modalidad que mejor se adapte a tu horario, ubicación y estilo de vida.
+          </p>
         </div>
         <div class="grid-3">
-          <div class="method-card reveal" style="--method-accent:var(--primary);--method-bg:var(--primary-bg);--method-color:var(--primary);">
+          <div class="method-card reveal"
+            style="--method-accent:var(--primary);--method-bg:var(--primary-bg);--method-color:var(--primary);">
             <div class="method-icon-wrap">
               <div class="method-icon"><i class="fas fa-school"></i></div>
             </div>
             <h3>Presencial</h3>
-            <p>Clases todos los días en nuestras instalaciones. Ideal para bachilleres recientes que pueden dedicarse de tiempo completo.</p>
+            <p>Clases todos los días en nuestras instalaciones. Ideal para bachilleres recientes que pueden dedicarse de
+              tiempo completo.</p>
             <div class="method-detail"><i class="fas fa-clock"></i> Lunes a viernes · Mañana y tarde</div>
           </div>
-          <div class="method-card reveal reveal-delay-1" style="--method-accent:#1A62CC;--method-bg:#EFF6FF;--method-color:#1A62CC;">
+          <div class="method-card reveal reveal-delay-1"
+            style="--method-accent:#1A62CC;--method-bg:#EFF6FF;--method-color:#1A62CC;">
             <div class="method-icon-wrap">
               <div class="method-icon"><i class="fas fa-laptop"></i></div>
             </div>
             <h3>Semipresencial</h3>
-            <p>Asiste los sábados y complementa con actividades en línea durante la semana. La opción preferida de quienes trabajan.</p>
+            <p>Asiste los sábados y complementa con actividades en línea durante la semana. La opción preferida de
+              quienes trabajan.</p>
             <div class="method-detail"><i class="fas fa-clock"></i> Sábados + actividades virtuales</div>
           </div>
-          <div class="method-card reveal reveal-delay-2" style="--method-accent:#92400E;--method-bg:#FFFBEB;--method-color:#92400E;">
+          <div class="method-card reveal reveal-delay-2"
+            style="--method-accent:#92400E;--method-bg:#FFFBEB;--method-color:#92400E;">
             <div class="method-icon-wrap">
               <div class="method-icon"><i class="fas fa-globe"></i></div>
             </div>
             <h3>Virtual / A Distancia</h3>
-            <p>100% en línea a través de la plataforma Moodle. Sin desplazamientos, con acceso a materiales y clases en cualquier momento.</p>
+            <p>100% en línea a través de la plataforma Moodle. Sin desplazamientos, con acceso a materiales y clases en
+              cualquier momento.</p>
             <div class="method-detail"><i class="fas fa-clock"></i> Flexible · Acceso 24/7</div>
           </div>
         </div>
@@ -613,9 +711,11 @@
         <div class="testimonials-grid">
           <div class="testimonial-card reveal">
             <div class="testimonial-stars">
-              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                class="fas fa-star"></i><i class="fas fa-star"></i>
             </div>
-            <p class="testimonial-text">"El IUTEPI me preparó con herramientas reales del mercado. Conseguí empleo en una empresa de tecnología antes de graduarme. Los docentes te exigen y eso marca la diferencia."</p>
+            <p class="testimonial-text">"El IUTEPI me preparó con herramientas reales del mercado. Conseguí empleo en
+              una empresa de tecnología antes de graduarme. Los docentes te exigen y eso marca la diferencia."</p>
             <div class="testimonial-author">
               <div class="testimonial-avatar">CR</div>
               <div>
@@ -627,9 +727,12 @@
           </div>
           <div class="testimonial-card reveal reveal-delay-1">
             <div class="testimonial-stars">
-              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                class="fas fa-star"></i><i class="fas fa-star"></i>
             </div>
-            <p class="testimonial-text">"Estudié en modalidad semipresencial mientras trabajaba de lunes a viernes. La estructura me permitió no descuidar ninguna de las dos cosas. Ahora tengo mi propio taller de electrónica."</p>
+            <p class="testimonial-text">"Estudié en modalidad semipresencial mientras trabajaba de lunes a viernes. La
+              estructura me permitió no descuidar ninguna de las dos cosas. Ahora tengo mi propio taller de
+              electrónica."</p>
             <div class="testimonial-author">
               <div class="testimonial-avatar" style="background:#1A62CC;">MG</div>
               <div>
@@ -641,9 +744,11 @@
           </div>
           <div class="testimonial-card reveal reveal-delay-2">
             <div class="testimonial-stars">
-              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+              <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
             </div>
-            <p class="testimonial-text">"La carrera de Administración Industrial me dio conocimientos de contabilidad y tributos que aplico a diario. La mención en Tributos fue clave para conseguir mi posición actual."</p>
+            <p class="testimonial-text">"La carrera de Administración Industrial me dio conocimientos de contabilidad y
+              tributos que aplico a diario. La mención en Tributos fue clave para conseguir mi posición actual."</p>
             <div class="testimonial-author">
               <div class="testimonial-avatar" style="background:#92400E;">LP</div>
               <div>
@@ -656,14 +761,64 @@
         </div>
       </div>
     </section>
+
+    <!-- Nueva Sección de Galería -->
+    <section class="section" id="galeria">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-badge"><i class="fas fa-camera"></i> Galería IUTEPI</div>
+          <h2 class="section-title">Vida <span class="text-red">Universitaria</span></h2>
+          <p class="section-subtitle">Conoce nuestras instalaciones, actividades y el ambiente estudiantil de nuestra
+            institución.</p>
+        </div>
+        <div class="gallery-grid">
+          <!-- Item de galería 1 -->
+          <div class="gallery-item reveal">
+            <!-- Coloca las fotos reales en la carpeta assets/images/galeria/ y actualiza el src -->
+            <img src="assets/images/galeria/foto1.jpg" alt="Instalaciones"
+              onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%23f3f4f6\' width=\'400\' height=\'300\'/%3E%3Ctext fill=\'%239ca3af\' font-family=\'sans-serif\' font-size=\'16\' dy=\'10.5\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\'%3EFoto 1%3C/text%3E%3C/svg%3E'">
+            <div class="gallery-overlay">
+              <span>Acto academico 1</span>
+            </div>
+          </div>
+          <!-- Item de galería 2 -->
+          <div class="gallery-item reveal reveal-delay-1">
+            <img src="assets/images/galeria/foto2.jpg" alt="Laboratorio"
+              onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%23e5e7eb\' width=\'400\' height=\'300\'/%3E%3Ctext fill=\'%236b7280\' font-family=\'sans-serif\' font-size=\'16\' dy=\'10.5\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\'%3EFoto 2%3C/text%3E%3C/svg%3E'">
+            <div class="gallery-overlay">
+              <span>Acto academico 2</span>
+            </div>
+          </div>
+          <!-- Item de galería 3 -->
+          <div class="gallery-item reveal reveal-delay-2">
+            <img src="assets/images/galeria/foto3.jpg" alt="Estudiantes"
+              onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%23f3f4f6\' width=\'400\' height=\'300\'/%3E%3Ctext fill=\'%239ca3af\' font-family=\'sans-serif\' font-size=\'16\' dy=\'10.5\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\'%3EFoto 3%3C/text%3E%3C/svg%3E'">
+            <div class="gallery-overlay">
+              <span>Acto academico 3</span>
+            </div>
+          </div>
+          <!-- Item de galería 4 -->
+          <div class="gallery-item reveal">
+            <img src="assets/images/galeria/foto4.jpg" alt="Graduación"
+              onerror="this.src='data:image/svg+xml;charset=UTF-8,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'300\' viewBox=\'0 0 400 300\'%3E%3Crect fill=\'%23e5e7eb\' width=\'400\' height=\'300\'/%3E%3Ctext fill=\'%236b7280\' font-family=\'sans-serif\' font-size=\'16\' dy=\'10.5\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\'%3EFoto 4%3C/text%3E%3C/svg%3E'">
+            <div class="gallery-overlay">
+              <span>Acto academico 4</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="cta-section" id="inscripcion">
       <div class="container">
         <div style="max-width:680px; margin:0 auto; text-align:center;">
-          <div class="section-badge" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.9);border-color:rgba(255,255,255,0.2);margin-bottom:var(--space-xl);">
+          <div class="section-badge"
+            style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.9);border-color:rgba(255,255,255,0.2);margin-bottom:var(--space-xl);">
             <i class="fas fa-rocket"></i> Comienza ahora
           </div>
           <h2>Forma parte del IUTEPI</h2>
-          <p style="margin-top:var(--space-lg);">Inscríbete en nuestra institución y comienza una carrera de alta demanda en solo 3 años. Consulta los requisitos y ven a conocernos.</p>
+          <p style="margin-top:var(--space-lg);">Inscríbete en nuestra institución y comienza una carrera de alta
+            demanda en solo 3 años. Consulta los requisitos y ven a conocernos.</p>
           <div class="cta-btns">
             <a href="requisitos.html" class="btn btn-primary btn-lg" id="cta-inscribete">
               <i class="fas fa-edit"></i> Ver requisitos de inscripción
@@ -681,33 +836,44 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <a href="index.html" class="footer-logo">
-            <img src="assets/images/logo-iutepi.png" alt="Logo IUTEPI" style="max-height: 50px; filter:brightness(0) invert(1);">
-            
+            <img src="assets/images/logo-iutepi.png" alt="Logo IUTEPI"
+              style="max-height: 50px; filter:brightness(0) invert(1);">
+
           </a>
-          <p>Instituto Universitario de Tecnología para la Informática. Formando Técnicos Superiores Universitarios desde 1974.</p>
+          <p>Instituto Universitario de Tecnología para la Informática. Formando Técnicos Superiores Universitarios
+            desde 1974.</p>
           <div class="footer-social">
-            <a href="https://www.facebook.com/iutepi.institutouniversitario/" aria-label="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.instagram.com/iutepi.valencia/?hl=es" aria-label="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
-            
-            
+            <a href="https://www.facebook.com/iutepi.institutouniversitario/" aria-label="Facebook" target="_blank"><i
+                class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/iutepi.valencia/?hl=es" aria-label="Instagram" target="_blank"><i
+                class="fab fa-instagram"></i></a>
+
+
           </div>
         </div>
         <div class="footer-col">
           <h4>Institución</h4>
           <ul>
-            <li><a href="institucion.html#mision"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i> Misión y Visión</a></li>
-            <li><a href="institucion.html#filosofia"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i> Carta Filosófica</a></li>
-            <li><a href="institucion.html#objetivos"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i> Objetivos</a></li>
+            <li><a href="institucion.html#mision"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i> Misión
+                y Visión</a></li>
+            <li><a href="institucion.html#filosofia"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i>
+                Carta Filosófica</a></li>
+            <li><a href="institucion.html#objetivos"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i>
+                Objetivos</a></li>
             <li><a href="sedes.html"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i> Sedes</a></li>
           </ul>
         </div>
         <div class="footer-col">
           <h4>Carreras</h4>
           <ul>
-            <li><a href="carreras.html#sistemas"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i> Análisis de Sistemas</a></li>
-            <li><a href="carreras.html#electronica"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i> Electrónica</a></li>
-            <li><a href="carreras.html#administracion"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i> Administración Industrial</a></li>
-            <li><a href="diplomados.html"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i> Diplomados</a></li>
+            <li><a href="carreras.html#sistemas"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i> Análisis
+                de Sistemas</a></li>
+            <li><a href="carreras.html#electronica"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i>
+                Electrónica</a></li>
+            <li><a href="carreras.html#administracion"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i>
+                Administración Industrial</a></li>
+            <li><a href="diplomados.html"><i class="fas fa-chevron-right" style="font-size:0.6rem;"></i> Diplomados</a>
+            </li>
           </ul>
         </div>
         <div class="footer-col">
@@ -724,12 +890,12 @@
             <i class="fas fa-globe"></i>
             <a href="http://virtual.iutepi.edu.ve/moodle/" target="_blank">Aula Virtual Moodle</a>
           </div>
-          
+
         </div>
       </div>
       <div class="footer-bottom">
         <p>&copy; 2025 <span>IUTEPI</span>. Todos los derechos reservados.</p>
-        
+
       </div>
     </div>
   </footer>
@@ -737,5 +903,92 @@
   <script src="js/main.js"></script>
   <script src="js/chatbot.js"></script>
   <script type="module" src="js/firebase-config.js"></script>
+  <script>
+    /* ---- Hero Carousel ---- */
+    (function () {
+      // Agrega aquí los nombres de tus imágenes en assets/images/hero-carousel/
+      // El carrusel las cargará en orden. Ejemplo:
+      // const HERO_IMAGES = ['foto1.jpg', 'foto2.jpg', 'foto3.jpg'];
+      const HERO_IMAGES = [
+        'Banner1.png', 'Banner2.png', 'banner3.png'
+      ];
+
+      const BASE_PATH = 'assets/images/hero-carousel/';
+      const carousel = document.getElementById('hero-carousel');
+      const dotsEl = document.getElementById('hero-dots');
+      const INTERVAL = 5000; // ms entre slides
+      let current = 0;
+      let timer = null;
+      let slides = [];
+      let dots = [];
+
+      function buildSlides(images) {
+        // Eliminar slide de respaldo si hay imágenes reales
+        carousel.innerHTML = '';
+
+        images.forEach((img, i) => {
+          const div = document.createElement('div');
+          div.className = 'hero-slide' + (i === 0 ? ' active' : '');
+
+          // Capa de fondo borroso (para cubrir toda la pantalla sin bordes negros)
+          const blurBg = document.createElement('div');
+          blurBg.className = 'hero-slide-blur';
+          blurBg.style.backgroundImage = `url('${BASE_PATH}${img}')`;
+
+          // Capa de imagen principal (para que se vea completa)
+          const imgDiv = document.createElement('div');
+          imgDiv.className = 'hero-slide-img';
+          imgDiv.style.backgroundImage = `url('${BASE_PATH}${img}')`;
+
+          div.appendChild(blurBg);
+          div.appendChild(imgDiv);
+          carousel.appendChild(div);
+
+          const dot = document.createElement('button');
+          dot.className = 'hero-dot' + (i === 0 ? ' active' : '');
+          dot.setAttribute('aria-label', `Ir a imagen ${i + 1}`);
+          dot.addEventListener('click', () => goTo(i));
+          dotsEl.appendChild(dot);
+        });
+
+        slides = Array.from(carousel.querySelectorAll('.hero-slide'));
+        dots = Array.from(dotsEl.querySelectorAll('.hero-dot'));
+      }
+
+      function goTo(index) {
+        slides[current].classList.remove('active');
+        dots[current] && dots[current].classList.remove('active');
+        current = (index + slides.length) % slides.length;
+        slides[current].classList.add('active');
+        dots[current] && dots[current].classList.add('active');
+        resetTimer();
+      }
+
+      function next() { goTo(current + 1); }
+
+      function resetTimer() {
+        clearInterval(timer);
+        if (slides.length > 1) timer = setInterval(next, INTERVAL);
+      }
+
+      function init() {
+        if (HERO_IMAGES.length === 0) {
+          // Sin imágenes: mantener slide de respaldo, sin dots
+          return;
+        }
+        buildSlides(HERO_IMAGES);
+        resetTimer();
+
+        // Pausar cuando la pestaña no es visible
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) clearInterval(timer);
+          else resetTimer();
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', init);
+    })();
+  </script>
 </body>
+
 </html>

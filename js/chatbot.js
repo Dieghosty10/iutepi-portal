@@ -347,11 +347,7 @@ class PIAChatbot {
     this.messages.appendChild(div);
     this.scrollBottom();
     
-    if (actionObj && actionObj.url) {
-      setTimeout(() => {
-        window.location.href = actionObj.url;
-      }, 1500); 
-    }
+
     
     if (!this.isOpen) {
       this.unreadCount++;
