@@ -209,10 +209,25 @@
   transition: all var(--transition-base);
 }
 .nav-overlay.visible { opacity: 1; visibility: visible; }
-.mobile-cta-container { display: none; }
+.mobile-cta-container { display: none !important; }
 @media (max-width: 1024px) {
   .navbar-hamburger { display: flex; }
-  .mobile-cta-container { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 20px; border-top: 1px solid #E2E8F0; padding-top: 20px; }
+  .mobile-cta-container { display: flex !important; flex-direction: column; gap: 10px; width: 100%; margin-top: 20px; border-top: 1px solid #E2E8F0; padding-top: 20px; }
+  .mobile-cta-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-display);
+    font-weight: 700;
+    text-decoration: none;
+    color: #fff !important;
+  }
+  .mobile-cta-btn.btn-primary { background: var(--text-primary); border: 1px solid var(--text-primary); }
+  .mobile-cta-btn.btn-secondary { background: var(--primary); border: 1px solid var(--primary); }
   .navbar-menu {
     position: fixed;
     top: 0; right: 0; bottom: 0;
