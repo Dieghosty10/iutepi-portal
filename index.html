@@ -344,15 +344,34 @@
       }
 
       .hero {
-        min-height: 85vh;
+        min-height: 88vh;
         padding-bottom: 60px;
+        align-items: flex-end;
+        padding-bottom: 80px;
+      }
+
+      .hero-inner {
+        max-width: 100%;
       }
 
       .hero-slide-img {
         background-size: cover;
       }
 
-      /* En teléfono mejor cubrir todo para no verse miniatura */
+      .hero-btns {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hero-btns .btn {
+        justify-content: center;
+        width: 100%;
+      }
+
+      .hero-chips {
+        justify-content: flex-start;
+      }
+
       .careers-grid,
       .features-grid,
       .testimonials-grid {
@@ -362,9 +381,39 @@
       .highlights-inner {
         flex-direction: column;
         gap: var(--space-xl);
+        align-items: flex-start;
+        padding: 0 var(--space-lg);
+      }
+
+      .navbar-cta {
+        display: none;
       }
     }
-  </style>
+
+    @media (max-width: 480px) {
+      .hero {
+        min-height: 100svh;
+        padding-bottom: 100px;
+      }
+
+      .hero-title {
+        font-size: clamp(2rem, 8vw, 2.8rem);
+      }
+
+      .hero-desc {
+        font-size: 0.95rem;
+      }
+
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-sm);
+      }
+
+      .highlights-inner {
+        gap: var(--space-lg);
+      }
+    }
+</style>
 </head>
 
 <body>

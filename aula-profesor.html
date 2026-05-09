@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profesor — Campus Virtual IUTEPI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/aula.css" />
+  <!-- Librerías para Exportar a PDF y Excel -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebar-toggle"><i class="fas fa-bars"></i></button>
+<div class="aula-wrapper">
+  <aside class="aula-sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <img src="assets/images/logo-iutepi.png" alt="IUTEPI" />
+      <div class="sidebar-logo-text">IUTEPI <small>Profesor</small></div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sb-avatar">P</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sb-nombre">Cargando...</div>
+        <div class="sidebar-user-role">Profesor</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-label">Panel</div>
+      <button class="sidebar-nav-item active" data-sec="resumen"><i class="fas fa-th-large"></i> Resumen</button>
+      <div class="sidebar-nav-label">Académico</div>
+      <button class="sidebar-nav-item" data-sec="secciones"><i class="fas fa-chalkboard"></i> Mis Secciones</button>
+      <button class="sidebar-nav-item" data-sec="notas"><i class="fas fa-pen"></i> Subir Notas</button>
+      <button class="sidebar-nav-item" data-sec="matriz"><i class="fas fa-table"></i> Matriz de Calificaciones</button>
+      <button class="sidebar-nav-item" data-sec="evaluaciones"><i class="fas fa-calendar-plus"></i> Publicar Evaluación</button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="sidebar-logout" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <main class="aula-main">
+    <!-- RESUMEN -->
+    <section class="aula-section active" id="sec-resumen">
+      <div class="page-head"><h1><i class="fas fa-th-large" style="color:var(--primary);margin-right:8px;"></i>Mi Panel</h1><p>Resumen de tu actividad académica</p></div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-icon si-red"><i class="fas fa-chalkboard"></i></div><div><div class="stat-val" id="stat-secciones">—</div><div class="stat-lbl">Secciones activas</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-blue"><i class="fas fa-users"></i></div><div><div class="stat-val" id="stat-alumnos">—</div><div class="stat-lbl">Alumnos totales</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green"><i class="fas fa-check-circle"></i></div><div><div class="stat-val" id="stat-notas-registradas">—</div><div class="stat-lbl">Notas registradas</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber"><i class="fas fa-calendar"></i></div><div><div class="stat-val" id="stat-evaluaciones">—</div><div class="stat-lbl">Evaluaciones publicadas</div></div></div>
+      </div>
+      <div class="aula-card">
+        <div class="aula-card-head"><div class="aula-card-title"><i class="fas fa-chalkboard"></i>Mis secciones rápidas</div></div>
+        <div class="aula-card-body" id="resumen-secciones"><div class="loading-state"><div class="spinner"></div></div></div>
+      </div>
+    </section>
+
+    <!-- SECCIONES -->
+    <section class="aula-section" id="sec-secciones">
+      <div class="page-head"><h1><i class="fas fa-chalkboard" style="color:var(--primary);margin-right:8px;"></i>Mis Secciones</h1><p>Materias que dictas en el período activo</p></div>
+      <div id="lista-secciones"><div class="loading-state"><div class="spinner"></div></div></div>
+    </section>
+
+    <!-- NOTAS -->
+    <section class="aula-section" id="sec-notas">
+      <div class="page-head"><h1><i class="fas fa-pen" style="color:var(--primary);margin-right:8px;"></i>Subir Notas</h1><p>Registra las calificaciones de tus alumnos</p></div>
+      <div class="aula-card" style="margin-bottom:20px;">
+        <div class="aula-card-body">
+          <div class="fr2">
+            <div class="aula-fg"><label>Sección</label><select class="aula-select" id="sel-seccion-notas"></select></div>
+            <div class="aula-fg"><label>Tipo de evaluación</label>
+              <select class="aula-select" id="sel-tipo-nota">
+                <option value="corte1">1er Corte</option>
+                <option value="corte2">2do Corte</option>
+                <option value="corte3">3er Corte</option>
+                <option value="recuperativo">Recuperativo</option>
+              </select>
+            </div>
+          </div>
+          <button class="aula-btn aula-btn-secondary" id="btn-cargar-alumnos-notas"><i class="fas fa-users"></i> Cargar alumnos</button>
+        </div>
+      </div>
+      <div id="formulario-notas"></div>
+    </section>
+
+    <!-- MATRIZ -->
+    <section class="aula-section" id="sec-matriz">
+      <div class="page-head"><h1><i class="fas fa-table" style="color:var(--primary);margin-right:8px;"></i>Matriz de Calificaciones</h1><p>Vista general del rendimiento del grupo</p></div>
+      <div class="aula-card" style="margin-bottom:20px;">
+        <div class="aula-card-body">
+          <div class="aula-fg"><label>Seleccionar sección</label><select class="aula-select" id="sel-seccion-matriz"></select></div>
+          <button class="aula-btn aula-btn-secondary" id="btn-cargar-matriz"><i class="fas fa-table"></i> Ver matriz</button>
+        </div>
+      </div>
+      <div id="export-buttons-container" style="display:none; justify-content:flex-end; gap:10px; margin-bottom:15px;">
+        <button class="aula-btn" id="btn-export-excel" style="background:#166534;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:600;"><i class="fas fa-file-excel" style="margin-right:6px;"></i>Exportar a Excel</button>
+        <button class="aula-btn" id="btn-export-pdf" style="background:#CC1F26;color:white;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:600;"><i class="fas fa-file-pdf" style="margin-right:6px;"></i>Exportar a PDF</button>
+      </div>
+      <div id="contenedor-matriz"></div>
+    </section>
+
+    <!-- EVALUACIONES -->
+    <section class="aula-section" id="sec-evaluaciones">
+      <div class="page-head"><h1><i class="fas fa-calendar-plus" style="color:var(--primary);margin-right:8px;"></i>Publicar Evaluación</h1><p>Notifica a tus alumnos sobre próximas evaluaciones</p></div>
+      <div class="fr2" style="align-items:flex-start;">
+        <div class="aula-card">
+          <div class="aula-card-head"><div class="aula-card-title"><i class="fas fa-plus-circle"></i>Nueva evaluación</div></div>
+          <div class="aula-card-body">
+            <div id="eval-error"></div>
+            <div class="aula-fg"><label>Sección *</label><select class="aula-select" id="eval-seccion"></select></div>
+            <div class="aula-fg"><label>Título *</label><input type="text" class="aula-input" id="eval-titulo" placeholder="Ej: Examen Parcial 1" /></div>
+            <div class="aula-fg"><label>Tema</label><input type="text" class="aula-input" id="eval-tema" placeholder="Temas a evaluar..." /></div>
+            <div class="fr2">
+              <div class="aula-fg"><label>Tipo</label>
+                <select class="aula-select" id="eval-tipo">
+                  <option value="examen">Examen</option>
+                  <option value="practica">Práctica</option>
+                  <option value="entrega">Entrega</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+              <div class="aula-fg"><label>Salón</label><input type="text" class="aula-input" id="eval-salon" placeholder="Ej: Aula 3-B" /></div>
+            </div>
+            <div class="fr2">
+              <div class="aula-fg"><label>Fecha *</label><input type="date" class="aula-input" id="eval-fecha" /></div>
+              <div class="aula-fg"><label>Hora</label><input type="time" class="aula-input" id="eval-hora" /></div>
+            </div>
+            <button class="aula-btn aula-btn-primary aula-btn-block" id="btn-publicar-eval"><i class="fas fa-paper-plane"></i> Publicar evaluación</button>
+          </div>
+        </div>
+        <div class="aula-card">
+          <div class="aula-card-head"><div class="aula-card-title"><i class="fas fa-list"></i>Evaluaciones publicadas</div></div>
+          <div class="aula-card-body" id="lista-evaluaciones-prof"><div class="loading-state"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="toast-container"></div>
+<script type="module" src="js/aula-profesor.js"></script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+import { verificarAcceso, cerrarSesion, crearCuentaUsuario, registrarAuditoria } from './aula-auth.js';
+import { getFirestore, collection, getDocs, getDoc, doc, setDoc, updateDoc, addDoc, query, orderBy, limit, where, serverTimestamp, Timestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+
+const db = getFirestore(getApps()[0]);
+let adminActual = null;
+let todosUsuarios = [], todasSecciones = [], todosProfs = [], todosPeriodos = [];
+
+/* ===== TOAST ===== */
+function toast(msg, tipo = 'info') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast toast-${tipo}`;
+  const iconos = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+  t.innerHTML = `<i class="fas ${iconos[tipo] || 'fa-info-circle'}"></i> ${msg}`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+/* ===== NAVEGACIÓN ===== */
+function navegar(id) {
+  document.querySelectorAll('.aula-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById(`sec-${id}`)?.classList.add('active');
+  document.querySelector(`[data-sec="${id}"]`)?.classList.add('active');
+  const cargadores = { usuarios: cargarUsuarios, secciones: cargarSecciones, periodos: cargarPeriodos, auditoria: cargarAuditoria };
+  if (cargadores[id]) cargadores[id]();
+}
+
+/* ===== FORMATO ===== */
+function fFecha(ts) {
+  if (!ts) return '—';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleString('es-VE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+function fFechaSolo(ts) {
+  if (!ts) return '—';
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('es-VE');
+}
+
+/* ===== MODALES ===== */
+function abrirModal(id) { document.getElementById(id)?.classList.add('active'); }
+function cerrarModal(id) { document.getElementById(id)?.classList.remove('active'); }
+document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => cerrarModal(b.dataset.close)));
+document.querySelectorAll('.aula-modal-overlay').forEach(o => o.addEventListener('click', e => { if (e.target === o) cerrarModal(o.id); }));
+
+/* ===== RESUMEN ===== */
+async function cargarResumen() {
+  try {
+    const [snapU, snapP, snapPer] = await Promise.all([
+      getDocs(collection(db, 'users')),
+      getDocs(query(collection(db, 'auditoria'), orderBy('timestamp', 'desc'), limit(8))),
+      getDocs(collection(db, 'periodos'))
+    ]);
+    let total = 0, solventes = 0, profesores = 0;
+    snapU.forEach(d => {
+      const u = d.data(); total++;
+      if (u.rol === 'estudiante' && u.solvente) solventes++;
+      if (u.rol === 'profesor' && !u.suspendido) profesores++;
+    });
+    document.getElementById('stat-total-usuarios').textContent = total;
+    document.getElementById('stat-solventes').textContent = solventes;
+    document.getElementById('stat-profesores').textContent = profesores;
+    let periodoActivo = '—';
+    snapPer.forEach(d => { if (d.data().activo) periodoActivo = d.data().nombre; });
+    document.getElementById('stat-periodo').textContent = periodoActivo;
+
+    const logs = [];
+    snapP.forEach(d => logs.push({ id: d.id, ...d.data() }));
+    const etiquetas = { login: 'Inicio de sesión', logout: 'Cierre de sesión', crear_usuario: 'Usuario creado', subir_nota: 'Nota registrada' };
+    const listaEl = document.getElementById('lista-auditoria-resumen');
+    listaEl.innerHTML = logs.length === 0 ? '<p style="color:#94A3B8;text-align:center;padding:20px;">Sin registros</p>' :
+      logs.map(l => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F1F5F9;font-size:0.82rem;">
+        <span><strong>${etiquetas[l.accion] || l.accion}</strong> — ${l.detalles?.nombre || l.detalles?.cedula || l.usuarioId?.substring(0,8)}</span>
+        <span style="color:#94A3B8;">${fFecha(l.timestamp)}</span></div>`).join('');
+
+    const estadoEl = document.getElementById('estado-sistema');
+    estadoEl.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div class="aula-alert al-success"><i class="fas fa-check-circle"></i> Conexión con Firebase activa</div>
+        <div style="font-size:0.855rem;color:#64748B;">
+          <p><strong>Total usuarios:</strong> ${total}</p>
+          <p style="margin-top:6px;"><strong>Estudiantes solventes:</strong> ${solventes}</p>
+          <p style="margin-top:6px;"><strong>Período activo:</strong> ${periodoActivo}</p>
+        </div>
+      </div>`;
+  } catch (e) { toast('Error al cargar resumen', 'error'); }
+}
+
+/* ===== USUARIOS ===== */
+async function cargarUsuarios() {
+  const tb = document.getElementById('tabla-usuarios');
+  tb.innerHTML = '<tr><td colspan="6" class="loading-state"><div class="spinner"></div> Cargando...</td></tr>';
+  const snap = await getDocs(collection(db, 'users'));
+  todosUsuarios = [];
+  snap.forEach(d => todosUsuarios.push({ uid: d.id, ...d.data() }));
+  renderUsuarios(todosUsuarios);
+}
+
+function renderUsuarios(lista) {
+  const tb = document.getElementById('tabla-usuarios');
+  if (lista.length === 0) { tb.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-users"></i><p>No hay usuarios registrados</p></div></td></tr>'; return; }
+  const roles = { admin: '<span class="badge badge-red">Admin</span>', profesor: '<span class="badge badge-blue">Profesor</span>', estudiante: '<span class="badge badge-gray">Estudiante</span>' };
+  tb.innerHTML = lista.map(u => `
+    <tr>
+      <td><strong>${u.nombre || '<em style="color:#94A3B8;">Sin nombre</em>'}</strong></td>
+      <td>${u.cedula || '—'}</td>
+      <td>${u.rol === 'estudiante' ? (u.codigoEstudiante ? `<span style="font-family:monospace;font-size:0.8rem;">${u.codigoEstudiante}</span>` : '<span style="color:#94A3B8;">—</span>') : '—'}</td>
+      <td>${roles[u.rol] || u.rol}</td>
+      <td>${u.suspendido ? '<span class="badge badge-red">Suspendido</span>' : '<span class="badge badge-green">Activo</span>'}</td>
+      <td>${u.rol === 'estudiante' ? (u.solvente ? '<span class="badge badge-green">Solvente</span>' : '<span class="badge badge-amber">No solvente</span>') : '—'}</td>
+      <td style="display:flex;gap:6px;">
+        <button class="aula-btn aula-btn-secondary aula-btn-sm" onclick="editarUsuario('${u.uid}')"><i class="fas fa-edit"></i></button>
+        <button class="aula-btn ${u.suspendido ? 'aula-btn-success' : 'aula-btn-danger'} aula-btn-sm" onclick="toggleSuspender('${u.uid}',${u.suspendido})">
+          <i class="fas fa-${u.suspendido ? 'user-check' : 'user-slash'}"></i>
+        </button>
+      </td>
+    </tr>`).join('');
+}
+
+document.getElementById('filtro-buscar').addEventListener('input', filtrarUsuarios);
+document.getElementById('filtro-rol').addEventListener('change', filtrarUsuarios);
+function filtrarUsuarios() {
+  const txt = document.getElementById('filtro-buscar').value.toLowerCase();
+  const rol = document.getElementById('filtro-rol').value;
+  renderUsuarios(todosUsuarios.filter(u =>
+    (u.nombre?.toLowerCase().includes(txt) || u.cedula?.includes(txt)) && (!rol || u.rol === rol)
+  ));
+}
+
+window.editarUsuario = function(uid) {
+  const u = todosUsuarios.find(x => x.uid === uid);
+  if (!u) return;
+  document.getElementById('modal-usuario-titulo').textContent = 'Editar usuario';
+  document.getElementById('usr-uid').value = uid;
+  document.getElementById('usr-nombre').value = u.nombre;
+  document.getElementById('usr-cedula').value = u.cedula;
+  document.getElementById('usr-cedula').disabled = true;
+  // En edición, ocultar campo correo (no se puede cambiar el email de Auth fácilmente)
+  const campoCorroo = document.getElementById('campo-correo');
+  campoCorroo.style.display = 'none';
+  campoCorroo.querySelector('input').required = false;
+  document.getElementById('usr-rol').value = u.rol;
+  document.getElementById('usr-carrera').value = u.carreraId || '';
+  document.getElementById('usr-solvente').checked = u.solvente;
+  document.getElementById('usr-codigo').value = u.codigoEstudiante || '';
+  toggleCamposRol(u.rol);
+  abrirModal('modal-usuario');
+};
+
+window.toggleSuspender = async function(uid, estabaActivo) {
+  if (!confirm(`¿${estabaActivo ? 'Activar' : 'Suspender'} esta cuenta?`)) return;
+  await updateDoc(doc(db, 'users', uid), { suspendido: !estabaActivo });
+  await registrarAuditoria(estabaActivo ? 'activar_usuario' : 'suspender_usuario', adminActual.uid, { uid });
+  toast(`Usuario ${estabaActivo ? 'activado' : 'suspendido'}`, 'success');
+  cargarUsuarios();
+};
+
+function toggleCamposRol(rol) {
+  document.getElementById('campo-carrera').style.display = rol === 'estudiante' ? 'block' : 'none';
+  document.getElementById('campo-solvente').style.display = rol === 'estudiante' ? 'block' : 'none';
+  document.getElementById('campo-codigo').style.display = rol === 'estudiante' ? 'block' : 'none';
+}
+document.getElementById('usr-rol').addEventListener('change', e => toggleCamposRol(e.target.value));
+
+document.getElementById('btn-nuevo-usuario').addEventListener('click', () => {
+  document.getElementById('modal-usuario-titulo').textContent = 'Nuevo usuario';
+  document.getElementById('form-usuario').reset();
+  document.getElementById('usr-uid').value = '';
+  document.getElementById('usr-cedula').disabled = false;
+  // Mostrar campo correo en modo creación
+  const campoCorroo = document.getElementById('campo-correo');
+  campoCorroo.style.display = 'block';
+  campoCorroo.querySelector('input').required = true;
+  toggleCamposRol('');
+  abrirModal('modal-usuario');
+});
+
+document.getElementById('btn-guardar-usuario').addEventListener('click', async () => {
+  const uid = document.getElementById('usr-uid').value;
+  const nombre = document.getElementById('usr-nombre').value.trim();
+  const cedula = document.getElementById('usr-cedula').value.trim();
+  const correo = document.getElementById('usr-correo').value.trim();
+  const rol = document.getElementById('usr-rol').value;
+  const carreraId = document.getElementById('usr-carrera').value;
+  const solvente = document.getElementById('usr-solvente').checked;
+  const codigoEstudiante = document.getElementById('usr-codigo').value.trim();
+  const errEl = document.getElementById('modal-usuario-error');
+  errEl.innerHTML = '';
+
+  if (!nombre || !rol || (!uid && (!cedula || !correo))) {
+    errEl.innerHTML = '<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Completa los campos obligatorios.</div>';
+    return;
+  }
+  if (rol === 'estudiante' && !codigoEstudiante) {
+    errEl.innerHTML = '<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> El código de estudiante es obligatorio.</div>';
+    return;
+  }
+
+  const btn = document.getElementById('btn-guardar-usuario');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div>';
+  try {
+    // Validar cédula duplicada en creación
+    if (!uid && cedula) {
+      const qCedula = query(collection(db, 'users'), where('cedula', '==', cedula));
+      const snapCedula = await getDocs(qCedula);
+      if (!snapCedula.empty) {
+        errEl.innerHTML = '<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Ya existe un usuario registrado con esa cédula.</div>';
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Guardar';
+        return;
+      }
+    }
+    // Validar código de estudiante duplicado
+    if (!uid && rol === 'estudiante' && codigoEstudiante) {
+      const qCodigo = query(collection(db, 'users'), where('codigoEstudiante', '==', codigoEstudiante));
+      const snapCodigo = await getDocs(qCodigo);
+      if (!snapCodigo.empty) {
+        errEl.innerHTML = '<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Ya existe un estudiante con ese código.</div>';
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Guardar';
+        return;
+      }
+    }
+
+    if (uid) {
+      const datosActualizados = { nombre, rol, carreraId, solvente };
+      if (rol === 'estudiante') datosActualizados.codigoEstudiante = codigoEstudiante;
+      await updateDoc(doc(db, 'users', uid), datosActualizados);
+      await registrarAuditoria('editar_usuario', adminActual.uid, { uid, nombre });
+      toast('Usuario actualizado', 'success');
+    } else {
+      await crearCuentaUsuario({ cedula, nombre, correo, rol, carreraId, solvente, codigoEstudiante });
+      toast(`Cuenta creada. Se enviaron correos de verificación y contraseña a ${correo}`, 'success');
+    }
+    cerrarModal('modal-usuario');
+    cargarUsuarios();
+  } catch (e) {
+    let msg = e.message;
+    if (e.code === 'auth/email-already-in-use') msg = 'Ese correo ya está registrado en el sistema.';
+    errEl.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> ${msg}</div>`;
+  } finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Guardar'; }
+});
+
+/* ===== SECCIONES ===== */
+async function cargarSecciones() {
+  const tb = document.getElementById('tabla-secciones');
+  tb.innerHTML = '<tr><td colspan="8" class="loading-state"><div class="spinner"></div></td></tr>';
+  const [snapS, snapU, snapP] = await Promise.all([
+    getDocs(collection(db, 'secciones')), getDocs(collection(db, 'users')), getDocs(collection(db, 'periodos'))
+  ]);
+  const usersMap = {}, periodosMap = {};
+  snapU.forEach(d => usersMap[d.id] = d.data());
+  snapP.forEach(d => periodosMap[d.id] = d.data());
+  todasSecciones = []; todosProfs = []; todosPeriodos = [];
+  snapS.forEach(d => todasSecciones.push({ id: d.id, ...d.data() }));
+  snapU.forEach(d => { const u = d.data(); if (u.rol === 'profesor') todosProfs.push({ uid: d.id, ...u }); });
+  snapP.forEach(d => todosPeriodos.push({ id: d.id, ...d.data() }));
+  const nombCarrera = { sistemas: 'Sistemas', electronica: 'Electrónica', administracion: 'Administración' };
+  tb.innerHTML = todasSecciones.length === 0 ? '<tr><td colspan="8"><div class="empty-state"><i class="fas fa-chalkboard"></i><p>Sin secciones</p></div></td></tr>' :
+    todasSecciones.map(s => {
+      const prof = usersMap[s.profesorId];
+      const per = periodosMap[s.periodoId];
+      return `<tr>
+        <td><strong>${s.materia}</strong></td>
+        <td>${nombCarrera[s.carreraId] || s.carreraId}</td>
+        <td>${s.semestre}°</td>
+        <td>${prof ? prof.nombre : '—'}</td>
+        <td>${per ? per.nombre : '—'}</td>
+        <td>${s.salon}</td>
+        <td>${(s.estudiantesIds || []).length}</td>
+        <td style="display:flex;gap:6px;">
+          <button class="aula-btn aula-btn-secondary aula-btn-sm" onclick="editarSeccion('${s.id}')"><i class="fas fa-edit"></i></button>
+          <button class="aula-btn aula-btn-secondary aula-btn-sm" onclick="gestionarAlumnos('${s.id}')"><i class="fas fa-users"></i></button>
+        </td>
+      </tr>`;
+    }).join('');
+}
+
+window.editarSeccion = function(id) {
+  const s = todasSecciones.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('modal-seccion-titulo').textContent = 'Editar sección';
+  document.getElementById('sec-id').value = id;
+  document.getElementById('sec-materia').value = s.materia;
+  document.getElementById('sec-salon').value = s.salon;
+  document.getElementById('sec-carrera').value = s.carreraId;
+  document.getElementById('sec-semestre').value = s.semestre;
+  document.getElementById('sec-dias').value = s.horario?.dias || '';
+  document.getElementById('sec-hora-inicio').value = s.horario?.horaInicio || '';
+  document.getElementById('sec-hora-fin').value = s.horario?.horaFin || '';
+  poblarSelectPeriodos(s.periodoId);
+  poblarSelectProfesores(s.profesorId);
+  abrirModal('modal-seccion');
+};
+
+window.gestionarAlumnos = async function(seccionId) {
+  const sec = todasSecciones.find(x => x.id === seccionId);
+  document.getElementById('modal-alumnos-seccion').textContent = sec?.materia || seccionId;
+  const body = document.getElementById('modal-alumnos-body');
+  body.innerHTML = '<div class="loading-state"><div class="spinner"></div></div>';
+  abrirModal('modal-alumnos');
+  const snap = await getDocs(query(collection(db, 'users'), where('rol', '==', 'estudiante')));
+  const asignados = sec?.estudiantesIds || [];
+  body.innerHTML = `<p style="font-size:0.82rem;color:#64748B;margin-bottom:12px;">Selecciona los estudiantes que pertenecen a esta sección:</p>
+    <div style="max-height:350px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;">
+    ${snap.docs.map(d => { const u = d.data(); const checked = asignados.includes(d.id) ? 'checked' : '';
+      return `<label style="display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid #E2E8F0;border-radius:8px;cursor:pointer;">
+        <input type="checkbox" value="${d.id}" ${checked} style="width:16px;height:16px;" class="chk-alumno" />
+        <span><strong>${u.nombre}</strong> — Cédula: ${u.cedula}</span></label>`;
+    }).join('')}</div>`;
+  document.getElementById('btn-guardar-alumnos').onclick = async () => {
+    const seleccionados = [...document.querySelectorAll('.chk-alumno:checked')].map(c => c.value);
+    await updateDoc(doc(db, 'secciones', seccionId), { estudiantesIds: seleccionados });
+    await registrarAuditoria('asignar_alumnos', adminActual.uid, { seccionId, cantidad: seleccionados.length });
+    toast('Alumnos asignados correctamente', 'success');
+    cerrarModal('modal-alumnos');
+    cargarSecciones();
+  };
+};
+
+document.getElementById('btn-nueva-seccion').addEventListener('click', () => {
+  document.getElementById('modal-seccion-titulo').textContent = 'Nueva sección';
+  document.getElementById('form-seccion').reset();
+  document.getElementById('sec-id').value = '';
+  poblarSelectPeriodos('');
+  poblarSelectProfesores('');
+  abrirModal('modal-seccion');
+});
+
+function poblarSelectPeriodos(seleccionado = '') {
+  const sel = document.getElementById('sec-periodo');
+  sel.innerHTML = todosPeriodos.map(p => `<option value="${p.id}" ${p.id === seleccionado ? 'selected' : ''}>${p.nombre}</option>`).join('') || '<option>Sin períodos</option>';
+}
+function poblarSelectProfesores(seleccionado = '') {
+  const sel = document.getElementById('sec-profesor');
+  sel.innerHTML = '<option value="">Seleccionar...</option>' + todosProfs.map(p => `<option value="${p.uid}" ${p.uid === seleccionado ? 'selected' : ''}>${p.nombre}</option>`).join('');
+}
+
+document.getElementById('btn-guardar-seccion').addEventListener('click', async () => {
+  const id = document.getElementById('sec-id').value;
+  const datos = {
+    materia: document.getElementById('sec-materia').value.trim(),
+    salon: document.getElementById('sec-salon').value.trim(),
+    carreraId: document.getElementById('sec-carrera').value,
+    semestre: parseInt(document.getElementById('sec-semestre').value),
+    periodoId: document.getElementById('sec-periodo').value,
+    profesorId: document.getElementById('sec-profesor').value,
+    horario: {
+      dias: document.getElementById('sec-dias').value,
+      horaInicio: document.getElementById('sec-hora-inicio').value,
+      horaFin: document.getElementById('sec-hora-fin').value
+    }
+  };
+  const errEl = document.getElementById('modal-seccion-error');
+  if (!datos.materia || !datos.carreraId || !datos.semestre || !datos.periodoId || !datos.profesorId) {
+    errEl.innerHTML = '<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Completa todos los campos obligatorios.</div>';
+    return;
+  }
+  errEl.innerHTML = '';
+  if (id) { await updateDoc(doc(db, 'secciones', id), datos); }
+  else { datos.estudiantesIds = []; await addDoc(collection(db, 'secciones'), datos); }
+  await registrarAuditoria('guardar_seccion', adminActual.uid, { materia: datos.materia });
+  toast('Sección guardada', 'success');
+  cerrarModal('modal-seccion');
+  cargarSecciones();
+});
+
+/* ===== PERÍODOS ===== */
+async function cargarPeriodos() {
+  const tb = document.getElementById('tabla-periodos');
+  tb.innerHTML = '<tr><td colspan="6" class="loading-state"><div class="spinner"></div></td></tr>';
+  const snap = await getDocs(collection(db, 'periodos'));
+  todosPeriodos = [];
+  snap.forEach(d => todosPeriodos.push({ id: d.id, ...d.data() }));
+  tb.innerHTML = todosPeriodos.length === 0 ? '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-calendar"></i><p>Sin períodos</p></div></td></tr>' :
+    todosPeriodos.map(p => `<tr>
+      <td><strong>${p.nombre}</strong></td>
+      <td>${fFechaSolo(p.fechaInicio)}</td>
+      <td>${fFechaSolo(p.fechaFin)}</td>
+      <td>${fFechaSolo(p.inscripcionInicio)} — ${fFechaSolo(p.inscripcionFin)}</td>
+      <td>${p.activo ? '<span class="badge badge-green">Activo</span>' : '<span class="badge badge-gray">Inactivo</span>'}</td>
+      <td style="display:flex;gap:6px;">
+        <button class="aula-btn aula-btn-secondary aula-btn-sm" onclick="editarPeriodo('${p.id}')"><i class="fas fa-edit"></i></button>
+        ${!p.activo ? `<button class="aula-btn aula-btn-success aula-btn-sm" onclick="activarPeriodo('${p.id}')"><i class="fas fa-check"></i> Activar</button>` : ''}
+      </td>
+    </tr>`).join('');
+}
+
+window.editarPeriodo = function(id) {
+  const p = todosPeriodos.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('modal-periodo-titulo').textContent = 'Editar período';
+  document.getElementById('per-id').value = id;
+  document.getElementById('per-nombre').value = p.nombre;
+  const toInput = ts => ts?.toDate ? ts.toDate().toISOString().split('T')[0] : '';
+  document.getElementById('per-inicio').value = toInput(p.fechaInicio);
+  document.getElementById('per-fin').value = toInput(p.fechaFin);
+  document.getElementById('per-insc-inicio').value = toInput(p.inscripcionInicio);
+  document.getElementById('per-insc-fin').value = toInput(p.inscripcionFin);
+  document.getElementById('per-activo').checked = p.activo;
+  abrirModal('modal-periodo');
+};
+
+window.activarPeriodo = async function(id) {
+  const batch = todosPeriodos.map(p => updateDoc(doc(db, 'periodos', p.id), { activo: p.id === id }));
+  await Promise.all(batch);
+  toast('Período activado', 'success');
+  cargarPeriodos();
+};
+
+document.getElementById('btn-nuevo-periodo').addEventListener('click', () => {
+  document.getElementById('modal-periodo-titulo').textContent = 'Nuevo período';
+  document.getElementById('form-periodo').reset();
+  document.getElementById('per-id').value = '';
+  abrirModal('modal-periodo');
+});
+
+document.getElementById('btn-guardar-periodo').addEventListener('click', async () => {
+  const id = document.getElementById('per-id').value;
+  const nombre = document.getElementById('per-nombre').value.trim();
+  if (!nombre) return;
+  const toTs = val => val ? Timestamp.fromDate(new Date(val)) : null;
+  const datos = {
+    nombre, activo: document.getElementById('per-activo').checked,
+    fechaInicio: toTs(document.getElementById('per-inicio').value),
+    fechaFin: toTs(document.getElementById('per-fin').value),
+    inscripcionInicio: toTs(document.getElementById('per-insc-inicio').value),
+    inscripcionFin: toTs(document.getElementById('per-insc-fin').value)
+  };
+  if (datos.activo) {
+    const batch = todosPeriodos.map(p => updateDoc(doc(db, 'periodos', p.id), { activo: false }));
+    await Promise.all(batch);
+  }
+  if (id) { await updateDoc(doc(db, 'periodos', id), datos); }
+  else { await addDoc(collection(db, 'periodos'), datos); }
+  toast('Período guardado', 'success');
+  cerrarModal('modal-periodo');
+  cargarPeriodos();
+});
+
+/* ===== AUDITORÍA ===== */
+async function cargarAuditoria() {
+  const tb = document.getElementById('tabla-auditoria');
+  tb.innerHTML = '<tr><td colspan="4" class="loading-state"><div class="spinner"></div></td></tr>';
+  const snap = await getDocs(query(collection(db, 'auditoria'), orderBy('timestamp', 'desc'), limit(50)));
+  const logs = [];
+  snap.forEach(d => logs.push({ id: d.id, ...d.data() }));
+  const etiquetas = { login: 'Inicio de sesión', logout: 'Cierre de sesión', crear_usuario: 'Usuario creado', editar_usuario: 'Usuario editado', suspender_usuario: 'Usuario suspendido', activar_usuario: 'Usuario activado', asignar_alumnos: 'Alumnos asignados', guardar_seccion: 'Sección guardada', subir_nota: 'Nota registrada', publicar_evaluacion: 'Evaluación publicada' };
+  tb.innerHTML = logs.length === 0 ? '<tr><td colspan="4"><div class="empty-state"><i class="fas fa-shield-alt"></i><p>Sin registros</p></div></td></tr>' :
+    logs.map(l => `<tr>
+      <td><span class="badge badge-blue">${etiquetas[l.accion] || l.accion}</span></td>
+      <td style="font-family:monospace;font-size:0.78rem;">${l.usuarioId?.substring(0,12)}...</td>
+      <td style="font-size:0.8rem;">${JSON.stringify(l.detalles || {})}</td>
+      <td style="font-size:0.8rem;white-space:nowrap;">${fFecha(l.timestamp)}</td>
+    </tr>`).join('');
+}
+
+/* ===== SIDEBAR RESPONSIVE ===== */
+document.getElementById('sidebar-toggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+/* ===== INIT ===== */
+document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
+  btn.addEventListener('click', () => navegar(btn.dataset.sec));
+});
+document.getElementById('btn-logout').addEventListener('click', cerrarSesion);
+
+(async () => {
+  try {
+    adminActual = await verificarAcceso('admin');
+    document.getElementById('sb-nombre').textContent = adminActual.nombre;
+    document.getElementById('sb-avatar').textContent = adminActual.nombre.charAt(0).toUpperCase();
+    await cargarResumen();
+    // Pre-cargar datos para modales
+    const [snapU, snapP] = await Promise.all([getDocs(collection(db, 'users')), getDocs(collection(db, 'periodos'))]);
+    snapU.forEach(d => { const u = d.data(); if (u.rol === 'profesor') todosProfs.push({ uid: d.id, ...u }); });
+    snapP.forEach(d => todosPeriodos.push({ id: d.id, ...d.data() }));
+  } catch (e) { console.error(e); }
+})();

@@ -247,4 +247,5 @@
 }
 @media (max-width: 768px) {
   .navbar-logo-img { height: 42px; }
+  .navbar-actions .navbar-cta { display: none; }
 }

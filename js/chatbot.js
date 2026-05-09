@@ -138,24 +138,24 @@ class PIAChatbot {
     const html = `
       <div class="chat-fab" id="chat-fab">
         <div class="chat-tooltip">¡Pregúntame sobre el IUTEPI!</div>
-        <button class="chat-fab-btn" id="chat-fab-btn" aria-label="Abrir chat con PIA">
-          <span class="icon-open"><i class="fas fa-comment-dots"></i></span>
+        <button class="chat-fab-btn" id="chat-fab-btn" aria-label="Abrir chat con Epi">
+          <span class="icon-open"><img src="assets/icons/logochatbot.png" alt="Epi" class="logo-chatbot-img"></span>
           <span class="icon-close"><i class="fas fa-times"></i></span>
         </button>
         <div class="chat-fab-badge" id="chat-badge">1</div>
       </div>
 
-      <div class="chat-panel" id="chat-panel" role="dialog" aria-label="Chat con PIA - Asistente IUTEPI">
+      <div class="chat-panel" id="chat-panel" role="dialog" aria-label="Chat con Epi - Asistente IUTEPI">
         <div class="chat-header">
           <div class="chat-avatar">
-            PIA
+            <img src="assets/icons/avatarchatbot.png" alt="Epi" class="avatar-epi-img">
             <span class="chat-avatar-status"></span>
           </div>
           <div class="chat-header-info">
-            <div class="chat-header-name">PIA — Asistente IUTEPI</div>
+            <div class="chat-header-name">Epi — Asistente IUTEPI</div>
             <div class="chat-header-status">
               <i class="fas fa-circle" style="font-size:6px"></i>
-              En línea · Navega contigo
+              En línea · Tu guía académica
             </div>
           </div>
           <div class="chat-header-actions">
@@ -177,10 +177,10 @@ class PIAChatbot {
             <textarea
               id="chat-input"
               class="chat-input"
-              placeholder="Escribe tu pregunta aquí..."
+              placeholder="Escríbele algo a Epi..."
               rows="1"
               maxlength="500"
-              aria-label="Mensaje para PIA"
+              aria-label="Mensaje para Epi"
             ></textarea>
           </div>
           <button class="chat-send-btn" id="chat-send-btn" title="Enviar" aria-label="Enviar mensaje">
@@ -227,13 +227,102 @@ class PIAChatbot {
   }
   toggle() { this.isOpen ? this.close() : this.open(); }
   open() {
-    this.isOpen = true;
     this.fab.classList.add('active');
-    this.panel.classList.add('open');
     this.badge.classList.add('hidden');
     this.unreadCount = 0;
-    setTimeout(() => this.input.focus(), 300);
-    this.scrollBottom();
+    if (!sessionStorage.getItem('epi_presentado')) {
+      sessionStorage.setItem('epi_presentado', '1');
+      this.mostrarBienvenidaEpi(() => {
+        this.isOpen = true;
+        this.panel.classList.add('open');
+        setTimeout(() => this.input.focus(), 300);
+        this.scrollBottom();
+      });
+    } else {
+      this.isOpen = true;
+      this.panel.classList.add('open');
+      setTimeout(() => this.input.focus(), 300);
+      this.scrollBottom();
+    }
+  }
+  mostrarBienvenidaEpi(callback) {
+    const overlay = document.createElement('div');
+    overlay.className = 'epi-presentacion-overlay';
+    overlay.id = 'epi-bienvenida';
+    overlay.innerHTML = `
+      <div class="epi-pres-head">
+        <div class="epi-pres-anillo">
+          <img src="assets/icons/avatarchatbot.png" alt="Epi" class="epi-pres-img">
+        </div>
+        <div class="epi-pres-nombre">Epi</div>
+        <div class="epi-pres-rol">Asistente del IUTEPI</div>
+      </div>
+      <div class="epi-pres-body" id="epi-pres-body">
+        <div class="epi-dots-wrap" id="epi-dots">
+          <div class="epi-dot"></div>
+          <div class="epi-dot"></div>
+          <div class="epi-dot"></div>
+        </div>
+      </div>
+      <button class="epi-pres-btn" id="epi-comenzar-btn">Comenzar consulta</button>
+    `;
+    document.body.appendChild(overlay);
+    const cuerpo = document.getElementById('epi-pres-body');
+    const dots = document.getElementById('epi-dots');
+    const btn = document.getElementById('epi-comenzar-btn');
+    const lineas = [
+      'Hola, me llamo Epi. Soy el asistente virtual del IUTEPI y estoy aqui para orientarte.',
+      'Puedo ayudarte a conocer nuestras carreras, el proceso de inscripcion, las sedes, requisitos y mucho mas.',
+      'Cuando estes listo, cuentame en que puedo ayudarte.',
+    ];
+    let cerrado = false;
+    const cerrarYAbrir = () => {
+      if (cerrado) return;
+      cerrado = true;
+      overlay.classList.add('desapareciendo');
+      setTimeout(() => {
+        overlay.remove();
+        if (callback) callback();
+      }, 420);
+    };
+    const mostrarLinea = (idx) => {
+      if (idx >= lineas.length) {
+        dots.style.display = 'none';
+        btn.classList.add('visible');
+        return;
+      }
+      dots.style.display = 'flex';
+      setTimeout(() => {
+        dots.style.display = 'none';
+        const bloque = document.createElement('div');
+        bloque.className = 'epi-linea-pensamiento';
+        bloque.innerHTML = `<span class="epi-linea-texto-inner">${lineas[idx]}</span>`;
+        cuerpo.insertBefore(bloque, dots);
+        setTimeout(() => mostrarLinea(idx + 1), 1700);
+      }, 950);
+    };
+    setTimeout(() => mostrarLinea(0), 500);
+    btn.addEventListener('click', cerrarYAbrir);
+    setTimeout(cerrarYAbrir, 16000);
+  }
+  saludoRepetido() {
+    const saludos = [
+      'Bienvenido de nuevo. En que puedo ayudarte?',
+      'Hola otra vez. Cual es tu consulta hoy?',
+      'Que bueno verte. Estoy listo para orientarte.',
+      'Hola. Tienes alguna pregunta sobre el IUTEPI?',
+      'De nuevo por aqui. Cuentame que necesitas.',
+      'Hola. Resolvamos tus dudas juntos.',
+    ];
+    const idx = Math.floor(Math.random() * saludos.length);
+    const burbuja = document.createElement('div');
+    burbuja.className = 'epi-saludo-burbuja';
+    burbuja.textContent = saludos[idx];
+    document.body.appendChild(burbuja);
+    setTimeout(() => {
+      burbuja.classList.add('desapareciendo');
+      setTimeout(() => burbuja.remove(), 380);
+    }, 2600);
   }
   close() {
     this.isOpen = false;
@@ -241,7 +330,7 @@ class PIAChatbot {
     this.panel.classList.remove('open');
   }
   showGreeting() {
-    this.addBot(`¡Hola! Soy **PIA**, tu asistente virtual del IUTEPI.\n\nEstoy aquí para ayudarte con:\n• Las carreras y sus materias\n• Proceso de inscripción\n• Sedes y modalidades\n• Requisitos y documentos\n\n¿En qué puedo ayudarte hoy?`);
+    this.addBot(`¡Hola! Soy **Epi**, tu asistente del IUTEPI. \uD83E\uDD89\n\nEstoy aquí para ayudarte con:\n• Las carreras y sus materias\n• Proceso de inscripción\n• Sedes y modalidades\n• Requisitos y documentos\n\n¿En qué puedo ayudarte hoy?`);
     if (!this.isOpen) {
       this.unreadCount = 1;
       this.badge.textContent = '1';
@@ -339,10 +428,12 @@ class PIAChatbot {
     }
 
     div.innerHTML = `
-      <div class="msg-avatar"><i class="fas fa-robot"></i></div>
+      <div class="msg-avatar msg-avatar-epi">
+        <img src="assets/icons/avatarchatbot.png" alt="Epi" style="width:100%;height:100%;object-fit:contain;border-radius:50%;">
+      </div>
       <div>
         <div class="msg-bubble">${this.format(textStr)}${actionHTML}</div>
-        <div class="msg-time">${time}</div>
+        <div class="msg-time">Epi · ${time}</div>
       </div>`;
     this.messages.appendChild(div);
     this.scrollBottom();
@@ -361,10 +452,12 @@ class PIAChatbot {
     div.className = 'chat-message user';
     const time = new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
     div.innerHTML = `
-      <div class="msg-avatar"><i class="fas fa-user"></i></div>
+      <div class="msg-avatar" style="background:#E2E8F0;color:#64748B;">
+        <i class="fas fa-user"></i>
+      </div>
       <div>
         <div class="msg-bubble">${this.esc(text)}</div>
-        <div class="msg-time">${time}</div>
+        <div class="msg-time">Tú · ${time}</div>
       </div>`;
     this.messages.appendChild(div);
     this.scrollBottom();
@@ -389,7 +482,9 @@ class PIAChatbot {
     const div = document.createElement('div');
     div.className = 'chat-typing'; div.id = 'chat-typing';
     div.innerHTML = `
-      <div class="msg-avatar"><i class="fas fa-robot"></i></div>
+      <div class="msg-avatar msg-avatar-epi">
+        <img src="assets/icons/avatarchatbot.png" alt="Epi" style="width:100%;height:100%;object-fit:contain;border-radius:50%;">
+      </div>
       <div class="typing-bubble">
         <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
       </div>`;

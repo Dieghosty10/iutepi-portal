@@ -103,6 +103,14 @@
       .career-detail-grid.reverse { direction: ltr; }
       .career-intro-card { position: static; }
     }
+    @media (max-width:480px) {
+      .career-detail-section { padding: var(--space-3xl) 0; }
+      .career-intro-card { padding: var(--space-xl); }
+      .career-badge-large { width: 60px; height: 60px; font-size: 1.5rem; }
+      .mentions-grid { grid-template-columns: 1fr; }
+      .labor-grid { grid-template-columns: 1fr; }
+      .career-actions .btn { justify-content: center; }
+    }
   </style>
 </head>
 <body style="padding-top:calc(var(--topbar-h) + var(--navbar-h));">

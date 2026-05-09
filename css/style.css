@@ -777,9 +777,59 @@ h3 { font-size: clamp(1.1rem, 2vw, 1.4rem); }
   .topbar { display: none; }
   .cta-btns { flex-direction: column; align-items: stretch; }
   .cta-btns .btn { justify-content: center; }
+
+  .page-header { padding: var(--space-3xl) 0 var(--space-2xl); }
+  .page-header h1 { font-size: clamp(1.5rem, 6vw, 2rem); }
+
+  .career-tabs { gap: 4px; }
+  .career-tab-btn { padding: 8px 12px; font-size: 0.8rem; }
+
+  .subject-list { grid-template-columns: 1fr; }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: var(--space-sm);
+    text-align: center;
+  }
+
+  .semester-header { padding: var(--space-md) var(--space-lg); }
+  .semester-body-inner { padding: var(--space-md) var(--space-lg) var(--space-lg); }
+
+  .accordion-header { padding: var(--space-md) var(--space-lg); }
+  .accordion-body-inner { padding: var(--space-md) var(--space-lg) var(--space-lg); }
+
+  .stats-grid { grid-template-columns: repeat(2,1fr); gap: var(--space-lg); }
+  .stat-number { font-size: 2rem; }
 }
 @media (max-width: 480px) {
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .container { padding: 0 var(--space-lg); }
   .section { padding: var(--space-3xl) 0; }
+
+  .career-tabs {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-bottom: none;
+  }
+  .career-tab-btn {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    margin-bottom: 4px;
+  }
+  .career-tab-btn.active {
+    border-bottom-color: var(--border);
+    border-bottom-left-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+  }
+
+  .page-header-breadcrumb { flex-wrap: wrap; }
+
+  .btn-lg { padding: 12px 20px; font-size: 0.88rem; }
+
+  h1 { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+  h2 { font-size: clamp(1.3rem, 5vw, 1.8rem); }
+  .section-title { font-size: clamp(1.3rem, 5vw, 1.8rem); }
+  .section-subtitle { font-size: 0.95rem; }
+
+  .footer-grid { gap: var(--space-xl); }
 }

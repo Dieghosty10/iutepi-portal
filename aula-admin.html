@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Administrador — Campus Virtual IUTEPI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/aula.css" />
+</head>
+<body>
+<button class="sidebar-toggle" id="sidebar-toggle"><i class="fas fa-bars"></i></button>
+
+<div class="aula-wrapper">
+  <!-- SIDEBAR -->
+  <aside class="aula-sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <img src="assets/images/logo-iutepi.png" alt="IUTEPI" />
+      <div class="sidebar-logo-text">IUTEPI <small>Campus Virtual</small></div>
+    </div>
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sb-avatar">A</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="sb-nombre">Cargando...</div>
+        <div class="sidebar-user-role">Administrador</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-nav-label">Panel</div>
+      <button class="sidebar-nav-item active" data-sec="resumen"><i class="fas fa-th-large"></i> Resumen</button>
+      <div class="sidebar-nav-label">Gestión</div>
+      <button class="sidebar-nav-item" data-sec="usuarios"><i class="fas fa-users"></i> Usuarios</button>
+      <button class="sidebar-nav-item" data-sec="secciones"><i class="fas fa-chalkboard-teacher"></i> Secciones</button>
+      <button class="sidebar-nav-item" data-sec="periodos"><i class="fas fa-calendar-alt"></i> Períodos</button>
+      <div class="sidebar-nav-label">Sistema</div>
+      <button class="sidebar-nav-item" data-sec="auditoria"><i class="fas fa-shield-alt"></i> Auditoría</button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="sidebar-logout" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="aula-main">
+
+    <!-- RESUMEN -->
+    <section class="aula-section active" id="sec-resumen">
+      <div class="page-head"><h1><i class="fas fa-th-large" style="color:var(--primary);margin-right:8px;"></i>Panel General</h1><p>Resumen del sistema académico</p></div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-icon si-blue"><i class="fas fa-users"></i></div><div><div class="stat-val" id="stat-total-usuarios">—</div><div class="stat-lbl">Usuarios registrados</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green"><i class="fas fa-user-check"></i></div><div><div class="stat-val" id="stat-solventes">—</div><div class="stat-lbl">Estudiantes solventes</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-red"><i class="fas fa-chalkboard-teacher"></i></div><div><div class="stat-val" id="stat-profesores">—</div><div class="stat-lbl">Profesores activos</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber"><i class="fas fa-calendar-check"></i></div><div><div class="stat-val" id="stat-periodo">—</div><div class="stat-lbl">Período activo</div></div></div>
+      </div>
+      <div class="fr2">
+        <div class="aula-card">
+          <div class="aula-card-head"><div class="aula-card-title"><i class="fas fa-clock"></i>Últimas acciones</div></div>
+          <div class="aula-card-body" id="lista-auditoria-resumen"><div class="loading-state"><div class="spinner"></div> Cargando...</div></div>
+        </div>
+        <div class="aula-card">
+          <div class="aula-card-head"><div class="aula-card-title"><i class="fas fa-info-circle"></i>Estado del sistema</div></div>
+          <div class="aula-card-body" id="estado-sistema"><div class="loading-state"><div class="spinner"></div> Cargando...</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- USUARIOS -->
+    <section class="aula-section" id="sec-usuarios">
+      <div class="page-head" style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><h1><i class="fas fa-users" style="color:var(--primary);margin-right:8px;"></i>Gestión de Usuarios</h1><p>Crear, editar y gestionar cuentas del sistema</p></div>
+        <button class="aula-btn aula-btn-primary" id="btn-nuevo-usuario"><i class="fas fa-plus"></i> Nuevo usuario</button>
+      </div>
+      <div class="aula-card">
+        <div class="aula-card-head">
+          <div class="aula-card-title"><i class="fas fa-filter"></i>Filtros</div>
+          <div style="display:flex;gap:10px;">
+            <select class="aula-select" style="width:auto;" id="filtro-rol">
+              <option value="">Todos los roles</option>
+              <option value="estudiante">Estudiantes</option>
+              <option value="profesor">Profesores</option>
+              <option value="admin">Administradores</option>
+            </select>
+            <input type="text" class="aula-input" style="width:220px;" id="filtro-buscar" placeholder="Buscar por nombre o cédula..." />
+          </div>
+        </div>
+        <div class="aula-card-body" style="padding:0;">
+          <div class="tbl-wrap">
+            <table class="aula-tbl">
+              <thead><tr><th>Nombre</th><th>Cédula</th><th>Código</th><th>Rol</th><th>Estado</th><th>Solvente</th><th>Acciones</th></tr></thead>
+              <tbody id="tabla-usuarios"><tr><td colspan="7" class="loading-state"><div class="spinner"></div> Cargando usuarios...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIONES -->
+    <section class="aula-section" id="sec-secciones">
+      <div class="page-head" style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><h1><i class="fas fa-chalkboard-teacher" style="color:var(--primary);margin-right:8px;"></i>Secciones</h1><p>Asignar profesores y estudiantes a secciones</p></div>
+        <button class="aula-btn aula-btn-primary" id="btn-nueva-seccion"><i class="fas fa-plus"></i> Nueva sección</button>
+      </div>
+      <div class="aula-card">
+        <div class="aula-card-body" style="padding:0;">
+          <div class="tbl-wrap">
+            <table class="aula-tbl">
+              <thead><tr><th>Materia</th><th>Carrera</th><th>Semestre</th><th>Profesor</th><th>Período</th><th>Salón</th><th>Alumnos</th><th>Acciones</th></tr></thead>
+              <tbody id="tabla-secciones"><tr><td colspan="8" class="loading-state"><div class="spinner"></div> Cargando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERIODOS -->
+    <section class="aula-section" id="sec-periodos">
+      <div class="page-head" style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><h1><i class="fas fa-calendar-alt" style="color:var(--primary);margin-right:8px;"></i>Períodos Académicos</h1><p>Definir inicio y fin de semestres</p></div>
+        <button class="aula-btn aula-btn-primary" id="btn-nuevo-periodo"><i class="fas fa-plus"></i> Nuevo período</button>
+      </div>
+      <div class="aula-card">
+        <div class="aula-card-body" style="padding:0;">
+          <div class="tbl-wrap">
+            <table class="aula-tbl">
+              <thead><tr><th>Nombre</th><th>Inicio</th><th>Fin</th><th>Inscripción</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody id="tabla-periodos"><tr><td colspan="6" class="loading-state"><div class="spinner"></div> Cargando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AUDITORÍA -->
+    <section class="aula-section" id="sec-auditoria">
+      <div class="page-head"><h1><i class="fas fa-shield-alt" style="color:var(--primary);margin-right:8px;"></i>Auditoría del Sistema</h1><p>Registro de todas las acciones realizadas</p></div>
+      <div class="aula-card">
+        <div class="aula-card-body" style="padding:0;">
+          <div class="tbl-wrap">
+            <table class="aula-tbl">
+              <thead><tr><th>Acción</th><th>Usuario</th><th>Detalles</th><th>Fecha y hora</th></tr></thead>
+              <tbody id="tabla-auditoria"><tr><td colspan="4" class="loading-state"><div class="spinner"></div> Cargando...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODAL USUARIO -->
+<div class="aula-modal-overlay" id="modal-usuario">
+  <div class="aula-modal">
+    <div class="modal-head"><h3 id="modal-usuario-titulo">Nuevo usuario</h3><button class="modal-close" data-close="modal-usuario"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div id="modal-usuario-error"></div>
+      <form id="form-usuario" novalidate>
+        <input type="hidden" id="usr-uid" />
+        <div class="fr2">
+          <div class="aula-fg"><label>Nombre completo *</label><input type="text" class="aula-input" id="usr-nombre" placeholder="Ej: Juan Pérez" required /></div>
+          <div class="aula-fg"><label>Cédula *</label><input type="text" class="aula-input" id="usr-cedula" placeholder="Sin puntos" inputmode="numeric" required /></div>
+        </div>
+        <div class="aula-fg" id="campo-correo">
+          <label>Correo electrónico *</label>
+          <input type="email" class="aula-input" id="usr-correo" placeholder="alumno@correo.com" required />
+          <p style="font-size:0.75rem;color:#64748B;margin-top:4px;"><i class="fas fa-info-circle"></i> El usuario recibirá un correo de verificación y otro para crear su contraseña personal.</p>
+        </div>
+        <div class="fr2">
+          <div class="aula-fg">
+            <label>Rol *</label>
+            <select class="aula-select" id="usr-rol" required>
+              <option value="">Seleccionar...</option>
+              <option value="estudiante">Estudiante</option>
+              <option value="profesor">Profesor</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+          <div class="aula-fg" id="campo-carrera">
+            <label>Carrera</label>
+            <select class="aula-select" id="usr-carrera">
+              <option value="">Seleccionar...</option>
+              <option value="sistemas">Análisis de Sistemas</option>
+              <option value="electronica">Electrónica</option>
+              <option value="administracion">Administración Industrial</option>
+            </select>
+          </div>
+        </div>
+        <div class="aula-fg" id="campo-codigo">
+          <label>Código de estudiante *</label>
+          <input type="text" class="aula-input" id="usr-codigo" placeholder="Ej: 2024-SIS-0042" />
+        </div>
+        <div class="aula-fg" id="campo-solvente">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" id="usr-solvente" checked style="width:16px;height:16px;" />
+            Marcar como solvente (tiene acceso al sistema)
+          </label>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="aula-btn aula-btn-secondary" data-close="modal-usuario">Cancelar</button>
+      <button class="aula-btn aula-btn-primary" id="btn-guardar-usuario"><i class="fas fa-save"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SECCIÓN -->
+<div class="aula-modal-overlay" id="modal-seccion">
+  <div class="aula-modal aula-modal-lg">
+    <div class="modal-head"><h3 id="modal-seccion-titulo">Nueva sección</h3><button class="modal-close" data-close="modal-seccion"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div id="modal-seccion-error"></div>
+      <form id="form-seccion" novalidate>
+        <input type="hidden" id="sec-id" />
+        <div class="fr2">
+          <div class="aula-fg"><label>Materia *</label><input type="text" class="aula-input" id="sec-materia" placeholder="Ej: Programación I" required /></div>
+          <div class="aula-fg"><label>Salón *</label><input type="text" class="aula-input" id="sec-salon" placeholder="Ej: Aula 3-B" required /></div>
+        </div>
+        <div class="fr3">
+          <div class="aula-fg">
+            <label>Carrera *</label>
+            <select class="aula-select" id="sec-carrera" required>
+              <option value="">Seleccionar...</option>
+              <option value="sistemas">Análisis de Sistemas</option>
+              <option value="electronica">Electrónica</option>
+              <option value="administracion">Administración Industrial</option>
+            </select>
+          </div>
+          <div class="aula-fg"><label>Semestre *</label>
+            <select class="aula-select" id="sec-semestre" required>
+              <option value="">Seleccionar...</option>
+              <option value="1">1er semestre</option><option value="2">2do semestre</option>
+              <option value="3">3er semestre</option><option value="4">4to semestre</option>
+              <option value="5">5to semestre</option><option value="6">6to semestre</option>
+            </select>
+          </div>
+          <div class="aula-fg"><label>Período *</label><select class="aula-select" id="sec-periodo" required><option value="">Cargando...</option></select></div>
+        </div>
+        <div class="aula-fg"><label>Profesor *</label><select class="aula-select" id="sec-profesor" required><option value="">Seleccionar profesor...</option></select></div>
+        <div class="fr3">
+          <div class="aula-fg"><label>Días</label><input type="text" class="aula-input" id="sec-dias" placeholder="Ej: Lun, Mié, Vie" /></div>
+          <div class="aula-fg"><label>Hora inicio</label><input type="time" class="aula-input" id="sec-hora-inicio" /></div>
+          <div class="aula-fg"><label>Hora fin</label><input type="time" class="aula-input" id="sec-hora-fin" /></div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="aula-btn aula-btn-secondary" data-close="modal-seccion">Cancelar</button>
+      <button class="aula-btn aula-btn-primary" id="btn-guardar-seccion"><i class="fas fa-save"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PERÍODO -->
+<div class="aula-modal-overlay" id="modal-periodo">
+  <div class="aula-modal">
+    <div class="modal-head"><h3 id="modal-periodo-titulo">Nuevo período</h3><button class="modal-close" data-close="modal-periodo"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body">
+      <div id="modal-periodo-error"></div>
+      <form id="form-periodo" novalidate>
+        <input type="hidden" id="per-id" />
+        <div class="aula-fg"><label>Nombre del período *</label><input type="text" class="aula-input" id="per-nombre" placeholder="Ej: 2024-I" required /></div>
+        <div class="fr2">
+          <div class="aula-fg"><label>Inicio del semestre *</label><input type="date" class="aula-input" id="per-inicio" required /></div>
+          <div class="aula-fg"><label>Fin del semestre *</label><input type="date" class="aula-input" id="per-fin" required /></div>
+        </div>
+        <div class="fr2">
+          <div class="aula-fg"><label>Inicio inscripciones</label><input type="date" class="aula-input" id="per-insc-inicio" /></div>
+          <div class="aula-fg"><label>Fin inscripciones</label><input type="date" class="aula-input" id="per-insc-fin" /></div>
+        </div>
+        <div class="aula-fg">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+            <input type="checkbox" id="per-activo" style="width:16px;height:16px;" />
+            Marcar como período activo
+          </label>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="aula-btn aula-btn-secondary" data-close="modal-periodo">Cancelar</button>
+      <button class="aula-btn aula-btn-primary" id="btn-guardar-periodo"><i class="fas fa-save"></i> Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ASIGNAR ESTUDIANTES A SECCIÓN -->
+<div class="aula-modal-overlay" id="modal-alumnos">
+  <div class="aula-modal aula-modal-lg">
+    <div class="modal-head"><h3>Asignar estudiantes — <span id="modal-alumnos-seccion"></span></h3><button class="modal-close" data-close="modal-alumnos"><i class="fas fa-times"></i></button></div>
+    <div class="modal-body" id="modal-alumnos-body">
+      <div class="loading-state"><div class="spinner"></div> Cargando...</div>
+    </div>
+    <div class="modal-foot">
+      <button class="aula-btn aula-btn-secondary" data-close="modal-alumnos">Cerrar</button>
+      <button class="aula-btn aula-btn-primary" id="btn-guardar-alumnos"><i class="fas fa-save"></i> Guardar asignaciones</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script type="module" src="js/aula-admin.js"></script>
+</body>
+</html>
