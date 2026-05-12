@@ -36,15 +36,15 @@ function fFechaCorta(ts) {
 }
 
 /* ===== NAVEGACIÓN ===== */
-function navegar(id) {
+window.navegar = function(id) {
   document.querySelectorAll('.aula-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.sidebar-nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById(`sec-${id}`)?.classList.add('active');
   document.querySelector(`[data-sec="${id}"]`)?.classList.add('active');
-  const cargadores = { notas: cargarNotas, horario: cargarHorario, historial: cargarHistorial, evaluaciones: cargarEvaluaciones };
+  const cargadores = { notas: cargarNotas, horario: cargarHorario, historial: cargarHistorial, evaluaciones: cargarEvaluaciones, anuncios: cargarAnunciosEstudiante };
   if (cargadores[id]) cargadores[id]();
-}
-document.querySelectorAll('.sidebar-nav-item').forEach(b => b.addEventListener('click', () => navegar(b.dataset.sec)));
+};
+document.querySelectorAll('.sidebar-nav-item').forEach(b => b.addEventListener('click', () => window.navegar(b.dataset.sec)));
 document.getElementById('sidebar-toggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
 document.getElementById('btn-logout').addEventListener('click', () => { if (unsuscribirNotas) unsuscribirNotas(); cerrarSesion(); });
 
@@ -115,6 +115,7 @@ async function cargarResumen() {
     }).join('');
 
   iniciarAlertasEnTiempoReal();
+  cargarAnunciosEstudiante();
 }
 
 /* ===== ALERTAS EN TIEMPO REAL ===== */
@@ -201,6 +202,78 @@ async function cargarNotas() {
 
   }).join('') + (promTodos.length > 0 ? `<div class="aula-alert al-info"><i class="fas fa-calculator"></i> <strong>Promedio ponderado general del período: ${(promTodos.reduce((a,b)=>a+b,0)/promTodos.length).toFixed(2)}</strong></div>` : '');
 }
+
+/* ===== ANUNCIOS ===== */
+window.cargarAnunciosEstudiante = async function() {
+  const el = document.getElementById('contenedor-anuncios');
+  el.innerHTML = '<div class="loading-state"><div class="spinner"></div> Cargando...</div>';
+  try {
+    const secIds = misSecciones.map(s => s.id);
+    secIds.push('general'); // Incluir anuncios globales
+
+    // Si el estudiante tiene muchas secciones, Firestore limitará a 30 en el 'in'. Dividimos si es necesario.
+    let anuncios = [];
+    if (secIds.length > 0) {
+      // Tomamos hasta 30 para la query 'in'
+      const lote = secIds.slice(0, 30);
+      const snap = await getDocs(query(collection(db, 'anuncios'), where('seccionId', 'in', lote)));
+      snap.forEach(d => anuncios.push({ id: d.id, ...d.data() }));
+    }
+
+    anuncios.sort((a, b) => {
+      const fa = a.fecha?.toDate ? a.fecha.toDate() : new Date(0);
+      const fb = b.fecha?.toDate ? b.fecha.toDate() : new Date(0);
+      return fb - fa;
+    });
+
+    // Actualizar también el panel de resumen
+    const elAlertas = document.getElementById('lista-alertas');
+    const badgeSidebar = document.getElementById('sb-badge-anuncios');
+    const badgeResumen = document.getElementById('badge-alertas');
+    
+    if (anuncios.length > 0) {
+      if(badgeSidebar) { badgeSidebar.style.display = 'inline-block'; badgeSidebar.textContent = anuncios.length; }
+      if(badgeResumen) { badgeResumen.style.display = 'inline-block'; badgeResumen.textContent = anuncios.length; }
+      
+      if(elAlertas) {
+        elAlertas.innerHTML = anuncios.slice(0, 4).map(a => {
+          const isGlobal = a.seccionId === 'general';
+          const sec = seccionesMap[a.seccionId];
+          return `<div style="padding:8px 0;border-bottom:1px solid #F1F5F9;font-size:0.82rem;">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+              ${isGlobal ? '<span class="badge badge-amber" style="padding:2px 4px;font-size:0.65rem;">Global</span>' : `<span class="badge badge-blue" style="padding:2px 4px;font-size:0.65rem;">${sec?.materia || a.seccionId}</span>`}
+              <strong>${a.titulo}</strong>
+            </div>
+            <p style="color:#64748B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.mensaje}</p>
+          </div>`;
+        }).join('');
+      }
+    } else {
+      if(badgeSidebar) badgeSidebar.style.display = 'none';
+      if(badgeResumen) badgeResumen.style.display = 'none';
+      if(elAlertas) elAlertas.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i><p>Sin anuncios nuevos</p></div>';
+    }
+
+    el.innerHTML = anuncios.length === 0
+      ? '<div class="empty-state"><i class="fas fa-bullhorn"></i><p>No tienes notificaciones en tu bandeja</p></div>'
+      : anuncios.map(a => {
+          const isGlobal = a.seccionId === 'general';
+          const sec = seccionesMap[a.seccionId];
+          return `<div style="padding:16px;border:1px solid #E2E8F0;border-radius:10px;margin-bottom:12px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+              <h3 style="margin:0;font-size:1.1rem;color:#0F172A;"><i class="fas fa-envelope${isGlobal ? '-open-text' : ''}" style="color:${isGlobal ? '#F59E0B' : 'var(--primary)'};margin-right:8px;"></i>${a.titulo}</h3>
+              <span style="font-size:0.8rem;color:#94A3B8;">${fFecha(a.fecha)}</span>
+            </div>
+            <div style="margin-bottom:12px;">
+              ${isGlobal ? '<span class="badge badge-amber">Aviso Global</span>' : `<span class="badge badge-blue"><i class="fas fa-chalkboard" style="margin-right:4px;"></i>${sec?.materia || a.seccionId}</span>`}
+            </div>
+            <p style="font-size:0.95rem;color:#334155;line-height:1.5;white-space:pre-wrap;background:#F8FAFC;padding:12px;border-radius:6px;border-left:3px solid ${isGlobal ? '#F59E0B' : 'var(--primary)'};">${a.mensaje}</p>
+          </div>`;
+        }).join('');
+  } catch (err) {
+    el.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Error al cargar anuncios: ${err.message}</div>`;
+  }
+};
 
 /* ===== HORARIO ===== */
 async function cargarHorario() {

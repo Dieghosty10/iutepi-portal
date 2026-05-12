@@ -33,6 +33,7 @@
       <button class="sidebar-nav-item" data-sec="periodos"><i class="fas fa-calendar-alt"></i> Períodos</button>
       <div class="sidebar-nav-label">Sistema</div>
       <button class="sidebar-nav-item" data-sec="auditoria"><i class="fas fa-shield-alt"></i> Auditoría</button>
+      <button class="sidebar-nav-item" data-sec="anuncios"><i class="fas fa-bullhorn"></i> Anuncios Globales</button>
     </nav>
     <div class="sidebar-footer">
       <button class="sidebar-logout" id="btn-logout"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
@@ -140,6 +141,30 @@
               <tbody id="tabla-auditoria"><tr><td colspan="4" class="loading-state"><div class="spinner"></div> Cargando...</td></tr></tbody>
             </table>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANUNCIOS -->
+    <section class="aula-section" id="sec-anuncios">
+      <div class="page-head"><h1><i class="fas fa-bullhorn" style="color:var(--primary);margin-right:8px;"></i>Anuncios Globales</h1><p>Avisos dirigidos a toda la comunidad estudiantil</p></div>
+      <div class="fr2" style="align-items:flex-start;">
+        <div class="aula-card">
+          <div class="aula-card-head"><div class="aula-card-title"><i class="fas fa-paper-plane"></i>Redactar Anuncio Global</div></div>
+          <div class="aula-card-body">
+            <input type="hidden" id="admin-anuncio-id" />
+            <div id="admin-anuncio-error"></div>
+            <div class="aula-fg"><label>Título del mensaje *</label><input type="text" class="aula-input" id="admin-anuncio-titulo" placeholder="Ej: Mantenimiento del sistema" /></div>
+            <div class="aula-fg"><label>Contenido *</label><textarea class="aula-input" id="admin-anuncio-mensaje" rows="4" placeholder="Escribe el mensaje global..."></textarea></div>
+            <div style="display:flex;gap:10px;">
+              <button class="aula-btn aula-btn-primary" id="btn-publicar-anuncio-admin" style="flex:1;"><i class="fas fa-paper-plane"></i> Publicar anuncio global</button>
+              <button class="aula-btn aula-btn-secondary" id="btn-cancelar-anuncio-admin" style="display:none;">Cancelar</button>
+            </div>
+          </div>
+        </div>
+        <div class="aula-card">
+          <div class="aula-card-head"><div class="aula-card-title"><i class="fas fa-list"></i>Anuncios publicados</div></div>
+          <div class="aula-card-body" id="lista-anuncios-admin"><div class="loading-state"><div class="spinner"></div></div></div>
         </div>
       </div>
     </section>

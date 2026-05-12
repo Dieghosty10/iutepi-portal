@@ -23,7 +23,7 @@ window.navegar = function(id) {
   document.querySelectorAll('.sidebar-nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById(`sec-${id}`)?.classList.add('active');
   document.querySelector(`[data-sec="${id}"]`)?.classList.add('active');
-  const cargadores = { usuarios: cargarUsuarios, secciones: cargarSecciones, periodos: cargarPeriodos, auditoria: cargarAuditoria };
+  const cargadores = { usuarios: cargarUsuarios, secciones: cargarSecciones, periodos: cargarPeriodos, auditoria: cargarAuditoria, anuncios: cargarAnunciosAdmin };
   if (cargadores[id]) cargadores[id]();
 };
 
@@ -497,6 +497,122 @@ async function cargarAuditoria() {
 /* ===== SIDEBAR RESPONSIVE ===== */
 document.getElementById('sidebar-toggle').addEventListener('click', () => {
   document.getElementById('sidebar').classList.toggle('open');
+});
+
+/* ===== ANUNCIOS GLOBALES ===== */
+window.cargarAnunciosAdmin = async function() {
+  const el = document.getElementById('lista-anuncios-admin');
+  el.innerHTML = '<div class="loading-state"><div class="spinner"></div> Cargando...</div>';
+  try {
+    const snap = await getDocs(query(collection(db, 'anuncios'), where('seccionId', '==', 'general')));
+    const anuncios = [];
+    snap.forEach(d => anuncios.push({ id: d.id, ...d.data() }));
+    anuncios.sort((a, b) => {
+      const fa = a.fecha?.toDate ? a.fecha.toDate() : new Date(0);
+      const fb = b.fecha?.toDate ? b.fecha.toDate() : new Date(0);
+      return fb - fa;
+    });
+
+    el.innerHTML = anuncios.length === 0
+      ? '<div class="empty-state"><i class="fas fa-bullhorn"></i><p>No hay anuncios globales publicados</p></div>'
+      : anuncios.map(a => {
+          return `<div style="padding:12px;border:1px solid #E2E8F0;border-radius:10px;margin-bottom:10px;background:#FAFAFA;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+                  <strong style="font-size:0.9rem;">${a.titulo}</strong>
+                  <span class="badge badge-amber" style="font-size:0.7rem;">Global</span>
+                </div>
+                <p style="font-size:0.8rem;color:#475569;margin:6px 0;white-space:pre-wrap;">${a.mensaje}</p>
+                <p style="font-size:0.75rem;color:#94A3B8;margin-top:6px;">
+                  <i class="fas fa-clock" style="margin-right:4px;"></i>${fFecha(a.fecha)}
+                </p>
+              </div>
+              <div style="display:flex;gap:5px;flex-shrink:0;">
+                <button onclick="editarAnuncioAdmin('${a.id}', \`${a.titulo.replace(/'/g, "\\'")}\`, \`${a.mensaje.replace(/'/g, "\\'")}\`)" style="background:none;border:1px solid #E2E8F0;color:#64748B;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:0.78rem;" title="Editar anuncio">
+                  <i class="fas fa-pen"></i>
+                </button>
+                <button onclick="eliminarAnuncioAdmin('${a.id}')" style="background:none;border:1px solid #FECACA;color:#DC2626;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:0.78rem;" title="Eliminar anuncio">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+  } catch (err) {
+    el.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Error al cargar anuncios: ${err.message}</div>`;
+  }
+};
+
+window.editarAnuncioAdmin = function(id, titulo, mensaje) {
+  document.getElementById('admin-anuncio-id').value = id;
+  document.getElementById('admin-anuncio-titulo').value = titulo;
+  document.getElementById('admin-anuncio-mensaje').value = mensaje;
+  document.getElementById('btn-publicar-anuncio-admin').innerHTML = '<i class="fas fa-save"></i> Guardar cambios';
+  document.getElementById('btn-cancelar-anuncio-admin').style.display = 'block';
+  document.getElementById('admin-anuncio-titulo').focus();
+};
+
+window.eliminarAnuncioAdmin = async function(id) {
+  if (!confirm('¿Eliminar este anuncio global? Los usuarios ya no podrán verlo.')) return;
+  try {
+    await deleteDoc(doc(db, 'anuncios', id));
+    toast('Anuncio eliminado', 'success');
+    cargarAnunciosAdmin();
+  } catch (err) {
+    toast('Error al eliminar: ' + err.message, 'error');
+  }
+};
+
+document.getElementById('btn-cancelar-anuncio-admin')?.addEventListener('click', () => {
+  document.getElementById('admin-anuncio-id').value = '';
+  document.getElementById('admin-anuncio-titulo').value = '';
+  document.getElementById('admin-anuncio-mensaje').value = '';
+  document.getElementById('btn-publicar-anuncio-admin').innerHTML = '<i class="fas fa-paper-plane"></i> Publicar anuncio global';
+  document.getElementById('btn-cancelar-anuncio-admin').style.display = 'none';
+});
+
+document.getElementById('btn-publicar-anuncio-admin')?.addEventListener('click', async () => {
+  const id = document.getElementById('admin-anuncio-id').value;
+  const titulo = document.getElementById('admin-anuncio-titulo').value.trim();
+  const mensaje = document.getElementById('admin-anuncio-mensaje').value.trim();
+  const errEl = document.getElementById('admin-anuncio-error');
+
+  if (!titulo || !mensaje) {
+    errEl.innerHTML = '<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Completa todos los campos obligatorios.</div>';
+    return;
+  }
+  
+  const btn = document.getElementById('btn-publicar-anuncio-admin');
+  const btnOriginal = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+  btn.disabled = true;
+
+  try {
+    const data = {
+      seccionId: 'general',
+      titulo,
+      mensaje,
+      creadoPor: adminActual.uid,
+      fecha: serverTimestamp()
+    };
+    
+    if (id) {
+      await updateDoc(doc(db, 'anuncios', id), data);
+      toast('Anuncio actualizado exitosamente', 'success');
+    } else {
+      await addDoc(collection(db, 'anuncios'), data);
+      toast('Anuncio global publicado exitosamente', 'success');
+    }
+    
+    document.getElementById('btn-cancelar-anuncio-admin').click(); // Limpiar formulario
+    cargarAnunciosAdmin();
+  } catch (err) {
+    errEl.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Error: ${err.message}</div>`;
+  } finally {
+    btn.innerHTML = btnOriginal;
+    btn.disabled = false;
+  }
 });
 
 /* ===== INIT ===== */

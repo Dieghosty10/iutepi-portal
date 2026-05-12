@@ -34,7 +34,7 @@ window.navegar = function(id) {
   document.querySelectorAll('.sidebar-nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById(`sec-${id}`)?.classList.add('active');
   document.querySelector(`[data-sec="${id}"]`)?.classList.add('active');
-  const cargadores = { secciones: cargarSecciones, evaluaciones: cargarEvaluaciones, notas: () => {}, matriz: () => {} };
+  const cargadores = { secciones: cargarSecciones, evaluaciones: cargarEvaluaciones, notas: () => {}, matriz: () => {}, anuncios: cargarAnuncios };
   if (cargadores[id]) cargadores[id]();
 };
 
@@ -53,6 +53,9 @@ window.irASeccionAction = function(seccionId, action) {
   } else if (action === 'evaluacion') {
     document.getElementById('eval-seccion').value = seccionId;
     window.navegar('evaluaciones');
+  } else if (action === 'anuncio') {
+    document.getElementById('anuncio-seccion').value = seccionId;
+    window.navegar('anuncios');
   }
 };
 
@@ -126,6 +129,7 @@ function cargarSecciones() {
             <button class="aula-btn aula-btn-sm aula-btn-secondary" onclick="window.irASeccionAction('${s.id}', 'notas')"><i class="fas fa-pen"></i> Subir Notas</button>
             <button class="aula-btn aula-btn-sm aula-btn-secondary" onclick="window.irASeccionAction('${s.id}', 'matriz')"><i class="fas fa-table"></i> Ver Matriz</button>
             <button class="aula-btn aula-btn-sm aula-btn-primary" onclick="window.irASeccionAction('${s.id}', 'evaluacion')"><i class="fas fa-calendar-plus"></i> Nueva Evaluación</button>
+            <button class="aula-btn aula-btn-sm aula-btn-secondary" onclick="window.irASeccionAction('${s.id}', 'anuncio')" style="background:#F1F5F9;color:#475569;"><i class="fas fa-bullhorn"></i> Enviar Aviso</button>
           </div>
         </div>
       </div>`;
@@ -136,7 +140,7 @@ function cargarSecciones() {
 function poblarSelectores() {
   const secciones = misSecciones;
   const opts = secciones.map(s => `<option value="${s.id}">${s.materia} (Sem ${s.semestre})</option>`).join('');
-  ['sel-seccion-notas', 'sel-seccion-matriz', 'eval-seccion'].forEach(id => {
+  ['sel-seccion-notas', 'sel-seccion-matriz', 'eval-seccion', 'anuncio-seccion'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = opts || '<option>Sin secciones</option>';
   });
