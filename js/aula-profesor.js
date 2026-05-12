@@ -427,9 +427,22 @@ document.getElementById('btn-publicar-eval').addEventListener('click', async () 
   cargarEvaluaciones();
 });
 
+/* ===== INIT ===== */
+(async () => {
+  try {
+    profActual = await verificarAcceso('profesor');
+    document.getElementById('sb-nombre').textContent = profActual.nombre;
+    document.getElementById('sb-avatar').textContent = profActual.nombre.charAt(0).toUpperCase();
+    await cargarDatosBase();
+    poblarSelectores();
+    await cargarResumen();
+  } catch (e) { console.error(e); }
+})();
+
 /* ===== ANUNCIOS ===== */
-window.cargarAnuncios = async function() {
+async function cargarAnuncios() {
   const el = document.getElementById('lista-anuncios-prof');
+  if (!el) return;
   el.innerHTML = '<div class="loading-state"><div class="spinner"></div> Cargando...</div>';
   try {
     const snap = await getDocs(query(collection(db, 'anuncios'), where('creadoPor', '==', profActual.uid)));
@@ -440,7 +453,6 @@ window.cargarAnuncios = async function() {
       const fb = b.fecha?.toDate ? b.fecha.toDate() : new Date(0);
       return fb - fa;
     });
-
     el.innerHTML = anuncios.length === 0
       ? '<div class="empty-state"><i class="fas fa-bullhorn"></i><p>No has enviado ningún anuncio</p></div>'
       : anuncios.map(a => {
@@ -453,34 +465,29 @@ window.cargarAnuncios = async function() {
                   <span class="badge badge-blue" style="font-size:0.7rem;">${sec?.materia || a.seccionId}</span>
                 </div>
                 <p style="font-size:0.8rem;color:#475569;margin:6px 0;white-space:pre-wrap;">${a.mensaje}</p>
-                <p style="font-size:0.75rem;color:#94A3B8;margin-top:6px;">
-                  <i class="fas fa-clock" style="margin-right:4px;"></i>${fFecha(a.fecha)}
-                </p>
+                <p style="font-size:0.75rem;color:#94A3B8;margin-top:6px;"><i class="fas fa-clock" style="margin-right:4px;"></i>${fFecha(a.fecha)}</p>
               </div>
               <div style="display:flex;gap:5px;flex-shrink:0;">
-                <button onclick="editarAnuncio('${a.id}', '${a.seccionId}', \`${a.titulo.replace(/'/g, "\\'")}\`, \`${a.mensaje.replace(/'/g, "\\'")}\`)" style="background:none;border:1px solid #E2E8F0;color:#64748B;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:0.78rem;" title="Editar anuncio">
-                  <i class="fas fa-pen"></i>
-                </button>
-                <button onclick="eliminarAnuncio('${a.id}')" style="background:none;border:1px solid #FECACA;color:#DC2626;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:0.78rem;" title="Eliminar anuncio">
-                  <i class="fas fa-trash"></i>
-                </button>
+                <button onclick="editarAnuncio('${a.id}','${a.seccionId}',this)" data-titulo="${a.titulo.replace(/"/g,'&quot;')}" data-mensaje="${a.mensaje.replace(/"/g,'&quot;')}" style="background:none;border:1px solid #E2E8F0;color:#64748B;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:0.78rem;"><i class="fas fa-pen"></i></button>
+                <button onclick="eliminarAnuncio('${a.id}')" style="background:none;border:1px solid #FECACA;color:#DC2626;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:0.78rem;"><i class="fas fa-trash"></i></button>
               </div>
             </div>
           </div>`;
         }).join('');
   } catch (err) {
-    el.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Error al cargar anuncios: ${err.message}</div>`;
+    el.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Error: ${err.message}</div>`;
+    console.error('cargarAnuncios:', err);
   }
-};
+}
 
-window.editarAnuncio = function(id, seccionId, titulo, mensaje) {
+window.editarAnuncio = function(id, seccionId, btn) {
   document.getElementById('anuncio-id').value = id;
   document.getElementById('anuncio-seccion').value = seccionId;
-  document.getElementById('anuncio-titulo').value = titulo;
-  document.getElementById('anuncio-mensaje').value = mensaje;
+  document.getElementById('anuncio-titulo').value = btn.dataset.titulo;
+  document.getElementById('anuncio-mensaje').value = btn.dataset.mensaje;
   document.getElementById('btn-publicar-anuncio').innerHTML = '<i class="fas fa-save"></i> Guardar cambios';
-  document.getElementById('btn-cancelar-anuncio').style.display = 'block';
-  document.getElementById('anuncio-titulo').focus();
+  document.getElementById('btn-cancelar-anuncio').style.display = 'inline-block';
+  document.getElementById('anuncio-titulo').scrollIntoView({ behavior: 'smooth' });
 };
 
 window.eliminarAnuncio = async function(id) {
@@ -496,7 +503,6 @@ window.eliminarAnuncio = async function(id) {
 
 document.getElementById('btn-cancelar-anuncio')?.addEventListener('click', () => {
   document.getElementById('anuncio-id').value = '';
-  document.getElementById('anuncio-seccion').value = '';
   document.getElementById('anuncio-titulo').value = '';
   document.getElementById('anuncio-mensaje').value = '';
   document.getElementById('btn-publicar-anuncio').innerHTML = '<i class="fas fa-paper-plane"></i> Publicar anuncio';
@@ -514,47 +520,31 @@ document.getElementById('btn-publicar-anuncio')?.addEventListener('click', async
     errEl.innerHTML = '<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Completa todos los campos obligatorios.</div>';
     return;
   }
-  
+  errEl.innerHTML = '';
+
   const btn = document.getElementById('btn-publicar-anuncio');
   const btnOriginal = btn.innerHTML;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
   btn.disabled = true;
 
   try {
-    const data = {
-      seccionId,
-      titulo,
-      mensaje,
-      creadoPor: profActual.uid,
-      fecha: serverTimestamp()
-    };
-    
+    const data = { seccionId, titulo, mensaje, creadoPor: profActual.uid, fecha: serverTimestamp() };
     if (id) {
       await updateDoc(doc(db, 'anuncios', id), data);
-      toast('Anuncio actualizado exitosamente', 'success');
+      toast('Anuncio actualizado', 'success');
     } else {
       await addDoc(collection(db, 'anuncios'), data);
       toast('Anuncio publicado exitosamente', 'success');
     }
-    
-    document.getElementById('btn-cancelar-anuncio').click(); // Limpiar formulario
+    // Limpiar formulario
+    document.getElementById('btn-cancelar-anuncio').click();
     cargarAnuncios();
   } catch (err) {
     errEl.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Error: ${err.message}</div>`;
+    console.error('publicarAnuncio:', err);
   } finally {
     btn.innerHTML = btnOriginal;
     btn.disabled = false;
   }
 });
 
-/* ===== INIT ===== */
-(async () => {
-  try {
-    profActual = await verificarAcceso('profesor');
-    document.getElementById('sb-nombre').textContent = profActual.nombre;
-    document.getElementById('sb-avatar').textContent = profActual.nombre.charAt(0).toUpperCase();
-    await cargarDatosBase();
-    poblarSelectores();
-    await cargarResumen();
-  } catch (e) { console.error(e); }
-})();
