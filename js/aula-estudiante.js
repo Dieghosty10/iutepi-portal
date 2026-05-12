@@ -6,6 +6,8 @@ const db = getFirestore(getApps()[0]);
 let estudianteActual = null;
 let misSecciones = [], seccionesMap = {}, periodosMap = {}, usersMap = {};
 let unsuscribirNotas = null;
+let unsuscribirAnuncios = null;
+let anunciosConocidos = null; // null = primera carga (no notificar), Set = ya inicializado
 let notasConocidas = new Set();
 
 /* ===== UTILS ===== */
@@ -46,7 +48,11 @@ window.navegar = function(id) {
 };
 document.querySelectorAll('.sidebar-nav-item').forEach(b => b.addEventListener('click', () => window.navegar(b.dataset.sec)));
 document.getElementById('sidebar-toggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
-document.getElementById('btn-logout').addEventListener('click', () => { if (unsuscribirNotas) unsuscribirNotas(); cerrarSesion(); });
+document.getElementById('btn-logout').addEventListener('click', () => {
+  if (unsuscribirNotas) unsuscribirNotas();
+  if (unsuscribirAnuncios) unsuscribirAnuncios();
+  cerrarSesion();
+});
 
 /* ===== DATOS BASE ===== */
 async function cargarDatosBase() {
@@ -395,6 +401,108 @@ async function cargarEvaluaciones() {
     }).join('');
 }
 
+/* ===== NOTIFICACIONES EN TIEMPO REAL DE ANUNCIOS ===== */
+function iniciarEscuchaAnuncios() {
+  if (unsuscribirAnuncios) unsuscribirAnuncios();
+
+  const secIds = misSecciones.map(s => s.id);
+  secIds.push('general');
+  if (secIds.length === 0) return;
+
+  const lote = secIds.slice(0, 30);
+  const q = query(collection(db, 'anuncios'), where('seccionId', 'in', lote));
+
+  unsuscribirAnuncios = onSnapshot(q, (snap) => {
+    // Primera ejecución: solo guardar los IDs conocidos sin notificar
+    if (anunciosConocidos === null) {
+      anunciosConocidos = new Set();
+      snap.forEach(d => anunciosConocidos.add(d.id));
+      return;
+    }
+
+    // Escuchar cambios posteriores
+    snap.docChanges().forEach(cambio => {
+      if (cambio.type === 'added' && !anunciosConocidos.has(cambio.doc.id)) {
+        anunciosConocidos.add(cambio.doc.id);
+        const a = cambio.doc.data();
+        mostrarNotificacionAnuncio(a);
+        // Actualizar badges y alertas del panel
+        cargarAnunciosEstudiante();
+      }
+    });
+  }, (err) => console.error('onSnapshot anuncios:', err));
+}
+
+function mostrarNotificacionAnuncio(anuncio) {
+  // Eliminar notificación anterior si existe
+  document.querySelector('.notif-anuncio')?.remove();
+
+  const isGlobal = anuncio.seccionId === 'general';
+  const color = isGlobal ? '#F59E0B' : '#CC1F26';
+  const icon = isGlobal ? 'fa-globe' : 'fa-bullhorn';
+  const origen = isGlobal ? 'Aviso Global' : 'Aviso de tu profesor';
+
+  const notif = document.createElement('div');
+  notif.className = 'notif-anuncio';
+  notif.style.cssText = `
+    position:fixed;top:20px;right:20px;z-index:9999;
+    background:#fff;border-radius:14px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.18);
+    border-left:5px solid ${color};
+    padding:16px 20px;max-width:360px;
+    display:flex;flex-direction:column;gap:8px;
+    animation:slideInRight 0.4s ease;
+  `;
+  notif.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:32px;height:32px;border-radius:50%;background:${color}18;display:flex;align-items:center;justify-content:center;">
+          <i class="fas ${icon}" style="color:${color};font-size:0.9rem;"></i>
+        </div>
+        <span style="font-size:0.75rem;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:.05em;">${origen}</span>
+      </div>
+      <button onclick="this.closest('.notif-anuncio').remove()" style="background:none;border:none;cursor:pointer;color:#94A3B8;font-size:1rem;padding:0;line-height:1;">&times;</button>
+    </div>
+    <div>
+      <strong style="font-size:0.95rem;color:#0F172A;display:block;margin-bottom:4px;">${anuncio.titulo}</strong>
+      <p style="font-size:0.82rem;color:#475569;margin:0;line-height:1.4;
+        display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${anuncio.mensaje}</p>
+    </div>
+    <button onclick="window.navegar('anuncios');this.closest('.notif-anuncio').remove();" style="
+      background:${color};color:#fff;border:none;border-radius:8px;
+      padding:7px 14px;font-size:0.8rem;font-weight:600;cursor:pointer;
+      align-self:flex-start;">
+      Ver anuncio <i class="fas fa-arrow-right" style="margin-left:4px;"></i>
+    </button>
+  `;
+
+  // Añadir animación CSS si no existe
+  if (!document.getElementById('notif-styles')) {
+    const s = document.createElement('style');
+    s.id = 'notif-styles';
+    s.textContent = `
+      @keyframes slideInRight {
+        from { transform:translateX(120%); opacity:0; }
+        to   { transform:translateX(0);   opacity:1; }
+      }
+      @keyframes slideOutRight {
+        from { transform:translateX(0);   opacity:1; }
+        to   { transform:translateX(120%); opacity:0; }
+      }
+      .notif-anuncio.saliendo { animation:slideOutRight 0.35s ease forwards; }
+    `;
+    document.head.appendChild(s);
+  }
+
+  document.body.appendChild(notif);
+
+  // Auto-cerrar después de 8 segundos
+  setTimeout(() => {
+    notif.classList.add('saliendo');
+    setTimeout(() => notif.remove(), 350);
+  }, 8000);
+}
+
 /* ===== INIT ===== */
 (async () => {
   try {
@@ -403,5 +511,6 @@ async function cargarEvaluaciones() {
     document.getElementById('sb-avatar').textContent = estudianteActual.nombre.charAt(0).toUpperCase();
     await cargarDatosBase();
     await cargarResumen();
+    iniciarEscuchaAnuncios();
   } catch (e) { console.error(e); }
 })();

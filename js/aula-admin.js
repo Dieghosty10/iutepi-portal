@@ -1,5 +1,5 @@
 import { verificarAcceso, cerrarSesion, crearCuentaUsuario, registrarAuditoria } from './aula-auth.js';
-import { getFirestore, collection, getDocs, getDoc, doc, setDoc, updateDoc, addDoc, query, orderBy, limit, where, serverTimestamp, Timestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getFirestore, collection, getDocs, getDoc, doc, setDoc, updateDoc, addDoc, deleteDoc, query, orderBy, limit, where, serverTimestamp, Timestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 
 const db = getFirestore(getApps()[0]);
@@ -149,12 +149,18 @@ window.editarUsuario = function(uid) {
   abrirModal('modal-usuario');
 };
 
-window.toggleSuspender = async function(uid, estabaActivo) {
-  if (!confirm(`¿${estabaActivo ? 'Activar' : 'Suspender'} esta cuenta?`)) return;
-  await updateDoc(doc(db, 'users', uid), { suspendido: !estabaActivo });
-  await registrarAuditoria(estabaActivo ? 'activar_usuario' : 'suspender_usuario', adminActual.uid, { uid });
-  toast(`Usuario ${estabaActivo ? 'activado' : 'suspendido'}`, 'success');
-  cargarUsuarios();
+window.toggleSuspender = async function(uid, estaSuspendido) {
+  const accion = estaSuspendido ? 'Activar' : 'Suspender';
+  if (!confirm(`¿${accion} esta cuenta?`)) return;
+  try {
+    const nuevoEstado = !estaSuspendido;
+    await updateDoc(doc(db, 'users', uid), { suspendido: nuevoEstado });
+    await registrarAuditoria(nuevoEstado ? 'suspender_usuario' : 'activar_usuario', adminActual.uid, { uid });
+    toast(`Usuario ${nuevoEstado ? 'suspendido' : 'activado'} correctamente`, 'success');
+    cargarUsuarios();
+  } catch (err) {
+    toast('Error: ' + err.message, 'error');
+  }
 };
 
 function toggleCamposRol(rol) {
