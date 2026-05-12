@@ -18,14 +18,14 @@ function toast(msg, tipo = 'info') {
 }
 
 /* ===== NAVEGACIÓN ===== */
-function navegar(id) {
+window.navegar = function(id) {
   document.querySelectorAll('.aula-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.sidebar-nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById(`sec-${id}`)?.classList.add('active');
   document.querySelector(`[data-sec="${id}"]`)?.classList.add('active');
   const cargadores = { usuarios: cargarUsuarios, secciones: cargarSecciones, periodos: cargarPeriodos, auditoria: cargarAuditoria };
   if (cargadores[id]) cargadores[id]();
-}
+};
 
 /* ===== FORMATO ===== */
 function fFecha(ts) {
@@ -445,14 +445,53 @@ async function cargarAuditoria() {
   const snap = await getDocs(query(collection(db, 'auditoria'), orderBy('timestamp', 'desc'), limit(50)));
   const logs = [];
   snap.forEach(d => logs.push({ id: d.id, ...d.data() }));
-  const etiquetas = { login: 'Inicio de sesión', logout: 'Cierre de sesión', crear_usuario: 'Usuario creado', editar_usuario: 'Usuario editado', suspender_usuario: 'Usuario suspendido', activar_usuario: 'Usuario activado', asignar_alumnos: 'Alumnos asignados', guardar_seccion: 'Sección guardada', subir_nota: 'Nota registrada', publicar_evaluacion: 'Evaluación publicada' };
-  tb.innerHTML = logs.length === 0 ? '<tr><td colspan="4"><div class="empty-state"><i class="fas fa-shield-alt"></i><p>Sin registros</p></div></td></tr>' :
-    logs.map(l => `<tr>
-      <td><span class="badge badge-blue">${etiquetas[l.accion] || l.accion}</span></td>
-      <td style="font-family:monospace;font-size:0.78rem;">${l.usuarioId?.substring(0,12)}...</td>
-      <td style="font-size:0.8rem;">${JSON.stringify(l.detalles || {})}</td>
-      <td style="font-size:0.8rem;white-space:nowrap;">${fFecha(l.timestamp)}</td>
-    </tr>`).join('');
+  const etiquetas = {
+    login: 'Inicio de sesión', logout: 'Cierre de sesión',
+    crear_usuario: 'Usuario creado', editar_usuario: 'Usuario editado',
+    suspender_usuario: 'Cuenta suspendida', activar_usuario: 'Cuenta activada',
+    asignar_alumnos: 'Alumnos asignados', guardar_seccion: 'Sección guardada',
+    subir_nota: 'Nota registrada', publicar_evaluacion: 'Evaluación publicada',
+    eliminar_evaluacion: 'Evaluación eliminada'
+  };
+  const iconosAccion = {
+    login: { icon: 'fa-sign-in-alt', color: '#3B82F6' },
+    logout: { icon: 'fa-sign-out-alt', color: '#64748B' },
+    crear_usuario: { icon: 'fa-user-plus', color: '#22C55E' },
+    editar_usuario: { icon: 'fa-user-edit', color: '#F59E0B' },
+    suspender_usuario: { icon: 'fa-user-slash', color: '#EF4444' },
+    activar_usuario: { icon: 'fa-user-check', color: '#22C55E' },
+    asignar_alumnos: { icon: 'fa-users', color: '#8B5CF6' },
+    guardar_seccion: { icon: 'fa-chalkboard', color: '#0891B2' },
+    subir_nota: { icon: 'fa-pen', color: '#CC1F26' },
+    publicar_evaluacion: { icon: 'fa-calendar-plus', color: '#F59E0B' },
+    eliminar_evaluacion: { icon: 'fa-trash', color: '#EF4444' }
+  };
+  // Construir mapa de usuarios para mostrar nombres
+  const usersMapAudit = {};
+  todosUsuarios.forEach(u => { usersMapAudit[u.uid] = u.nombre || u.uid?.substring(0,8); });
+
+  tb.innerHTML = logs.length === 0
+    ? '<tr><td colspan="4"><div class="empty-state"><i class="fas fa-shield-alt"></i><p>Sin registros</p></div></td></tr>'
+    : logs.map(l => {
+        const ic = iconosAccion[l.accion] || { icon: 'fa-circle', color: '#94A3B8' };
+        const nombreUsuario = usersMapAudit[l.usuarioId] || l.usuarioId?.substring(0,10) + '...';
+        const detalleTexto = l.detalles?.nombre || l.detalles?.materia || l.detalles?.titulo
+          || (l.detalles?.valor !== undefined ? `Nota: ${l.detalles.valor}` : '')
+          || (l.detalles?.cantidad !== undefined ? `${l.detalles.cantidad} alumnos` : '');
+        return `<tr>
+          <td>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:${ic.color}18;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i class="fas ${ic.icon}" style="font-size:0.75rem;color:${ic.color};"></i>
+              </div>
+              <span style="font-size:0.855rem;font-weight:600;">${etiquetas[l.accion] || l.accion}</span>
+            </div>
+          </td>
+          <td style="font-size:0.82rem;color:#475569;">${nombreUsuario}</td>
+          <td style="font-size:0.8rem;color:#64748B;">${detalleTexto}</td>
+          <td style="font-size:0.78rem;white-space:nowrap;color:#94A3B8;">${fFecha(l.timestamp)}</td>
+        </tr>`;
+      }).join('');
 }
 
 /* ===== SIDEBAR RESPONSIVE ===== */
@@ -462,7 +501,7 @@ document.getElementById('sidebar-toggle').addEventListener('click', () => {
 
 /* ===== INIT ===== */
 document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
-  btn.addEventListener('click', () => navegar(btn.dataset.sec));
+  btn.addEventListener('click', () => window.navegar(btn.dataset.sec));
 });
 document.getElementById('btn-logout').addEventListener('click', cerrarSesion);
 

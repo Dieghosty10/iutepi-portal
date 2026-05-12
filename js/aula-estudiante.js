@@ -172,10 +172,13 @@ async function cargarNotas() {
     const vals = tipos.map(t => notas[t] ?? null).filter(v => v !== null);
     const prom = vals.length > 0 ? (vals.reduce((a,b) => a+b, 0) / vals.length) : null;
     if (prom !== null) promTodos.push(prom);
+    const estadoBadge = prom === null ? '<span class="badge badge-gray">Sin notas</span>'
+      : prom >= 10 ? '<span class="badge badge-green">Aprobado</span>'
+      : '<span class="badge badge-red">Reprobado</span>';
     return `<div class="aula-card" style="margin-bottom:16px;">
       <div class="aula-card-head">
         <div class="aula-card-title"><i class="fas fa-book"></i>${s.materia}</div>
-        <div>Promedio: ${chipNota(prom)}</div>
+        <div style="display:flex;align-items:center;gap:8px;">${estadoBadge}<div>Promedio: ${chipNota(prom)}</div></div>
       </div>
       <div class="aula-card-body" style="padding:0;">
         <div class="tbl-wrap">
@@ -184,8 +187,18 @@ async function cargarNotas() {
             <tbody><tr>${tipos.map(t => `<td>${chipNota(notas[t])}</td>`).join('')}</tr></tbody>
           </table>
         </div>
+        ${vals.length > 0 ? `<div style="padding:12px 16px;background:#F8FAFC;border-top:1px solid #F1F5F9;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span style="font-size:0.78rem;color:#64748B;font-weight:600;">Progreso (${vals.length}/${tipos.length} cortes)</span>
+            <span style="font-size:0.78rem;font-weight:700;color:${prom>=10?'#166534':'#991B1B'};">${prom !== null ? prom.toFixed(1)+'/20' : '—'}</span>
+          </div>
+          <div style="height:8px;background:#E2E8F0;border-radius:4px;overflow:hidden;">
+            <div style="height:100%;width:${Math.min(((prom||0)/20)*100,100).toFixed(1)}%;background:${prom>=10?'#22C55E':'#EF4444'};border-radius:4px;transition:width 0.4s ease;"></div>
+          </div>
+        </div>` : ''}
       </div>
     </div>`;
+
   }).join('') + (promTodos.length > 0 ? `<div class="aula-alert al-info"><i class="fas fa-calculator"></i> <strong>Promedio ponderado general del período: ${(promTodos.reduce((a,b)=>a+b,0)/promTodos.length).toFixed(2)}</strong></div>` : '');
 }
 

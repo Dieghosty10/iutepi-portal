@@ -45,10 +45,10 @@
     <section class="aula-section active" id="sec-resumen">
       <div class="page-head"><h1><i class="fas fa-th-large" style="color:var(--primary);margin-right:8px;"></i>Mi Panel</h1><p>Resumen de tu actividad académica</p></div>
       <div class="stats-row">
-        <div class="stat-card"><div class="stat-icon si-red"><i class="fas fa-chalkboard"></i></div><div><div class="stat-val" id="stat-secciones">—</div><div class="stat-lbl">Secciones activas</div></div></div>
-        <div class="stat-card"><div class="stat-icon si-blue"><i class="fas fa-users"></i></div><div><div class="stat-val" id="stat-alumnos">—</div><div class="stat-lbl">Alumnos totales</div></div></div>
-        <div class="stat-card"><div class="stat-icon si-green"><i class="fas fa-check-circle"></i></div><div><div class="stat-val" id="stat-notas-registradas">—</div><div class="stat-lbl">Notas registradas</div></div></div>
-        <div class="stat-card"><div class="stat-icon si-amber"><i class="fas fa-calendar"></i></div><div><div class="stat-val" id="stat-evaluaciones">—</div><div class="stat-lbl">Evaluaciones publicadas</div></div></div>
+        <div class="stat-card" style="cursor:pointer;transition:transform 0.2s;" onclick="window.navegar('secciones')" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'"><div class="stat-icon si-red"><i class="fas fa-chalkboard"></i></div><div><div class="stat-val" id="stat-secciones">—</div><div class="stat-lbl">Secciones activas</div></div></div>
+        <div class="stat-card" style="cursor:pointer;transition:transform 0.2s;" onclick="window.navegar('secciones')" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'"><div class="stat-icon si-blue"><i class="fas fa-users"></i></div><div><div class="stat-val" id="stat-alumnos">—</div><div class="stat-lbl">Alumnos totales</div></div></div>
+        <div class="stat-card" style="cursor:pointer;transition:transform 0.2s;" onclick="window.navegar('notas')" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'"><div class="stat-icon si-green"><i class="fas fa-check-circle"></i></div><div><div class="stat-val" id="stat-notas-registradas">—</div><div class="stat-lbl">Notas registradas</div></div></div>
+        <div class="stat-card" style="cursor:pointer;transition:transform 0.2s;" onclick="window.navegar('evaluaciones')" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'"><div class="stat-icon si-amber"><i class="fas fa-calendar"></i></div><div><div class="stat-val" id="stat-evaluaciones">—</div><div class="stat-lbl">Evaluaciones publicadas</div></div></div>
       </div>
       <div class="aula-card">
         <div class="aula-card-head"><div class="aula-card-title"><i class="fas fa-chalkboard"></i>Mis secciones rápidas</div></div>

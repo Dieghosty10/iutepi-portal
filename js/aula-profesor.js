@@ -1,5 +1,5 @@
 import { verificarAcceso, cerrarSesion, registrarAuditoria } from './aula-auth.js';
-import { getFirestore, collection, getDocs, getDoc, doc, addDoc, setDoc, updateDoc, query, where, orderBy, serverTimestamp, Timestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getFirestore, collection, getDocs, getDoc, doc, addDoc, setDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp, Timestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { getApps } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 
 const db = getFirestore(getApps()[0]);
@@ -29,18 +29,32 @@ function chipNota(val) {
 }
 
 /* ===== NAVEGACIÓN ===== */
-function navegar(id) {
+window.navegar = function(id) {
   document.querySelectorAll('.aula-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.sidebar-nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById(`sec-${id}`)?.classList.add('active');
   document.querySelector(`[data-sec="${id}"]`)?.classList.add('active');
-  const cargadores = { secciones: cargarSecciones, evaluaciones: cargarEvaluaciones };
+  const cargadores = { secciones: cargarSecciones, evaluaciones: cargarEvaluaciones, notas: () => {}, matriz: () => {} };
   if (cargadores[id]) cargadores[id]();
-}
+};
 
-document.querySelectorAll('.sidebar-nav-item').forEach(b => b.addEventListener('click', () => navegar(b.dataset.sec)));
+document.querySelectorAll('.sidebar-nav-item').forEach(b => b.addEventListener('click', () => window.navegar(b.dataset.sec)));
 document.getElementById('sidebar-toggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
 document.getElementById('btn-logout').addEventListener('click', cerrarSesion);
+
+// Navegación rápida global
+window.irASeccionAction = function(seccionId, action) {
+  if(action === 'notas') {
+    document.getElementById('sel-seccion-notas').value = seccionId;
+    window.navegar('notas');
+  } else if (action === 'matriz') {
+    document.getElementById('sel-seccion-matriz').value = seccionId;
+    window.navegar('matriz');
+  } else if (action === 'evaluacion') {
+    document.getElementById('eval-seccion').value = seccionId;
+    window.navegar('evaluaciones');
+  }
+};
 
 /* ===== CARGAR DATOS BASE ===== */
 async function cargarDatosBase() {
@@ -108,6 +122,11 @@ function cargarSecciones() {
               ${alumnos.length > 6 ? `<span class="badge badge-gray">+${alumnos.length-6} más</span>` : ''}
             </div>
           </div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid #F1F5F9;display:flex;gap:10px;">
+            <button class="aula-btn aula-btn-sm aula-btn-secondary" onclick="window.irASeccionAction('${s.id}', 'notas')"><i class="fas fa-pen"></i> Subir Notas</button>
+            <button class="aula-btn aula-btn-sm aula-btn-secondary" onclick="window.irASeccionAction('${s.id}', 'matriz')"><i class="fas fa-table"></i> Ver Matriz</button>
+            <button class="aula-btn aula-btn-sm aula-btn-primary" onclick="window.irASeccionAction('${s.id}', 'evaluacion')"><i class="fas fa-calendar-plus"></i> Nueva Evaluación</button>
+          </div>
         </div>
       </div>`;
     }).join('');
@@ -137,13 +156,15 @@ document.getElementById('btn-cargar-alumnos-notas').addEventListener('click', as
   const notasMap = {};
   snapN.forEach(d => { const n = d.data(); notasMap[n.estudianteId] = { id: d.id, valor: n.valor }; });
 
+  const nombresCorte = { corte1: '1er Corte', corte2: '2do Corte', corte3: '3er Corte', recuperativo: 'Recuperativo' };
   const el = document.getElementById('formulario-notas');
   el.innerHTML = `<div class="aula-card">
     <div class="aula-card-head">
-      <div class="aula-card-title"><i class="fas fa-pen"></i>Ingresar notas — ${sec.materia} · ${tipo}</div>
+      <div class="aula-card-title"><i class="fas fa-pen"></i>Ingresar notas — ${sec.materia} · ${nombresCorte[tipo] || tipo}</div>
+      <span class="badge badge-blue">${alumnos.length} estudiantes</span>
     </div>
     <div class="aula-card-body">
-      <p style="font-size:0.82rem;color:#64748B;margin-bottom:14px;">Escala 0–20. Deja en blanco para no registrar.</p>
+      <p style="font-size:0.82rem;color:#64748B;margin-bottom:14px;">Escala 0–20. Las notas cambian de color automáticamente. Deja en blanco para no registrar.</p>
       <div class="tbl-wrap">
         <table class="aula-tbl">
           <thead><tr><th>Estudiante</th><th>Cédula</th><th>Nota (0-20)</th><th>Estado</th></tr></thead>
@@ -153,8 +174,8 @@ document.getElementById('btn-cargar-alumnos-notas').addEventListener('click', as
               const notaExistente = notasMap[uid];
               return `<tr>
                 <td><strong>${u.nombre || uid}</strong></td>
-                <td>${u.cedula || '—'}</td>
-                <td><input type="number" class="input-nota" data-uid="${uid}" data-nota-id="${notaExistente?.id || ''}" min="0" max="20" step="0.25" value="${notaExistente?.valor ?? ''}" placeholder="—" /></td>
+                <td style="font-size:0.82rem;color:#64748B;">${u.cedula || '—'}</td>
+                <td><input type="number" class="input-nota" data-uid="${uid}" data-nota-id="${notaExistente?.id || ''}" min="0" max="20" step="0.25" value="${notaExistente?.valor ?? ''}" placeholder="—" style="border-radius:7px;border:1.5px solid #E2E8F0;padding:7px 10px;width:90px;font-size:0.9rem;text-align:center;outline:none;transition:border-color 0.15s,background 0.15s;" /></td>
                 <td>${notaExistente ? '<span class="badge badge-green">Registrada</span>' : '<span class="badge badge-gray">Pendiente</span>'}</td>
               </tr>`;
             }).join('')}
@@ -166,6 +187,30 @@ document.getElementById('btn-cargar-alumnos-notas').addEventListener('click', as
       </div>
     </div>
   </div>`;
+
+  // Feedback visual en tiempo real al escribir la nota
+  el.querySelectorAll('.input-nota').forEach(input => {
+    const actualizarColor = () => {
+      const v = parseFloat(input.value);
+      if (input.value === '' || isNaN(v)) {
+        input.style.background = '#F8FAFC';
+        input.style.borderColor = '#E2E8F0';
+        input.style.color = '#0F172A';
+      } else if (v >= 10) {
+        input.style.background = '#F0FDF4';
+        input.style.borderColor = '#22C55E';
+        input.style.color = '#166534';
+      } else {
+        input.style.background = '#FEF2F2';
+        input.style.borderColor = '#EF4444';
+        input.style.color = '#991B1B';
+      }
+    };
+    actualizarColor();
+    input.addEventListener('input', actualizarColor);
+  });
+
+
 
   document.getElementById('btn-guardar-notas').addEventListener('click', async () => {
     const inputs = document.querySelectorAll('.input-nota');
@@ -282,27 +327,74 @@ document.getElementById('btn-export-excel').addEventListener('click', () => {
 
 /* ===== EVALUACIONES ===== */
 async function cargarEvaluaciones() {
-  const snap = await getDocs(query(collection(db, 'evaluaciones'), where('creadoPor', '==', profActual.uid), orderBy('fecha', 'desc')));
-  const evals = [];
-  snap.forEach(d => evals.push({ id: d.id, ...d.data() }));
-  const tipos = { examen: 'badge-red', practica: 'badge-blue', entrega: 'badge-amber', otro: 'badge-gray' };
   const el = document.getElementById('lista-evaluaciones-prof');
-  el.innerHTML = evals.length === 0 ? '<div class="empty-state"><i class="fas fa-calendar"></i><p>Sin evaluaciones publicadas</p></div>' :
-    evals.map(e => {
-      const sec = misSecciones.find(s => s.id === e.seccionId);
-      return `<div style="padding:10px 0;border-bottom:1px solid #F1F5F9;">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-          <div>
-            <strong style="font-size:0.875rem;">${e.titulo}</strong>
-            <span class="badge ${tipos[e.tipo] || 'badge-gray'}" style="margin-left:8px;">${e.tipo}</span>
-          </div>
-          <span style="font-size:0.78rem;color:#94A3B8;">${fFecha(e.fecha)}</span>
-        </div>
-        <p style="font-size:0.8rem;color:#64748B;margin-top:4px;">${sec?.materia || e.seccionId} · ${e.salon || 'Sin salón'}</p>
-        ${e.tema ? `<p style="font-size:0.78rem;color:#94A3B8;">Tema: ${e.tema}</p>` : ''}
-      </div>`;
-    }).join('');
+  el.innerHTML = '<div class="loading-state"><div class="spinner"></div> Cargando...</div>';
+  try {
+    // Query sin orderBy para evitar requerir índice compuesto en Firestore
+    const snap = await getDocs(query(collection(db, 'evaluaciones'), where('creadoPor', '==', profActual.uid)));
+    const evals = [];
+    snap.forEach(d => evals.push({ id: d.id, ...d.data() }));
+    // Ordenar en el cliente por fecha descendente
+    evals.sort((a, b) => {
+      const fa = a.fecha?.toDate ? a.fecha.toDate() : new Date(0);
+      const fb = b.fecha?.toDate ? b.fecha.toDate() : new Date(0);
+      return fb - fa;
+    });
+    const colores = { examen: 'badge-red', practica: 'badge-blue', entrega: 'badge-amber', otro: 'badge-gray' };
+    const iconos = { examen: 'fa-file-alt', practica: 'fa-flask', entrega: 'fa-inbox', otro: 'fa-tag' };
+    el.innerHTML = evals.length === 0
+      ? '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>Sin evaluaciones publicadas</p></div>'
+      : evals.map(e => {
+          const sec = misSecciones.find(s => s.id === e.seccionId);
+          const hoy = new Date();
+          const fechaEv = e.fecha?.toDate ? e.fecha.toDate() : null;
+          const dias = fechaEv ? Math.ceil((fechaEv - hoy) / (1000*60*60*24)) : null;
+          const badge = dias === null ? '' : dias < 0 ? '<span class="badge badge-gray">Finalizada</span>'
+            : dias === 0 ? '<span class="badge badge-red">¡Hoy!</span>'
+            : dias <= 3 ? `<span class="badge badge-amber">En ${dias} días</span>`
+            : `<span class="badge badge-blue">En ${dias} días</span>`;
+          return `<div style="padding:12px;border:1px solid #E2E8F0;border-radius:10px;margin-bottom:10px;background:#FAFAFA;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div style="flex:1;">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+                  <i class="fas ${iconos[e.tipo]||'fa-tag'}" style="color:var(--primary);"></i>
+                  <strong style="font-size:0.9rem;">${e.titulo}</strong>
+                  <span class="badge ${colores[e.tipo]||'badge-gray'}">${e.tipo}</span>
+                  ${badge}
+                </div>
+                <p style="font-size:0.8rem;color:#64748B;margin:3px 0;">
+                  <i class="fas fa-chalkboard" style="margin-right:4px;"></i>${sec?.materia || e.seccionId}
+                  ${e.salon ? ` · <i class="fas fa-door-open" style="margin-right:4px;"></i>${e.salon}` : ''}
+                  ${e.hora ? ` · <i class="fas fa-clock" style="margin-right:4px;"></i>${e.hora}` : ''}
+                </p>
+                ${e.tema ? `<p style="font-size:0.78rem;color:#94A3B8;margin:3px 0;"><i class="fas fa-book-open" style="margin-right:4px;"></i>Tema: ${e.tema}</p>` : ''}
+                <p style="font-size:0.78rem;color:#94A3B8;margin:3px 0;">
+                  <i class="fas fa-calendar" style="margin-right:4px;"></i>${fFecha(e.fecha)}
+                </p>
+              </div>
+              <button onclick="eliminarEvaluacion('${e.id}')" style="background:none;border:1px solid #FECACA;color:#DC2626;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:0.78rem;flex-shrink:0;" title="Eliminar evaluación">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>`;
+        }).join('');
+  } catch (err) {
+    el.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Error al cargar evaluaciones: ${err.message}</div>`;
+    console.error('cargarEvaluaciones:', err);
+  }
 }
+
+window.eliminarEvaluacion = async function(id) {
+  if (!confirm('¿Eliminar esta evaluación? Esta acción no se puede deshacer.')) return;
+  try {
+    await deleteDoc(doc(db, 'evaluaciones', id));
+    await registrarAuditoria('eliminar_evaluacion', profActual.uid, { evalId: id });
+    toast('Evaluación eliminada', 'success');
+    cargarEvaluaciones();
+  } catch (err) {
+    toast('Error al eliminar: ' + err.message, 'error');
+  }
+};
 
 document.getElementById('btn-publicar-eval').addEventListener('click', async () => {
   const seccionId = document.getElementById('eval-seccion').value;

@@ -46,10 +46,10 @@
     <section class="aula-section active" id="sec-resumen">
       <div class="page-head"><h1><i class="fas fa-th-large" style="color:var(--primary);margin-right:8px;"></i>Panel General</h1><p>Resumen del sistema académico</p></div>
       <div class="stats-row">
-        <div class="stat-card"><div class="stat-icon si-blue"><i class="fas fa-users"></i></div><div><div class="stat-val" id="stat-total-usuarios">—</div><div class="stat-lbl">Usuarios registrados</div></div></div>
-        <div class="stat-card"><div class="stat-icon si-green"><i class="fas fa-user-check"></i></div><div><div class="stat-val" id="stat-solventes">—</div><div class="stat-lbl">Estudiantes solventes</div></div></div>
-        <div class="stat-card"><div class="stat-icon si-red"><i class="fas fa-chalkboard-teacher"></i></div><div><div class="stat-val" id="stat-profesores">—</div><div class="stat-lbl">Profesores activos</div></div></div>
-        <div class="stat-card"><div class="stat-icon si-amber"><i class="fas fa-calendar-check"></i></div><div><div class="stat-val" id="stat-periodo">—</div><div class="stat-lbl">Período activo</div></div></div>
+        <div class="stat-card" style="cursor:pointer;transition:transform 0.2s;" onclick="window.navegar('usuarios')" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'"><div class="stat-icon si-blue"><i class="fas fa-users"></i></div><div><div class="stat-val" id="stat-total-usuarios">—</div><div class="stat-lbl">Usuarios registrados</div></div></div>
+        <div class="stat-card" style="cursor:pointer;transition:transform 0.2s;" onclick="document.getElementById('filtro-rol').value='estudiante';window.navegar('usuarios')" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'"><div class="stat-icon si-green"><i class="fas fa-user-check"></i></div><div><div class="stat-val" id="stat-solventes">—</div><div class="stat-lbl">Estudiantes solventes</div></div></div>
+        <div class="stat-card" style="cursor:pointer;transition:transform 0.2s;" onclick="document.getElementById('filtro-rol').value='profesor';window.navegar('usuarios')" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'"><div class="stat-icon si-red"><i class="fas fa-chalkboard-teacher"></i></div><div><div class="stat-val" id="stat-profesores">—</div><div class="stat-lbl">Profesores activos</div></div></div>
+        <div class="stat-card" style="cursor:pointer;transition:transform 0.2s;" onclick="window.navegar('periodos')" onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'"><div class="stat-icon si-amber"><i class="fas fa-calendar-check"></i></div><div><div class="stat-val" id="stat-periodo">—</div><div class="stat-lbl">Período activo</div></div></div>
       </div>
       <div class="fr2">
         <div class="aula-card">
