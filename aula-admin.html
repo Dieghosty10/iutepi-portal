@@ -250,8 +250,22 @@
       <form id="form-seccion" novalidate>
         <input type="hidden" id="sec-id" />
         <div class="fr2">
-          <div class="aula-fg"><label>Materia *</label><input type="text" class="aula-input" id="sec-materia" placeholder="Ej: Programación I" required /></div>
-          <div class="aula-fg"><label>Salón *</label><input type="text" class="aula-input" id="sec-salon" placeholder="Ej: Aula 3-B" required /></div>
+          <div class="aula-fg"><label>Período *</label><select class="aula-select" id="sec-periodo" required><option value="">Cargando...</option></select></div>
+          <div class="aula-fg"><label>Salón *</label>
+            <select class="aula-select" id="sec-salon" required>
+              <option value="">-- Seleccionar salón --</option>
+              <optgroup label="Bloque B">
+                <option value="B-13">Aula B-13</option><option value="B-14">Aula B-14</option><option value="B-15">Aula B-15</option>
+                <option value="B-16">Aula B-16</option><option value="B-17">Aula B-17</option><option value="B-18">Aula B-18</option>
+                <option value="B-19">Aula B-19</option><option value="B-20">Aula B-20</option><option value="B-21">Aula B-21</option>
+              </optgroup>
+              <optgroup label="Bloque A">
+                <option value="A-15">Aula A-15</option><option value="A-16">Aula A-16</option><option value="A-17">Aula A-17</option>
+                <option value="A-18">Aula A-18</option><option value="A-19">Aula A-19</option><option value="A-20">Aula A-20</option>
+                <option value="A-21">Aula A-21</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
         <div class="fr3">
           <div class="aula-fg">
@@ -271,7 +285,11 @@
               <option value="5">5to semestre</option><option value="6">6to semestre</option>
             </select>
           </div>
-          <div class="aula-fg"><label>Período *</label><select class="aula-select" id="sec-periodo" required><option value="">Cargando...</option></select></div>
+          <div class="aula-fg"><label>Materia *</label>
+            <select class="aula-select" id="sec-materia" required>
+              <option value="">Seleccione carrera y semestre</option>
+            </select>
+          </div>
         </div>
         <div class="aula-fg"><label>Profesor *</label><select class="aula-select" id="sec-profesor" required><option value="">Seleccionar profesor...</option></select></div>
         <div class="fr3">

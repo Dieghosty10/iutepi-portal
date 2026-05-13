@@ -79,12 +79,12 @@ const IUTEPI_DATA = {
         }
       ],
       pensum: [
-        { semestre: 1, nombre: "Primer Semestre", materias: ["Matemática I", "Inglés Técnico I", "Lenguajes de Programación I", "Introducción a la Computación", "Sistemas Operativos I", "Comunicación y Lenguaje"] },
-        { semestre: 2, nombre: "Segundo Semestre", materias: ["Matemática II", "Inglés Técnico II", "Lenguajes de Programación II", "Base de Datos I", "Sistemas Operativos II", "Metodología de la Investigación"] },
-        { semestre: 3, nombre: "Tercer Semestre", materias: ["Matemática III", "Lenguajes de Programación III", "Base de Datos II", "Redes de Datos I", "Ingeniería de Software I", "Seguridad Informática"] },
-        { semestre: 4, nombre: "Cuarto Semestre", materias: ["Base de Datos III", "Redes de Datos II", "Ingeniería de Software II", "Administración de Sistemas", "Electiva I", "Pasantías Fase I"] },
-        { semestre: 5, nombre: "Quinto Semestre", materias: ["Proyecto de Investigación Tecnológica", "Electiva II", "Seminario de Grado"] },
-        { semestre: 6, nombre: "Sexto Semestre", materias: ["Proyecto de Grado", "Pasantías Fase II"] }
+        { semestre: 1, nombre: "Primer Semestre", materias: ["Formación Deportiva", "Lenguaje y Comunicación", "Fundamentos Matemáticos", "Lógica y Diagramación", "Computación", "Inglés I", "Cultura, Ciudadanía y Ecología", "Administración de Redes Sociales"] },
+        { semestre: 2, nombre: "Segundo Semestre", materias: ["Economía General", "Inglés II", "Lectura y Expresión Oral y Escrita", "Estadística I", "Matemática I", "Fundamentos del Derecho", "Programación I", "Electrónica Digital"] },
+        { semestre: 3, nombre: "Tercer Semestre", materias: ["Matemática II", "Estadística II", "Programación II", "Base de Datos", "Análisis de Sistemas I", "Control de Proyectos", "Electiva I"] },
+        { semestre: 4, nombre: "Cuarto Semestre", materias: ["Introducción a la Investigación", "Servicio Comunitario", "Programación III", "Sistemas Operativos", "Análisis Numérico", "Análisis de Sistemas II", "Avances Tecnológicos", "Electiva II"] },
+        { semestre: 5, nombre: "Quinto Semestre", materias: ["Ética Profesional", "Metodología de la Investigación", "Programación IV", "Análisis de Sistemas III", "Inteligencia Artificial", "Investigaciones de Operaciones", "Electiva III"] },
+        { semestre: 6, nombre: "Sexto Semestre", materias: ["Trabajo Especial de Grado", "Pasantías Profesionales"] }
       ],
       pensum_url: "assets/pdfs/pensum-sistemas.pdf",
       campo_laboral: ["Empresas de tecnología e informática", "Bancos e instituciones financieras", "Organismos públicos y privados", "Desarrollo web independiente"],
@@ -112,12 +112,12 @@ const IUTEPI_DATA = {
         { nombre: "PCB (Placa de Circuito Impreso)", descripcion: "Diseña y fabrica circuitos impresos en tarjetas electrónicas a través del esquemático eléctrico-digital." }
       ],
       pensum: [
-        { semestre: 1, nombre: "Primer Semestre", materias: ["Física I", "Matemática I", "Electrónica Básica", "Inglés Técnico I", "Dibujo Técnico", "Comunicación y Lenguaje"] },
-        { semestre: 2, nombre: "Segundo Semestre", materias: ["Física II", "Matemática II", "Electrónica Analógica", "Inglés Técnico II", "Circuitos Eléctricos", "Metodología de la Investigación"] },
-        { semestre: 3, nombre: "Tercer Semestre", materias: ["Matemática III", "Electrónica Digital", "Microprocesadores", "Instrumentación Industrial", "Señales y Sistemas", "Programación de Microcontroladores"] },
-        { semestre: 4, nombre: "Cuarto Semestre", materias: ["Automatización Industrial", "Control Industrial", "Diseño de PCB", "Mantenimiento de Equipos Electrónicos", "Electiva I", "Pasantías Fase I"] },
-        { semestre: 5, nombre: "Quinto Semestre", materias: ["Proyecto de Investigación Tecnológica", "Electiva II", "Seminario de Grado"] },
-        { semestre: 6, nombre: "Sexto Semestre", materias: ["Proyecto de Grado", "Pasantías Fase II"] }
+        { semestre: 1, nombre: "Primer Semestre", materias: ["Formación Deportiva", "Lenguaje y Comunicación", "Fundamentos Matemáticos", "Lógica y Diagramación", "Computación", "Inglés I", "Cultura, Ciudadanía y Ecología", "Física"] },
+        { semestre: 2, nombre: "Segundo Semestre", materias: ["Economía General", "Inglés II", "Lectura y Expresión Oral y Escrita", "Estadística I", "Matemática I", "Fundamentos del Derecho", "Análisis de Circuitos I", "Introducción a la Electrónica"] },
+        { semestre: 3, nombre: "Tercer Semestre", materias: ["Matemática II", "Estadística II", "Análisis de Circuitos II", "Circuitos Lógicos", "Electrónica I", "Tecnología de Sistemas Eléctricos", "Electiva I"] },
+        { semestre: 4, nombre: "Cuarto Semestre", materias: ["Introducción a la Investigación", "Servicio Comunitario", "Electrónica II", "Circuitos Digitales", "Seminario Digitales", "Máquinas Eléctricas", "Microcontroladores I", "Electiva II"] },
+        { semestre: 5, nombre: "Quinto Semestre", materias: ["Ética Profesional", "Metodología de la Investigación", "Electrónica III", "Electrónica Industrial", "Microcontroladores II", "Control e Instrumentación", "Electiva III"] },
+        { semestre: 6, nombre: "Sexto Semestre", materias: ["Trabajo Especial de Grado", "Pasantías Profesionales"] }
       ],
       pensum_url: "assets/pdfs/pensum-electronica.pdf",
       campo_laboral: ["Industrias manufactureras y eléctricas", "Empresas de telecomunicaciones", "Plantas industriales", "Talleres de reparación electrónica"],
@@ -145,12 +145,12 @@ const IUTEPI_DATA = {
         { nombre: "Banca, Seguros y Negocios", descripcion: "Maneja los ámbitos administrativos y jurídicos para el conocimiento, aplicación y gestión de políticas bancarias y aseguradoras." }
       ],
       pensum: [
-        { semestre: 1, nombre: "Primer Semestre", materias: ["Matemática I", "Inglés Técnico I", "Contabilidad I", "Economía General", "Comunicación y Lenguaje", "Introducción a la Administración"] },
-        { semestre: 2, nombre: "Segundo Semestre", materias: ["Matemática II", "Inglés Técnico II", "Contabilidad II", "Derecho Mercantil", "Estadística Aplicada", "Metodología de la Investigación"] },
-        { semestre: 3, nombre: "Tercer Semestre", materias: ["Matemática Financiera", "Contabilidad de Costos", "Administración de Empresas I", "Finanzas Empresariales", "Tributación", "Relaciones Industriales"] },
-        { semestre: 4, nombre: "Cuarto Semestre", materias: ["Administración de Empresas II", "Análisis Financiero", "Seguridad Industrial", "Mercadeo y Ventas", "Electiva I", "Pasantías Fase I"] },
-        { semestre: 5, nombre: "Quinto Semestre", materias: ["Proyecto de Investigación", "Electiva II", "Seminario de Grado"] },
-        { semestre: 6, nombre: "Sexto Semestre", materias: ["Proyecto de Grado", "Pasantías Fase II"] }
+        { semestre: 1, nombre: "Primer Semestre", materias: ["Formación Deportiva", "Lenguaje y Comunicación", "Fundamentos Matemáticos", "Lógica y Diagramación", "Computación", "Inglés I", "Cultura, Ciudadanía y Ecología", "Administración I"] },
+        { semestre: 2, nombre: "Segundo Semestre", materias: ["Economía General", "Inglés II", "Lectura y Expresión Oral y Escrita", "Estadística I", "Matemática I", "Fundamentos del Derecho", "Administración II", "Contabilidad I"] },
+        { semestre: 3, nombre: "Tercer Semestre", materias: ["Matemática II", "Estadística II", "Administración de Recursos Humanos", "Derecho Mercantil", "Derecho Laboral", "Contabilidad II", "Matemática Financiera", "Electiva I"] },
+        { semestre: 4, nombre: "Cuarto Semestre", materias: ["Introducción a la Investigación", "Servicio Comunitario", "Método de Trabajo", "Sistema de Inform. Gerencial y Automa.", "Contabilidad de Costos", "Presupuesto", "Higiene y Seguridad Industrial", "Control de la Producción I", "Electiva II"] },
+        { semestre: 5, nombre: "Quinto Semestre", materias: ["Ética Profesional", "Metodología de la Investigación", "Contabilidad Inflacionaria", "Planeamiento Financiero", "Análisis de Estados Financieros", "Control de la Producción II", "Administración de Planta", "Electiva III"] },
+        { semestre: 6, nombre: "Sexto Semestre", materias: ["Trabajo Especial de Grado", "Pasantías Profesionales"] }
       ],
       pensum_url: "assets/pdfs/pensum-administracion.pdf",
       campo_laboral: ["Empresas industriales y comerciales", "Instituciones bancarias y aseguradoras", "Despachos contables", "Organismos públicos"],

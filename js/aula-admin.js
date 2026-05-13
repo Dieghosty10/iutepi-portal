@@ -287,7 +287,6 @@ window.editarSeccion = function(id) {
   if (!s) return;
   document.getElementById('modal-seccion-titulo').textContent = 'Editar sección';
   document.getElementById('sec-id').value = id;
-  document.getElementById('sec-materia').value = s.materia;
   document.getElementById('sec-salon').value = s.salon;
   document.getElementById('sec-carrera').value = s.carreraId;
   document.getElementById('sec-semestre').value = s.semestre;
@@ -296,6 +295,7 @@ window.editarSeccion = function(id) {
   document.getElementById('sec-hora-fin').value = s.horario?.horaFin || '';
   poblarSelectPeriodos(s.periodoId);
   poblarSelectProfesores(s.profesorId);
+  actualizarSelectMaterias(s.materia);
   abrirModal('modal-seccion');
 };
 
@@ -330,6 +330,7 @@ document.getElementById('btn-nueva-seccion').addEventListener('click', () => {
   document.getElementById('sec-id').value = '';
   poblarSelectPeriodos('');
   poblarSelectProfesores('');
+  actualizarSelectMaterias('');
   abrirModal('modal-seccion');
 });
 
@@ -341,6 +342,31 @@ function poblarSelectProfesores(seleccionado = '') {
   const sel = document.getElementById('sec-profesor');
   sel.innerHTML = '<option value="">Seleccionar...</option>' + todosProfs.map(p => `<option value="${p.uid}" ${p.uid === seleccionado ? 'selected' : ''}>${p.nombre}</option>`).join('');
 }
+
+function actualizarSelectMaterias(materiaSeleccionada = '') {
+  const carreraId = document.getElementById('sec-carrera').value;
+  const semestre = parseInt(document.getElementById('sec-semestre').value);
+  const selMateria = document.getElementById('sec-materia');
+  
+  if (!carreraId || !semestre) {
+    selMateria.innerHTML = '<option value="">Seleccione carrera y semestre</option>';
+    return;
+  }
+  
+  const carrera = window.IUTEPI_DATA?.carreras.find(c => c.id === carreraId);
+  const pen = carrera?.pensum.find(p => p.semestre === semestre);
+  
+  if (!pen || !pen.materias) {
+    selMateria.innerHTML = '<option value="">Materias no encontradas</option>';
+    return;
+  }
+  
+  selMateria.innerHTML = '<option value="">Seleccionar materia...</option>' + 
+    pen.materias.map(m => `<option value="${m}" ${m === materiaSeleccionada ? 'selected' : ''}>${m}</option>`).join('');
+}
+
+document.getElementById('sec-carrera').addEventListener('change', () => actualizarSelectMaterias());
+document.getElementById('sec-semestre').addEventListener('change', () => actualizarSelectMaterias());
 
 document.getElementById('btn-guardar-seccion').addEventListener('click', async () => {
   const id = document.getElementById('sec-id').value;
