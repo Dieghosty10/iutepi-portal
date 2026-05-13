@@ -432,19 +432,13 @@ document.getElementById('btn-confirmar-justif')?.addEventListener('click', async
   const btn = document.getElementById('btn-confirmar-justif');
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
   try {
-    if (tipo === 'baja') {
-      await deleteDoc(doc(db, 'evaluaciones', evalId));
-      await registrarAuditoria('eliminar_evaluacion', profActual.uid, { evalId, motivo });
-      toast('Evaluación eliminada', 'success');
-      cargarEvaluaciones();
-    } else {
-      await addDoc(collection(db, 'solicitudes_eval'), {
-        evalId, tipo: 'posponer', motivo, nuevaFecha,
-        creadoPor: profActual.uid, estado: 'pendiente', fecha: serverTimestamp()
-      });
-      await registrarAuditoria('solicitar_posponer_eval', profActual.uid, { evalId, motivo, nuevaFecha });
-      toast('Solicitud de postergación enviada. Pendiente de aprobación del administrador.', 'success');
-    }
+    await addDoc(collection(db, 'solicitudes_eval'), {
+      evalId, tipo, motivo, nuevaFecha: tipo === 'posponer' ? nuevaFecha : null,
+      creadoPor: profActual.uid, estado: 'pendiente', fecha: serverTimestamp()
+    });
+    const accion = tipo === 'baja' ? 'solicitar_eliminar_eval' : 'solicitar_posponer_eval';
+    await registrarAuditoria(accion, profActual.uid, { evalId, motivo, tipo, nuevaFecha });
+    toast(tipo === 'baja' ? 'Solicitud de eliminación enviada al administrador.' : 'Solicitud de postergación enviada al administrador.', 'success');
     document.getElementById('modal-eval-justif').classList.remove('active');
   } catch (err) {
     errEl.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Error: ${err.message}</div>`;

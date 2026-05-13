@@ -608,12 +608,18 @@ async function cargarSolicitudes() {
       const estadoBadge = s.estado === 'pendiente' ? '<span class="badge badge-amber">Pendiente</span>'
         : s.estado === 'aprobado' ? '<span class="badge badge-green">Aprobado</span>'
         : '<span class="badge badge-red">Rechazado</span>';
+      
+      const esBaja = s.tipo === 'baja';
+      const tipoTxt = esBaja ? '<span style="color:#DC2626;font-weight:600;"><i class="fas fa-trash"></i> Solicitud de Eliminación</span>' : '<span style="color:#D97706;font-weight:600;"><i class="fas fa-calendar-alt"></i> Solicitud de Postergación</span>';
+      const detalleAdicional = esBaja ? '' : `&middot; Nueva fecha propuesta: <strong>${s.nuevaFecha || '—'}</strong>`;
+
       return `<div style="padding:16px;border:1px solid #E2E8F0;border-radius:10px;margin-bottom:12px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05);">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
           <div>
-            <strong style="font-size:0.95rem;">${ev.titulo || 'Evaluación eliminada'}</strong>
+            <div style="margin-bottom:4px;font-size:0.85rem;">${tipoTxt}</div>
+            <strong style="font-size:0.95rem;">${ev.titulo || 'Evaluación ya no existe'}</strong>
             <div style="font-size:0.8rem;color:#64748B;margin-top:4px;">
-              Profesor: ${prof.nombre || s.creadoPor} &middot; Nueva fecha propuesta: <strong>${s.nuevaFecha || '—'}</strong>
+              Profesor: ${prof.nombre || s.creadoPor} ${detalleAdicional}
             </div>
           </div>
           ${estadoBadge}
@@ -621,8 +627,8 @@ async function cargarSolicitudes() {
         <p style="font-size:0.85rem;color:#334155;background:#F8FAFC;padding:10px;border-radius:6px;border-left:3px solid #F59E0B;">${s.motivo}</p>
         ${s.estado === 'pendiente' ? `
           <div style="display:flex;gap:8px;margin-top:12px;">
-            <button onclick="resolverSolicitud('${s.id}','${s.evalId}','${s.nuevaFecha}','aprobado')" class="aula-btn aula-btn-success" style="flex:1;"><i class="fas fa-check"></i> Aprobar y aplicar</button>
-            <button onclick="resolverSolicitud('${s.id}','${s.evalId}','','rechazado')" class="aula-btn aula-btn-danger" style="flex:1;"><i class="fas fa-times"></i> Rechazar</button>
+            <button onclick="resolverSolicitud('${s.id}','${s.evalId}','${s.tipo}','${s.nuevaFecha}','aprobado')" class="aula-btn aula-btn-success" style="flex:1;"><i class="fas fa-check"></i> Aprobar y aplicar</button>
+            <button onclick="resolverSolicitud('${s.id}','${s.evalId}','${s.tipo}','','rechazado')" class="aula-btn aula-btn-danger" style="flex:1;"><i class="fas fa-times"></i> Rechazar</button>
           </div>` : ''}
       </div>`;
     }).join('');
@@ -631,19 +637,24 @@ async function cargarSolicitudes() {
   }
 }
 
-window.resolverSolicitud = async function(solicitudId, evalId, nuevaFecha, decision) {
+window.resolverSolicitud = async function(solicitudId, evalId, tipo, nuevaFecha, decision) {
   const confirmMsg = decision === 'aprobado'
-    ? `¿Aprobar la postergación para el ${nuevaFecha}?`
+    ? (tipo === 'baja' ? '¿Aprobar la ELIMINACIÓN de esta evaluación de forma definitiva?' : `¿Aprobar la postergación para el ${nuevaFecha}?`)
     : '¿Rechazar esta solicitud?';
   if (!confirm(confirmMsg)) return;
   try {
     await updateDoc(doc(db, 'solicitudes_eval', solicitudId), { estado: decision });
-    if (decision === 'aprobado' && evalId && nuevaFecha) {
-      const { Timestamp } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
-      await updateDoc(doc(db, 'evaluaciones', evalId), { fecha: Timestamp.fromDate(new Date(nuevaFecha + 'T12:00:00')) });
+    if (decision === 'aprobado' && evalId) {
+      if (tipo === 'baja') {
+        await deleteDoc(doc(db, 'evaluaciones', evalId));
+      } else if (tipo === 'posponer' && nuevaFecha) {
+        const { Timestamp } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+        await updateDoc(doc(db, 'evaluaciones', evalId), { fecha: Timestamp.fromDate(new Date(nuevaFecha + 'T12:00:00')) });
+      }
     }
-    await registrarAuditoria('resolver_solicitud_eval', adminActual.uid, { solicitudId, decision });
-    toast(decision === 'aprobado' ? 'Postergación aprobada y fecha actualizada' : 'Solicitud rechazada', 'success');
+    await registrarAuditoria('resolver_solicitud_eval', adminActual.uid, { solicitudId, decision, tipo });
+    const exitoMsg = tipo === 'baja' ? 'Evaluación eliminada correctamente' : 'Postergación aprobada y fecha actualizada';
+    toast(decision === 'aprobado' ? exitoMsg : 'Solicitud rechazada', 'success');
     cargarSolicitudes();
   } catch (err) { toast('Error: ' + err.message, 'error'); }
 };
