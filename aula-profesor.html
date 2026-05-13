@@ -181,9 +181,9 @@
 <div id="toast-container"></div>
 
 <!-- MODAL JUSTIFICACION EVALUACION -->
-<div id="modal-eval-justif" class="modal-overlay" style="display:none;align-items:center;justify-content:center;">
-  <div class="modal-box" style="max-width:460px;width:94%;">
-    <div class="modal-header"><h2 id="modal-eval-justif-titulo">Justificación</h2><button onclick="document.getElementById('modal-eval-justif').style.display='none'" class="modal-close">&times;</button></div>
+<div class="aula-modal-overlay" id="modal-eval-justif">
+  <div class="aula-modal" style="max-width:460px;">
+    <div class="modal-head"><h3 id="modal-eval-justif-titulo">Justificación</h3><button onclick="document.getElementById('modal-eval-justif').classList.remove('active')" class="modal-close"><i class="fas fa-times"></i></button></div>
     <div class="modal-body">
       <input type="hidden" id="justif-eval-id" />
       <input type="hidden" id="justif-tipo" />

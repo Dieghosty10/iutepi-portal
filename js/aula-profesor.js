@@ -406,7 +406,7 @@ window.eliminarEvaluacion = function(id) {
   document.getElementById('campo-nueva-fecha').style.display = 'none';
   document.getElementById('justif-motivo').value = '';
   document.getElementById('justif-error').innerHTML = '';
-  document.getElementById('modal-eval-justif').style.display = 'flex';
+  document.getElementById('modal-eval-justif').classList.add('active');
 };
 
 window.posponerEvaluacion = function(id) {
@@ -418,7 +418,7 @@ window.posponerEvaluacion = function(id) {
   document.getElementById('justif-nueva-fecha').value = '';
   document.getElementById('justif-motivo').value = '';
   document.getElementById('justif-error').innerHTML = '';
-  document.getElementById('modal-eval-justif').style.display = 'flex';
+  document.getElementById('modal-eval-justif').classList.add('active');
 };
 
 document.getElementById('btn-confirmar-justif')?.addEventListener('click', async () => {
@@ -445,7 +445,7 @@ document.getElementById('btn-confirmar-justif')?.addEventListener('click', async
       await registrarAuditoria('solicitar_posponer_eval', profActual.uid, { evalId, motivo, nuevaFecha });
       toast('Solicitud de postergación enviada. Pendiente de aprobación del administrador.', 'success');
     }
-    document.getElementById('modal-eval-justif').style.display = 'none';
+    document.getElementById('modal-eval-justif').classList.remove('active');
   } catch (err) {
     errEl.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Error: ${err.message}</div>`;
   } finally {
