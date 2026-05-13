@@ -353,7 +353,14 @@ function actualizarSelectMaterias(materiaSeleccionada = '') {
     return;
   }
   
-  const carrera = window.IUTEPI_DATA?.carreras.find(c => c.id === carreraId);
+  const idMap = {
+    'sistemas': 'analisis-sistemas',
+    'administracion': 'administracion-industrial',
+    'electronica': 'electronica'
+  };
+  const realCarreraId = idMap[carreraId] || carreraId;
+  
+  const carrera = window.IUTEPI_DATA?.carreras.find(c => c.id === realCarreraId);
   const pen = carrera?.pensum.find(p => p.semestre === semestre);
   
   if (!pen || !pen.materias) {
