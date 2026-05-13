@@ -23,7 +23,7 @@ window.navegar = function(id) {
   document.querySelectorAll('.sidebar-nav-item').forEach(b => b.classList.remove('active'));
   document.getElementById(`sec-${id}`)?.classList.add('active');
   document.querySelector(`[data-sec="${id}"]`)?.classList.add('active');
-  const cargadores = { usuarios: cargarUsuarios, secciones: cargarSecciones, periodos: cargarPeriodos, auditoria: cargarAuditoria, anuncios: cargarAnunciosAdmin };
+  const cargadores = { usuarios: cargarUsuarios, secciones: cargarSecciones, periodos: cargarPeriodos, auditoria: cargarAuditoria, anuncios: cargarAnunciosAdmin, solicitudes: cargarSolicitudes };
   if (cargadores[id]) cargadores[id]();
 };
 
@@ -498,7 +498,123 @@ async function cargarAuditoria() {
           <td style="font-size:0.78rem;white-space:nowrap;color:#94A3B8;">${fFecha(l.timestamp)}</td>
         </tr>`;
       }).join('');
+
+  // Guardar datos para export
+  window._logsAuditoria = logs;
+  window._etiquetasAuditoria = etiquetas;
+  window._usersMapAudit = usersMapAudit;
 }
+
+/* ===== EXPORTAR AUDITORÍA PDF ===== */
+document.getElementById('btn-export-auditoria')?.addEventListener('click', () => {
+  const logs = window._logsAuditoria || [];
+  const etiquetas = window._etiquetasAuditoria || {};
+  const usersMap = window._usersMapAudit || {};
+  const { jsPDF } = window.jspdf;
+  const docPdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+  const fechaHoy = new Date().toLocaleString('es-VE');
+
+  // Encabezado
+  docPdf.setFillColor(204, 31, 38);
+  docPdf.rect(0, 0, 297, 22, 'F');
+  docPdf.setFontSize(13); docPdf.setTextColor(255,255,255); docPdf.setFont(undefined, 'bold');
+  docPdf.text('IUTEPI — Registro de Auditoría del Sistema', 14, 10);
+  docPdf.setFontSize(8.5); docPdf.setFont(undefined, 'normal');
+  docPdf.text(`Generado: ${fechaHoy}   |   Total registros: ${logs.length}`, 14, 17);
+
+  const bodyRows = logs.map(l => [
+    etiquetas[l.accion] || l.accion,
+    usersMap[l.usuarioId] || l.usuarioId?.substring(0,12) || '—',
+    l.detalles?.nombre || l.detalles?.titulo || l.detalles?.materia || (l.detalles?.valor !== undefined ? `Nota: ${l.detalles.valor}` : '') || '—',
+    fFecha(l.timestamp)
+  ]);
+
+  docPdf.autoTable({
+    head: [['Acción', 'Usuario', 'Detalles', 'Fecha y Hora']],
+    body: bodyRows,
+    startY: 26,
+    theme: 'striped',
+    headStyles: { fillColor: [204, 31, 38], textColor: 255, fontStyle: 'bold', fontSize: 8 },
+    bodyStyles: { fontSize: 7.5 },
+    styles: { overflow: 'linebreak' },
+    columnStyles: { 0: { cellWidth: 50 }, 1: { cellWidth: 45 }, 2: { cellWidth: 90 }, 3: { cellWidth: 50 } }
+  });
+
+  const total = docPdf.internal.getNumberOfPages();
+  for (let i = 1; i <= total; i++) {
+    docPdf.setPage(i); docPdf.setFontSize(7); docPdf.setTextColor(148, 163, 184);
+    docPdf.text(`Página ${i} de ${total} — IUTEPI Campus Virtual`, 14, 205);
+  }
+  docPdf.save(`Auditoria_IUTEPI_${new Date().toISOString().split('T')[0]}.pdf`);
+});
+
+/* ===== SOLICITUDES DE EVALUACIONES ===== */
+async function cargarSolicitudes() {
+  const el = document.getElementById('lista-solicitudes');
+  el.innerHTML = '<div class="loading-state"><div class="spinner"></div> Cargando...</div>';
+  try {
+    const snap = await getDocs(query(collection(db, 'solicitudes_eval'), orderBy('fecha', 'desc')));
+    const solicitudes = [];
+    snap.forEach(d => solicitudes.push({ id: d.id, ...d.data() }));
+    const badge = document.getElementById('sb-badge-solicitudes');
+    const pendientes = solicitudes.filter(s => s.estado === 'pendiente').length;
+    if (pendientes > 0) { badge.style.display = 'inline-block'; badge.textContent = pendientes; }
+    else badge.style.display = 'none';
+
+    if (solicitudes.length === 0) { el.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i><p>No hay solicitudes pendientes</p></div>'; return; }
+
+    // Cargar datos de evaluaciones y usuarios
+    const evalSnap = await getDocs(collection(db, 'evaluaciones'));
+    const evalMap = {}; evalSnap.forEach(d => evalMap[d.id] = { id: d.id, ...d.data() });
+    const userSnap = await getDocs(collection(db, 'users'));
+    const usersM = {}; userSnap.forEach(d => usersM[d.id] = d.data());
+
+    el.innerHTML = solicitudes.map(s => {
+      const ev = evalMap[s.evalId] || {};
+      const prof = usersM[s.creadoPor] || {};
+      const estadoBadge = s.estado === 'pendiente' ? '<span class="badge badge-amber">Pendiente</span>'
+        : s.estado === 'aprobado' ? '<span class="badge badge-green">Aprobado</span>'
+        : '<span class="badge badge-red">Rechazado</span>';
+      return `<div style="padding:16px;border:1px solid #E2E8F0;border-radius:10px;margin-bottom:12px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.05);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+          <div>
+            <strong style="font-size:0.95rem;">${ev.titulo || 'Evaluación eliminada'}</strong>
+            <div style="font-size:0.8rem;color:#64748B;margin-top:4px;">
+              Profesor: ${prof.nombre || s.creadoPor} &middot; Nueva fecha propuesta: <strong>${s.nuevaFecha || '—'}</strong>
+            </div>
+          </div>
+          ${estadoBadge}
+        </div>
+        <p style="font-size:0.85rem;color:#334155;background:#F8FAFC;padding:10px;border-radius:6px;border-left:3px solid #F59E0B;">${s.motivo}</p>
+        ${s.estado === 'pendiente' ? `
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button onclick="resolverSolicitud('${s.id}','${s.evalId}','${s.nuevaFecha}','aprobado')" class="aula-btn aula-btn-success" style="flex:1;"><i class="fas fa-check"></i> Aprobar y aplicar</button>
+            <button onclick="resolverSolicitud('${s.id}','${s.evalId}','','rechazado')" class="aula-btn aula-btn-danger" style="flex:1;"><i class="fas fa-times"></i> Rechazar</button>
+          </div>` : ''}
+      </div>`;
+    }).join('');
+  } catch (err) {
+    el.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Error: ${err.message}</div>`;
+  }
+}
+
+window.resolverSolicitud = async function(solicitudId, evalId, nuevaFecha, decision) {
+  const confirmMsg = decision === 'aprobado'
+    ? `¿Aprobar la postergación para el ${nuevaFecha}?`
+    : '¿Rechazar esta solicitud?';
+  if (!confirm(confirmMsg)) return;
+  try {
+    await updateDoc(doc(db, 'solicitudes_eval', solicitudId), { estado: decision });
+    if (decision === 'aprobado' && evalId && nuevaFecha) {
+      const { Timestamp } = await import('https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js');
+      await updateDoc(doc(db, 'evaluaciones', evalId), { fecha: Timestamp.fromDate(new Date(nuevaFecha + 'T12:00:00')) });
+    }
+    await registrarAuditoria('resolver_solicitud_eval', adminActual.uid, { solicitudId, decision });
+    toast(decision === 'aprobado' ? 'Postergación aprobada y fecha actualizada' : 'Solicitud rechazada', 'success');
+    cargarSolicitudes();
+  } catch (err) { toast('Error: ' + err.message, 'error'); }
+};
+
 
 /* ===== SIDEBAR RESPONSIVE ===== */
 document.getElementById('sidebar-toggle').addEventListener('click', () => {

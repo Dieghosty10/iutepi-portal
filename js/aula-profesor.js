@@ -197,27 +197,25 @@ document.getElementById('btn-cargar-alumnos-notas').addEventListener('click', as
     const actualizarColor = () => {
       const v = parseFloat(input.value);
       if (input.value === '' || isNaN(v)) {
-        input.style.background = '#F8FAFC';
-        input.style.borderColor = '#E2E8F0';
-        input.style.color = '#0F172A';
+        input.style.background = '#F8FAFC'; input.style.borderColor = '#E2E8F0'; input.style.color = '#0F172A';
       } else if (v >= 10) {
-        input.style.background = '#F0FDF4';
-        input.style.borderColor = '#22C55E';
-        input.style.color = '#166534';
+        input.style.background = '#F0FDF4'; input.style.borderColor = '#22C55E'; input.style.color = '#166534';
       } else {
-        input.style.background = '#FEF2F2';
-        input.style.borderColor = '#EF4444';
-        input.style.color = '#991B1B';
+        input.style.background = '#FEF2F2'; input.style.borderColor = '#EF4444'; input.style.color = '#991B1B';
       }
     };
     actualizarColor();
     input.addEventListener('input', actualizarColor);
   });
 
-
-
   document.getElementById('btn-guardar-notas').addEventListener('click', async () => {
-    const inputs = document.querySelectorAll('.input-nota');
+    const inputs = [...document.querySelectorAll('.input-nota')];
+    const conValor = inputs.filter(i => i.value.trim() !== '');
+    if (conValor.length === 0) { toast('No hay notas para guardar', 'error'); return; }
+
+    const nombresCorteConf = { corte1: '1er Corte', corte2: '2do Corte', corte3: '3er Corte', recuperativo: 'Recuperativo' };
+    if (!confirm(`¿Confirmas guardar las notas del ${nombresCorteConf[tipo]} de "${sec.materia}"?\n\nUna vez guardadas no podrás modificarlas. Verifica que todos los valores son correctos.`)) return;
+
     const btn = document.getElementById('btn-guardar-notas');
     btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Guardando...';
     let guardadas = 0, errores = 0;
@@ -231,19 +229,27 @@ document.getElementById('btn-cargar-alumnos-notas').addEventListener('click', as
       const datos = { estudianteId: uid, seccionId, periodoId: sec.periodoId, profesorId: profActual.uid, tipo, valor, fecha: serverTimestamp() };
       try {
         if (notaId) { await updateDoc(doc(db, 'notas', notaId), { valor, fecha: serverTimestamp() }); }
-        else {
-          const ref = await addDoc(collection(db, 'notas'), datos);
-          input.dataset.notaId = ref.id;
-        }
+        else { const ref = await addDoc(collection(db, 'notas'), datos); input.dataset.notaId = ref.id; }
         await registrarAuditoria('subir_nota', profActual.uid, { estudianteId: uid, seccionId, tipo, valor });
         guardadas++;
       } catch (_) { errores++; }
     }
-    btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Guardar todas las notas';
-    if (errores > 0) toast(`${guardadas} notas guardadas, ${errores} con error`, 'error');
-    else toast(`${guardadas} notas guardadas correctamente`, 'success');
+    // Bloquear inputs
+    inputs.forEach(i => { i.disabled = true; i.style.opacity = '0.6'; i.style.cursor = 'not-allowed'; });
+    btn.innerHTML = '<i class="fas fa-lock"></i> Notas guardadas y bloqueadas';
+    // Avanzar al siguiente corte
+    const orden = ['corte1', 'corte2', 'corte3', 'recuperativo'];
+    const idx = orden.indexOf(tipo);
+    if (idx >= 0 && idx < orden.length - 1) {
+      document.getElementById('sel-tipo-nota').value = orden[idx + 1];
+      toast(`✓ ${guardadas} notas guardadas. Ahora en: ${nombresCorteConf[orden[idx + 1]]}`, 'success');
+    } else {
+      toast(`✓ ${guardadas} notas guardadas correctamente`, 'success');
+    }
+    if (errores > 0) toast(`${errores} notas con error`, 'error');
   });
 });
+
 
 /* ===== MATRIZ ===== */
 document.getElementById('btn-cargar-matriz').addEventListener('click', async () => {
@@ -376,9 +382,14 @@ async function cargarEvaluaciones() {
                   <i class="fas fa-calendar" style="margin-right:4px;"></i>${fFecha(e.fecha)}
                 </p>
               </div>
-              <button onclick="eliminarEvaluacion('${e.id}')" style="background:none;border:1px solid #FECACA;color:#DC2626;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:0.78rem;flex-shrink:0;" title="Eliminar evaluación">
-                <i class="fas fa-trash"></i>
-              </button>
+              <div style="display:flex;gap:5px;flex-shrink:0;flex-direction:column;">
+                <button onclick="posponerEvaluacion('${e.id}')" style="background:none;border:1px solid #FEF3C7;color:#D97706;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:0.78rem;" title="Solicitar postergación">
+                  <i class="fas fa-calendar-alt"></i>
+                </button>
+                <button onclick="eliminarEvaluacion('${e.id}')" style="background:none;border:1px solid #FECACA;color:#DC2626;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:0.78rem;" title="Eliminar evaluación">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
             </div>
           </div>`;
         }).join('');
@@ -388,17 +399,59 @@ async function cargarEvaluaciones() {
   }
 }
 
-window.eliminarEvaluacion = async function(id) {
-  if (!confirm('¿Eliminar esta evaluación? Esta acción no se puede deshacer.')) return;
-  try {
-    await deleteDoc(doc(db, 'evaluaciones', id));
-    await registrarAuditoria('eliminar_evaluacion', profActual.uid, { evalId: id });
-    toast('Evaluación eliminada', 'success');
-    cargarEvaluaciones();
-  } catch (err) {
-    toast('Error al eliminar: ' + err.message, 'error');
-  }
+window.eliminarEvaluacion = function(id) {
+  document.getElementById('justif-eval-id').value = id;
+  document.getElementById('justif-tipo').value = 'baja';
+  document.getElementById('modal-eval-justif-titulo').textContent = 'Justificación para eliminar evaluación';
+  document.getElementById('campo-nueva-fecha').style.display = 'none';
+  document.getElementById('justif-motivo').value = '';
+  document.getElementById('justif-error').innerHTML = '';
+  document.getElementById('modal-eval-justif').style.display = 'flex';
 };
+
+window.posponerEvaluacion = function(id) {
+  document.getElementById('justif-eval-id').value = id;
+  document.getElementById('justif-tipo').value = 'posponer';
+  document.getElementById('modal-eval-justif-titulo').textContent = 'Solicitar postergación de evaluación';
+  document.getElementById('campo-nueva-fecha').style.display = 'block';
+  document.getElementById('justif-nueva-fecha').min = new Date().toISOString().split('T')[0];
+  document.getElementById('justif-nueva-fecha').value = '';
+  document.getElementById('justif-motivo').value = '';
+  document.getElementById('justif-error').innerHTML = '';
+  document.getElementById('modal-eval-justif').style.display = 'flex';
+};
+
+document.getElementById('btn-confirmar-justif')?.addEventListener('click', async () => {
+  const evalId = document.getElementById('justif-eval-id').value;
+  const tipo = document.getElementById('justif-tipo').value;
+  const motivo = document.getElementById('justif-motivo').value.trim();
+  const nuevaFecha = document.getElementById('justif-nueva-fecha').value;
+  const errEl = document.getElementById('justif-error');
+  if (!motivo) { errEl.innerHTML = '<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Debes ingresar un motivo.</div>'; return; }
+  if (tipo === 'posponer' && !nuevaFecha) { errEl.innerHTML = '<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Ingresa la nueva fecha propuesta.</div>'; return; }
+  const btn = document.getElementById('btn-confirmar-justif');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+  try {
+    if (tipo === 'baja') {
+      await deleteDoc(doc(db, 'evaluaciones', evalId));
+      await registrarAuditoria('eliminar_evaluacion', profActual.uid, { evalId, motivo });
+      toast('Evaluación eliminada', 'success');
+      cargarEvaluaciones();
+    } else {
+      await addDoc(collection(db, 'solicitudes_eval'), {
+        evalId, tipo: 'posponer', motivo, nuevaFecha,
+        creadoPor: profActual.uid, estado: 'pendiente', fecha: serverTimestamp()
+      });
+      await registrarAuditoria('solicitar_posponer_eval', profActual.uid, { evalId, motivo, nuevaFecha });
+      toast('Solicitud de postergación enviada. Pendiente de aprobación del administrador.', 'success');
+    }
+    document.getElementById('modal-eval-justif').style.display = 'none';
+  } catch (err) {
+    errEl.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Error: ${err.message}</div>`;
+  } finally {
+    btn.disabled = false; btn.innerHTML = 'Confirmar';
+  }
+});
 
 document.getElementById('btn-publicar-eval').addEventListener('click', async () => {
   const seccionId = document.getElementById('eval-seccion').value;
@@ -409,23 +462,40 @@ document.getElementById('btn-publicar-eval').addEventListener('click', async () 
     errEl.innerHTML = '<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Completa los campos obligatorios.</div>';
     return;
   }
+  const hoyStr = new Date().toISOString().split('T')[0];
+  if (fecha < hoyStr) {
+    errEl.innerHTML = '<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> La fecha no puede ser anterior a hoy.</div>';
+    return;
+  }
   errEl.innerHTML = '';
   const sec = misSecciones.find(s => s.id === seccionId);
-  await addDoc(collection(db, 'evaluaciones'), {
-    seccionId, titulo, tema: document.getElementById('eval-tema').value,
-    tipo: document.getElementById('eval-tipo').value,
-    salon: document.getElementById('eval-salon').value,
-    fecha: Timestamp.fromDate(new Date(fecha)),
-    hora: document.getElementById('eval-hora').value,
-    periodoId: sec?.periodoId || '',
-    creadoPor: profActual.uid,
-    creadoEn: serverTimestamp()
-  });
-  await registrarAuditoria('publicar_evaluacion', profActual.uid, { titulo, seccionId });
-  toast('Evaluación publicada', 'success');
-  ['eval-titulo','eval-tema','eval-salon','eval-fecha','eval-hora'].forEach(id => document.getElementById(id).value = '');
-  cargarEvaluaciones();
+  const btn = document.getElementById('btn-publicar-eval');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publicando...';
+  try {
+    await addDoc(collection(db, 'evaluaciones'), {
+      seccionId, titulo, tema: document.getElementById('eval-tema').value,
+      tipo: document.getElementById('eval-tipo').value,
+      salon: document.getElementById('eval-salon').value,
+      fecha: Timestamp.fromDate(new Date(fecha + 'T12:00:00')),
+      hora: document.getElementById('eval-hora').value,
+      periodoId: sec?.periodoId || '',
+      creadoPor: profActual.uid, creadoEn: serverTimestamp()
+    });
+    await registrarAuditoria('publicar_evaluacion', profActual.uid, { titulo, seccionId });
+    toast('Evaluación publicada', 'success');
+    ['eval-titulo','eval-tema','eval-fecha','eval-hora'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('eval-salon').value = '';
+    cargarEvaluaciones();
+  } catch (err) {
+    errEl.innerHTML = `<div class="aula-alert al-danger"><i class="fas fa-exclamation-circle"></i> Error: ${err.message}</div>`;
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Publicar evaluación';
+  }
 });
+
+// Fecha mínima = hoy
+document.getElementById('eval-fecha').min = new Date().toISOString().split('T')[0];
+
 
 /* ===== INIT ===== */
 (async () => {

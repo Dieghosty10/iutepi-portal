@@ -6,6 +6,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="css/aula.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <script src="js/data.js"></script>
 </head>
 <body>
 <button class="sidebar-toggle" id="sidebar-toggle"><i class="fas fa-bars"></i></button>
@@ -33,6 +36,7 @@
       <button class="sidebar-nav-item" data-sec="periodos"><i class="fas fa-calendar-alt"></i> Períodos</button>
       <div class="sidebar-nav-label">Sistema</div>
       <button class="sidebar-nav-item" data-sec="auditoria"><i class="fas fa-shield-alt"></i> Auditoría</button>
+      <button class="sidebar-nav-item" data-sec="solicitudes"><i class="fas fa-clock"></i> Solicitudes <span class="badge badge-red" id="sb-badge-solicitudes" style="display:none;font-size:0.65rem;padding:2px 5px;">0</span></button>
       <button class="sidebar-nav-item" data-sec="anuncios"><i class="fas fa-bullhorn"></i> Anuncios Globales</button>
     </nav>
     <div class="sidebar-footer">
@@ -132,7 +136,10 @@
 
     <!-- AUDITORÍA -->
     <section class="aula-section" id="sec-auditoria">
-      <div class="page-head"><h1><i class="fas fa-shield-alt" style="color:var(--primary);margin-right:8px;"></i>Auditoría del Sistema</h1><p>Registro de todas las acciones realizadas</p></div>
+      <div class="page-head" style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div><h1><i class="fas fa-shield-alt" style="color:var(--primary);margin-right:8px;"></i>Auditoría del Sistema</h1><p>Registro de todas las acciones realizadas</p></div>
+        <button class="aula-btn aula-btn-secondary" id="btn-export-auditoria"><i class="fas fa-file-pdf"></i> Exportar PDF</button>
+      </div>
       <div class="aula-card">
         <div class="aula-card-body" style="padding:0;">
           <div class="tbl-wrap">
@@ -143,6 +150,12 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- SOLICITUDES -->
+    <section class="aula-section" id="sec-solicitudes">
+      <div class="page-head"><h1><i class="fas fa-clock" style="color:var(--primary);margin-right:8px;"></i>Solicitudes de Evaluaciones</h1><p>Solicitudes de postergación enviadas por los profesores</p></div>
+      <div id="lista-solicitudes"><div class="loading-state"><div class="spinner"></div></div></div>
     </section>
 
     <!-- ANUNCIOS -->
@@ -182,7 +195,7 @@
         <input type="hidden" id="usr-uid" />
         <div class="fr2">
           <div class="aula-fg"><label>Nombre completo *</label><input type="text" class="aula-input" id="usr-nombre" placeholder="Ej: Juan Pérez" required /></div>
-          <div class="aula-fg"><label>Cédula *</label><input type="text" class="aula-input" id="usr-cedula" placeholder="Sin puntos" inputmode="numeric" required /></div>
+          <div class="aula-fg"><label>Cédula *</label><input type="text" class="aula-input" id="usr-cedula" placeholder="Sin puntos" inputmode="numeric" maxlength="8" pattern="[0-9]{7,8}" title="7 u 8 dígitos numéricos" required /></div>
         </div>
         <div class="aula-fg" id="campo-correo">
           <label>Correo electrónico *</label>

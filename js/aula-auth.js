@@ -59,7 +59,7 @@ async function iniciarSesion(correo, contrasena) {
 
   const datos = await obtenerDatosUsuario(usuario.uid);
   if (!datos) throw new Error('Usuario no encontrado en la base de datos.');
-  if (datos.suspendido) throw new Error('Tu cuenta está suspendida. Contacta a administración.');
+  if (datos.suspendido) throw new Error('Tu cuenta está suspendida. Contacta a Control de Estudios.');
 
   await registrarAuditoria('login', usuario.uid, { correo });
   return datos;
