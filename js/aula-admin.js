@@ -91,16 +91,16 @@ async function cargarResumen() {
 /* ===== USUARIOS ===== */
 async function cargarUsuarios() {
   const tb = document.getElementById('tabla-usuarios');
-  tb.innerHTML = '<tr><td colspan="6" class="loading-state"><div class="spinner"></div> Cargando...</td></tr>';
+  tb.innerHTML = '<tr><td colspan="7" class="loading-state"><div class="spinner"></div> Cargando...</td></tr>';
   const snap = await getDocs(collection(db, 'users'));
   todosUsuarios = [];
   snap.forEach(d => todosUsuarios.push({ uid: d.id, ...d.data() }));
-  renderUsuarios(todosUsuarios);
+  filtrarUsuarios();
 }
 
 function renderUsuarios(lista) {
   const tb = document.getElementById('tabla-usuarios');
-  if (lista.length === 0) { tb.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-users"></i><p>No hay usuarios registrados</p></div></td></tr>'; return; }
+  if (lista.length === 0) { tb.innerHTML = '<tr><td colspan="7"><div class="empty-state"><i class="fas fa-users"></i><p>No hay usuarios registrados que coincidan con los filtros</p></div></td></tr>'; return; }
   const roles = { admin: '<span class="badge badge-red">Admin</span>', profesor: '<span class="badge badge-blue">Profesor</span>', estudiante: '<span class="badge badge-gray">Estudiante</span>' };
   tb.innerHTML = lista.map(u => `
     <tr>
@@ -108,11 +108,11 @@ function renderUsuarios(lista) {
       <td>${u.cedula || '—'}</td>
       <td>${u.rol === 'estudiante' ? (u.codigoEstudiante ? `<span style="font-family:monospace;font-size:0.8rem;">${u.codigoEstudiante}</span>` : '<span style="color:#94A3B8;">—</span>') : '—'}</td>
       <td>${roles[u.rol] || u.rol}</td>
-      <td>${u.suspendido ? '<span class="badge badge-red">Suspendido</span>' : '<span class="badge badge-green">Activo</span>'}</td>
+      <td>${u.suspendido ? '<span class="badge badge-red">Inactivo</span>' : '<span class="badge badge-green">Activo</span>'}</td>
       <td>${u.rol === 'estudiante' ? (u.solvente ? '<span class="badge badge-green">Solvente</span>' : '<span class="badge badge-amber">No solvente</span>') : '—'}</td>
       <td style="display:flex;gap:6px;">
-        <button class="aula-btn aula-btn-secondary aula-btn-sm" onclick="editarUsuario('${u.uid}')"><i class="fas fa-edit"></i></button>
-        <button class="aula-btn ${u.suspendido ? 'aula-btn-success' : 'aula-btn-danger'} aula-btn-sm" onclick="toggleSuspender('${u.uid}',${u.suspendido})">
+        <button class="aula-btn aula-btn-secondary aula-btn-sm" onclick="editarUsuario('${u.uid}')" title="Editar usuario"><i class="fas fa-edit"></i></button>
+        <button class="aula-btn ${u.suspendido ? 'aula-btn-success' : 'aula-btn-danger'} aula-btn-sm" onclick="toggleSuspender('${u.uid}',${u.suspendido})" title="${u.suspendido ? 'Activar cuenta' : 'Dar de baja / Inactivar'}">
           <i class="fas fa-${u.suspendido ? 'user-check' : 'user-slash'}"></i>
         </button>
       </td>
@@ -121,12 +121,18 @@ function renderUsuarios(lista) {
 
 document.getElementById('filtro-buscar').addEventListener('input', filtrarUsuarios);
 document.getElementById('filtro-rol').addEventListener('change', filtrarUsuarios);
+document.getElementById('filtro-estado').addEventListener('change', filtrarUsuarios);
 function filtrarUsuarios() {
   const txt = document.getElementById('filtro-buscar').value.toLowerCase();
   const rol = document.getElementById('filtro-rol').value;
-  renderUsuarios(todosUsuarios.filter(u =>
-    (u.nombre?.toLowerCase().includes(txt) || u.cedula?.includes(txt)) && (!rol || u.rol === rol)
-  ));
+  const estado = document.getElementById('filtro-estado').value;
+  
+  renderUsuarios(todosUsuarios.filter(u => {
+    const matchTxt = u.nombre?.toLowerCase().includes(txt) || u.cedula?.includes(txt) || u.correo?.toLowerCase().includes(txt);
+    const matchRol = rol === 'todos' || !rol || u.rol === rol;
+    const matchEstado = estado === 'todos' ? true : (estado === 'activo' ? !u.suspendido : u.suspendido);
+    return matchTxt && matchRol && matchEstado;
+  }));
 }
 
 window.editarUsuario = function(uid) {
@@ -150,13 +156,13 @@ window.editarUsuario = function(uid) {
 };
 
 window.toggleSuspender = async function(uid, estaSuspendido) {
-  const accion = estaSuspendido ? 'Activar' : 'Suspender';
-  if (!confirm(`¿${accion} esta cuenta?`)) return;
+  const accion = estaSuspendido ? 'Activar' : 'Dar de baja (Inactivar)';
+  if (!confirm(`¿${accion} esta cuenta?\n\nSi la das de baja, el usuario no podrá acceder al sistema, pero su historial académico y datos permanecerán intactos.`)) return;
   try {
     const nuevoEstado = !estaSuspendido;
     await updateDoc(doc(db, 'users', uid), { suspendido: nuevoEstado });
     await registrarAuditoria(nuevoEstado ? 'suspender_usuario' : 'activar_usuario', adminActual.uid, { uid });
-    toast(`Usuario ${nuevoEstado ? 'suspendido' : 'activado'} correctamente`, 'success');
+    toast(`Usuario ${nuevoEstado ? 'inactivado' : 'activado'} correctamente`, 'success');
     cargarUsuarios();
   } catch (err) {
     toast('Error: ' + err.message, 'error');
