@@ -1,4 +1,4 @@
-import { auth } from './firebase-config.js';
+import { auth } from './aula-auth.js';
 import { verifyPasswordResetCode, confirmPasswordReset } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 
 // Elementos de la UI
