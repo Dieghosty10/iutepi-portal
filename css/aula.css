@@ -290,3 +290,39 @@ textarea.aula-input { min-height: 90px; resize: vertical; }
   .stats-row { grid-template-columns: 1fr; }
   .aula-main { padding: 16px 12px; padding-top: 60px; }
 }
+
+/* ===== PASSWORD STRENGTH METER ===== */
+.pw-strength-meter {
+  display: flex;
+  gap: 4px;
+  height: 6px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+.pw-bar {
+  flex: 1;
+  background: #E2E8F0;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+.pw-bar.pw-weak { background: #EF4444; }
+.pw-bar.pw-medium { background: #F59E0B; }
+.pw-bar.pw-strong { background: #22C55E; }
+
+.pw-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: #64748B;
+  margin-bottom: 20px;
+}
+.pw-rule {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.3s;
+}
+.pw-rule i { font-size: 0.8rem; }
+.pw-rule.valid { color: #166534; }
+.pw-rule.valid i { color: #22C55E; }
